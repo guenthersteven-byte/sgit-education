@@ -1,0 +1,104 @@
+# sgiT Education - CSV Import Template v2.0
+# ============================================================================
+# WICHTIG: Dieses Template enthält die korrekte Alterszuordnung gemäß 
+# dem Altersguide (docs/ALTERSGUIDE.md)
+# ============================================================================
+#
+# SPALTEN:
+# module,question,answer,wrong1,wrong2,wrong3,explanation,difficulty,age_min,age_max,source
+#
+# REGELN FÜR age_min/age_max:
+# ---------------------------------
+# | Alter | Mathe-Level | Themen |
+# |-------|-------------|--------|
+# | 5-6   | Zählen bis 20, +/- bis 10 | Farben, Tiere, Formen |
+# | 7-8   | +/- bis 100, 2er/5er/10er Einmaleins | Jahreszeiten, Wochentage |
+# | 8-9   | Einmaleins komplett, Division | Monate, Euro |
+# | 9-10  | Schriftlich rechnen, Brüche ½ ¼ | Bundesländer |
+# | 11-12 | Brüche, Dezimal, Prozent-Einstieg | Politik-Grundlagen |
+# | 12-13 | Gleichungen, Dreisatz | Geschichte |
+# | 13-14 | Lineare Funktionen, Pythagoras | Wirtschaft |
+# | 14-15 | POTENZEN, Wurzeln √9 √16 | Demokratie |
+# | 15-16 | Quadratische Gleichungen | Steuern-Grundlagen |
+# | 16-18 | Ableitungen, Integrale | Komplexe Themen |
+# | 18+   | Uni-Niveau | Fachthemen |
+# ---------------------------------
+#
+# DIFFICULTY:
+# 1 = Sehr leicht (age_min 5-7)
+# 2 = Leicht (age_min 7-9)
+# 3 = Mittel (age_min 9-12)
+# 4 = Schwer (age_min 12-15)
+# 5 = Sehr schwer (age_min 15+)
+#
+# BEISPIELE:
+# ============================================================================
+
+module,question,answer,wrong1,wrong2,wrong3,explanation,difficulty,age_min,age_max,source
+
+# === MATHEMATIK 5-6 Jahre ===
+mathematik,Wie viel ist 2 + 3?,5,4,6,7,Wenn du 2 Äpfel hast und 3 dazu bekommst hast du 5 Äpfel.,1,5,7,csv_import
+mathematik,Wie viel ist 5 - 2?,3,2,4,5,5 minus 2 ist 3. Stell dir vor du hast 5 Bonbons und gibst 2 weg.,1,5,7,csv_import
+mathematik,Wie viel ist 1 + 1?,2,1,3,0,1 und noch 1 macht zusammen 2.,1,5,7,csv_import
+mathematik,Zähle: 1 2 3 ... was kommt danach?,4,5,3,6,Nach 1 2 3 kommt die 4!,1,5,7,csv_import
+
+# === MATHEMATIK 7-8 Jahre ===
+mathematik,Wie viel ist 7 + 8?,15,14,16,13,7 plus 8 ergibt 15. Tipp: 7+8 = 7+3+5 = 10+5 = 15,2,7,9,csv_import
+mathematik,Wie viel ist 5 × 2?,10,8,12,15,5 mal 2 bedeutet 5+5 = 10,2,7,9,csv_import
+mathematik,Wie viel ist 3 × 5?,15,12,18,20,3 mal 5 = 15. Das ist die 5er-Reihe!,2,7,9,csv_import
+mathematik,Wie viel ist 50 - 23?,27,28,26,33,50 - 23 = 27. Rechne: 50-20=30 dann 30-3=27,2,7,9,csv_import
+
+# === MATHEMATIK 8-9 Jahre ===
+mathematik,Wie viel ist 7 × 8?,56,54,58,64,7 mal 8 = 56. Ein wichtiger Malfolge-Wert!,3,8,10,csv_import
+mathematik,Wie viel ist 81 ÷ 9?,9,8,7,10,81 geteilt durch 9 = 9. Denn 9 × 9 = 81,3,8,10,csv_import
+mathematik,Wie viel ist 124 + 78?,202,198,212,192,124 + 78 = 202. Schriftlich: 4+8=12 (2 schreiben 1 merken).,3,8,10,csv_import
+
+# === MATHEMATIK 9-10 Jahre ===
+mathematik,Was ist ½ + ¼?,¾,1,½,¼,½ = 2/4 und 2/4 + 1/4 = 3/4 = ¾,3,9,11,csv_import
+mathematik,Wie viel ist 456 × 3?,1368,1368,1356,1458,456 × 3 = 1368. Schriftlich multiplizieren!,3,9,11,csv_import
+
+# === MATHEMATIK 11-12 Jahre ===
+mathematik,Wie viel Prozent sind 25 von 100?,25%,20%,50%,10%,25 von 100 = 25/100 = 25 Prozent,3,11,13,csv_import
+mathematik,Was ist 0.5 als Bruch?,½,¼,⅓,¾,0.5 = 5/10 = 1/2 = ½,3,11,13,csv_import
+
+# === MATHEMATIK 12-13 Jahre ===
+mathematik,Löse: 2x + 6 = 14. Was ist x?,4,3,5,8,2x + 6 = 14 → 2x = 8 → x = 4,4,12,14,csv_import
+mathematik,20% von 80 Euro sind?,16 Euro,12 Euro,20 Euro,8 Euro,20% von 80 = 0.20 × 80 = 16 Euro,4,12,14,csv_import
+
+# === MATHEMATIK 14-15 Jahre (POTENZEN!) ===
+mathematik,Was ist 2³?,8,6,9,4,2³ = 2 × 2 × 2 = 8. Die Hochzahl 3 bedeutet: 3-mal mit sich selbst multiplizieren.,4,14,16,csv_import
+mathematik,Was ist 3³?,27,9,18,81,3³ = 3 × 3 × 3 = 27,4,14,16,csv_import
+mathematik,Was ist √49?,7,6,8,9,√49 = 7 denn 7 × 7 = 49,4,14,16,csv_import
+mathematik,Was ist 5²?,25,10,20,15,5² = 5 × 5 = 25. Das Quadrat von 5.,4,14,16,csv_import
+
+# === MATHEMATIK 15-16 Jahre ===
+mathematik,Löse: x² = 16. Was ist x?,±4,4,8,2,x² = 16 bedeutet x = +4 oder x = -4 denn beide ergeben quadriert 16.,5,15,18,csv_import
+
+# === ERDKUNDE 5-7 Jahre ===
+erdkunde,In welcher Stadt wohnst du wenn du in Deutschland bist?,Deutschland,Frankreich,Spanien,Italien,Deutschland ist das Land in dem wir leben!,1,5,8,csv_import
+erdkunde,Welche Farbe hat der Himmel an einem sonnigen Tag?,Blau,Rot,Grün,Gelb,An sonnigen Tagen ist der Himmel blau.,1,5,8,csv_import
+
+# === ERDKUNDE 9-11 Jahre ===
+erdkunde,Wie heißt die Hauptstadt von Deutschland?,Berlin,München,Hamburg,Frankfurt,Berlin ist die Hauptstadt von Deutschland seit 1990.,3,9,12,csv_import
+erdkunde,Wie viele Kontinente gibt es?,7,5,6,8,Es gibt 7 Kontinente: Europa Afrika Asien Australien Antarktis Nord- und Südamerika.,3,9,12,csv_import
+
+# === ERDKUNDE 11-14 Jahre ===
+erdkunde,Wie viele Bundesländer hat Deutschland?,16,14,15,17,Deutschland hat 16 Bundesländer seit der Wiedervereinigung 1990.,3,11,14,csv_import
+erdkunde,Welcher Kontinent liegt südlich von Europa?,Afrika,Asien,Australien,Antarktis,Afrika liegt direkt südlich von Europa über das Mittelmeer.,3,11,14,csv_import
+
+# === BITCOIN 12-14 Jahre (Grundlagen) ===
+bitcoin,Wer hat Bitcoin erfunden?,Satoshi Nakamoto,Elon Musk,Bill Gates,Mark Zuckerberg,Satoshi Nakamoto ist das Pseudonym des Bitcoin-Erfinders. Die wahre Identität ist unbekannt.,4,12,99,csv_import
+bitcoin,In welchem Jahr wurde Bitcoin veröffentlicht?,2009,2008,2010,2011,Bitcoin wurde am 3. Januar 2009 mit dem ersten Block (Genesis Block) gestartet.,4,12,99,csv_import
+
+# === BITCOIN 14+ Jahre (Technisch) ===
+bitcoin,Wie viele Satoshi sind 1 Bitcoin?,100.000.000,1.000.000,10.000.000,1.000.000.000,1 Bitcoin = 100 Millionen Satoshi. Satoshi ist die kleinste Einheit von Bitcoin.,4,14,99,csv_import
+bitcoin,Was ist ein Bitcoin-Halving?,Halbierung der Block-Belohnung,Verdopplung des Preises,Halbierung der Transaktionen,Verdopplung der Miner,Etwa alle 4 Jahre wird die Belohnung für Miner halbiert. Das begrenzt die Bitcoin-Menge.,5,14,99,csv_import
+
+# === STEUERN 16+ Jahre ===
+steuern,Wie hoch ist der normale Mehrwertsteuersatz in Deutschland?,19%,16%,20%,21%,Der reguläre Mehrwertsteuersatz in Deutschland beträgt 19%. Für Lebensmittel gilt der ermäßigte Satz von 7%.,5,16,99,csv_import
+steuern,Was ist der Unterschied zwischen Brutto und Netto?,Brutto ist vor Abzügen Netto ist nach Abzügen,Brutto ist mehr als Netto,Brutto ist für Firmen Netto für Privat,Kein Unterschied,Bruttolohn ist dein Gehalt vor Steuern und Sozialabgaben. Netto ist was auf deinem Konto ankommt.,5,16,99,csv_import
+
+# ============================================================================
+# HINWEIS: Beim CSV-Import werden die age_min/age_max Werte automatisch 
+# validiert. Fragen mit falscher Alterszuordnung werden markiert.
+# ============================================================================

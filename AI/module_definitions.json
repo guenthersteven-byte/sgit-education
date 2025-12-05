@@ -1,0 +1,373 @@
+{
+  "mathematik": {
+    "name": "Mathematik",
+    "definition": "Mathematik ist die Wissenschaft von Zahlen, Mengen, Strukturen und Rechenvorgängen.",
+    "topics": [
+      "Addition, Subtraktion, Multiplikation, Division",
+      "Brüche, Dezimalzahlen, Prozentrechnung",
+      "Algebra, Gleichungen, Variablen",
+      "Geometrie, Flächen, Volumen",
+      "Statistik, Wahrscheinlichkeit"
+    ],
+    "NOT_topics": [
+      "KEINE Hauptstädte oder Länder (das ist Erdkunde)",
+      "KEINE Tiere oder Pflanzen (das ist Biologie)",
+      "KEINE chemischen Formeln (das ist Chemie)",
+      "KEINE physikalischen Gesetze (das ist Physik)"
+    ],
+    "examples": [
+      "Was ist 7 × 8?",
+      "Berechne: 1/2 + 1/4",
+      "Wenn 2x + 5 = 13, was ist x?",
+      "Wie groß ist die Fläche eines Rechtecks mit 5cm × 3cm?"
+    ]
+  },
+  
+  "lesen": {
+    "name": "Lesen / Deutsch",
+    "definition": "Lesen ist das Schulfach DEUTSCH. Es geht um die deutsche Sprache: Grammatik, Rechtschreibung, Texte verstehen.",
+    "topics": [
+      "Buchstaben, Silben, Wörter lesen",
+      "Sätze bilden und verstehen",
+      "Rechtschreibung, Groß- und Kleinschreibung",
+      "Grammatik: Nomen, Verben, Adjektive",
+      "Satzzeichen: Punkt, Komma, Fragezeichen",
+      "Zeitformen: Gegenwart, Vergangenheit, Zukunft"
+    ],
+    "NOT_topics": [
+      "KEINE Mathematik (Zahlen, Rechnen)",
+      "KEINE Englisch (andere Sprache)",
+      "KEINE Erdkunde (Länder, Städte)",
+      "KEINE Geschichte (Ereignisse, Personen)"
+    ],
+    "examples": [
+      "Welcher Buchstabe kommt nach M?",
+      "Was ist die Mehrzahl von 'Haus'?",
+      "Ist 'Hund' ein Nomen oder Verb?",
+      "Welches Satzzeichen kommt ans Ende einer Frage?"
+    ]
+  },
+  
+  "englisch": {
+    "name": "Englisch",
+    "definition": "Englisch ist das Schulfach für die ENGLISCHE SPRACHE. Nur Fragen auf Englisch oder über Englisch!",
+    "topics": [
+      "English alphabet, letters, sounds",
+      "English vocabulary: colors, animals, numbers",
+      "English grammar: verbs, nouns, adjectives",
+      "English tenses: present, past, future",
+      "English questions and answers",
+      "English idioms and expressions"
+    ],
+    "NOT_topics": [
+      "KEINE Fragen auf DEUTSCH (das ist Lesen/Deutsch)",
+      "KEINE Mathematik",
+      "KEINE Erdkunde (außer in Englisch)",
+      "KEINE anderen Sprachen"
+    ],
+    "examples": [
+      "What color is the sky?",
+      "How do you say 'Hund' in English?",
+      "What is the past tense of 'go'?",
+      "Complete: I ___ happy. (am/is/are)"
+    ]
+  },
+  
+  "physik": {
+    "name": "Physik",
+    "definition": "Physik ist die Wissenschaft von Materie, Energie, Kräften und Bewegung. ES GEHT UM NATURGESETZE!",
+    "topics": [
+      "Mechanik: Bewegung, Geschwindigkeit, Beschleunigung",
+      "Kräfte: Schwerkraft, Reibung, Hebel",
+      "Energie: Kinetische, potentielle Energie",
+      "Licht: Reflexion, Brechung, Farben",
+      "Schall: Töne, Frequenz, Schallwellen",
+      "Wärme: Temperatur, Wärmeleitung",
+      "Elektrizität: Strom, Spannung, Stromkreis",
+      "Magnetismus: Magnete, Magnetfeld"
+    ],
+    "NOT_topics": [
+      "NIEMALS Hauptstädte oder Länder (das ist Erdkunde!)",
+      "NIEMALS Tiere oder Pflanzen (das ist Biologie!)",
+      "NIEMALS chemische Reaktionen (das ist Chemie!)",
+      "NIEMALS historische Ereignisse (das ist Geschichte!)",
+      "NUR physikalische Phänomene und Gesetze!"
+    ],
+    "examples": [
+      "Was ist Schwerkraft?",
+      "Wie schnell ist Licht?",
+      "Was ist ein Hebel?",
+      "Warum fällt ein Apfel nach unten?",
+      "Was passiert wenn Licht auf einen Spiegel trifft?"
+    ]
+  },
+  
+  "erdkunde": {
+    "name": "Erdkunde / Geografie",
+    "definition": "Erdkunde ist die Wissenschaft von der Erde, Ländern, Städten, Kontinenten und Landschaften.",
+    "topics": [
+      "Länder und Hauptstädte",
+      "Kontinente und Ozeane",
+      "Flüsse, Berge, Seen",
+      "Klima und Wetter",
+      "Bevölkerung und Kulturen",
+      "Karten lesen, Himmelsrichtungen"
+    ],
+    "NOT_topics": [
+      "KEINE physikalischen Gesetze (das ist Physik)",
+      "KEINE chemischen Formeln (das ist Chemie)",
+      "KEINE Tiere (das ist Biologie)",
+      "KEINE historischen Personen (das ist Geschichte)"
+    ],
+    "examples": [
+      "Was ist die Hauptstadt von Deutschland?",
+      "Welcher ist der längste Fluss Europas?",
+      "Wie heißen die 7 Kontinente?",
+      "In welche Himmelsrichtung geht die Sonne auf?"
+    ]
+  },
+  
+  "biologie": {
+    "name": "Biologie",
+    "definition": "Biologie ist die Wissenschaft vom LEBEN. Es geht um Lebewesen: Menschen, Tiere, Pflanzen, Zellen.",
+    "topics": [
+      "Tiere: Säugetiere, Vögel, Fische, Insekten",
+      "Pflanzen: Bäume, Blumen, Photosynthese",
+      "Menschlicher Körper: Organe, Skelett, Muskeln",
+      "Zellen: Aufbau, DNA, Vererbung",
+      "Ökosysteme: Nahrungsketten, Lebensräume",
+      "Evolution und Anpassung"
+    ],
+    "NOT_topics": [
+      "NIEMALS Hauptstädte oder Länder (das ist Erdkunde!)",
+      "NIEMALS physikalische Kräfte (das ist Physik!)",
+      "NIEMALS chemische Formeln (das ist Chemie!)",
+      "NUR Fragen über LEBEWESEN!"
+    ],
+    "examples": [
+      "Wie viele Beine hat eine Spinne?",
+      "Was ist Photosynthese?",
+      "Welches ist das größte Säugetier?",
+      "Wie heißt das Organ das Blut pumpt?",
+      "Was fressen Pflanzenfresser?"
+    ]
+  },
+  
+  "chemie": {
+    "name": "Chemie",
+    "definition": "Chemie ist die Wissenschaft von Stoffen, Elementen und chemischen Reaktionen.",
+    "topics": [
+      "Elemente: Sauerstoff, Wasserstoff, Kohlenstoff",
+      "Periodensystem der Elemente",
+      "Chemische Reaktionen und Formeln",
+      "Säuren und Basen",
+      "Aggregatzustände: fest, flüssig, gasförmig",
+      "Atome, Moleküle, Verbindungen"
+    ],
+    "NOT_topics": [
+      "KEINE Erdkunde (Länder, Städte)",
+      "KEINE Biologie (Tiere, Pflanzen) - außer biochemische Prozesse",
+      "KEINE reine Physik (Kräfte, Bewegung)",
+      "NUR chemische Prozesse und Stoffe!"
+    ],
+    "examples": [
+      "Was ist die chemische Formel für Wasser?",
+      "Wie heißt das Element mit dem Symbol O?",
+      "Was passiert bei einer Verbrennung?",
+      "Ist Essig eine Säure oder Base?"
+    ]
+  },
+  
+  "geschichte": {
+    "name": "Geschichte",
+    "definition": "Geschichte ist die Wissenschaft von vergangenen Ereignissen, Personen und Epochen.",
+    "topics": [
+      "Historische Ereignisse und Daten",
+      "Berühmte Persönlichkeiten der Geschichte",
+      "Epochen: Antike, Mittelalter, Neuzeit",
+      "Kriege, Revolutionen, Erfindungen",
+      "Kulturgeschichte und Zivilisationen"
+    ],
+    "NOT_topics": [
+      "KEINE aktuellen Hauptstädte (das ist Erdkunde)",
+      "KEINE Naturwissenschaften (Physik, Chemie, Biologie)",
+      "NUR vergangene Ereignisse und historische Fakten!"
+    ],
+    "examples": [
+      "Wann war der Erste Weltkrieg?",
+      "Wer war Julius Caesar?",
+      "In welchem Jahr fiel die Berliner Mauer?",
+      "Was war die Industrielle Revolution?"
+    ]
+  },
+  
+  "kunst": {
+    "name": "Kunst",
+    "definition": "Kunst ist das Schulfach über Malen, Zeichnen, Bildhauerei und berühmte Künstler.",
+    "topics": [
+      "Farben: Primärfarben, Mischfarben",
+      "Maltechniken: Aquarell, Öl, Acryl",
+      "Berühmte Künstler: Picasso, Van Gogh, da Vinci",
+      "Kunststile: Impressionismus, Surrealismus",
+      "Perspektive und Komposition"
+    ],
+    "NOT_topics": [
+      "KEINE Mathematik",
+      "KEINE Naturwissenschaften",
+      "NUR über Kunst und Künstler!"
+    ],
+    "examples": [
+      "Welche Farbe entsteht wenn man Rot und Gelb mischt?",
+      "Wer malte die Mona Lisa?",
+      "Was sind die drei Primärfarben?",
+      "Was ist ein Selbstporträt?"
+    ]
+  },
+  
+  "musik": {
+    "name": "Musik",
+    "definition": "Musik ist das Schulfach über Töne, Instrumente, Noten und Komponisten.",
+    "topics": [
+      "Noten: Tonleiter, Notenwerte",
+      "Instrumente: Klavier, Gitarre, Geige, Trompete",
+      "Komponisten: Mozart, Beethoven, Bach",
+      "Musikstile: Klassik, Pop, Rock, Jazz",
+      "Rhythmus und Takt"
+    ],
+    "NOT_topics": [
+      "KEINE anderen Schulfächer",
+      "NUR Musik-bezogene Fragen!"
+    ],
+    "examples": [
+      "Wie viele Tasten hat ein Klavier?",
+      "Wer komponierte die 'Kleine Nachtmusik'?",
+      "Welche Note kommt nach C?",
+      "Was ist ein Orchester?"
+    ]
+  },
+  
+  "computer": {
+    "name": "Computer / Informatik",
+    "definition": "Computer ist das Schulfach über Hardware, Software und Anwendungen. KEINE Programmierung!",
+    "topics": [
+      "Hardware: Maus, Tastatur, Monitor, CPU",
+      "Software: Windows, Programme, Apps",
+      "Internet: Browser, E-Mail, Suchmaschinen",
+      "Dateien: Speichern, Ordner, Dateitypen",
+      "Sicherheit: Passwörter, Viren, Datenschutz"
+    ],
+    "NOT_topics": [
+      "KEINE Programmierung (das ist 'programmieren' Modul)",
+      "KEINE höhere Mathematik",
+      "NUR Computer-Grundlagen!"
+    ],
+    "examples": [
+      "Was ist eine Maus?",
+      "Wofür ist die Enter-Taste?",
+      "Was ist ein Browser?",
+      "Wie heißt das Gehirn des Computers?",
+      "Was ist ein Virus?"
+    ]
+  },
+  
+  "programmieren": {
+    "name": "Programmieren",
+    "definition": "Programmieren ist das Schreiben von Code. Es geht um Programmiersprachen und Algorithmen.",
+    "topics": [
+      "Programmiersprachen: Python, JavaScript, Java",
+      "Grundkonzepte: Variablen, Schleifen, Funktionen",
+      "Algorithmen und Logik",
+      "Debugging und Fehlersuche",
+      "Einfache Code-Beispiele"
+    ],
+    "NOT_topics": [
+      "KEINE Computer-Grundlagen (das ist 'computer' Modul)",
+      "KEINE reine Mathematik",
+      "NUR über Code und Programmierung!"
+    ],
+    "examples": [
+      "Was ist eine Variable?",
+      "Was macht eine for-Schleife?",
+      "Was ist Python?",
+      "Was bedeutet 'Hello World'?",
+      "Was ist ein Bug?"
+    ]
+  },
+  
+  "bitcoin": {
+    "name": "Bitcoin / Kryptowährung",
+    "definition": "Bitcoin ist digitales Geld. Es funktioniert ohne Banken (dezentral) und basiert auf Blockchain-Technologie.",
+    "topics": [
+      "Was ist Bitcoin? (Digitales Geld)",
+      "Dezentralität (keine Banken nötig)",
+      "Blockchain (Technologie dahinter)",
+      "21 Millionen Maximum (Knappheit)",
+      "Mining (wie neue Bitcoin entstehen)",
+      "Wallets (wo Bitcoin gespeichert werden)",
+      "Satoshi Nakamoto (Erfinder)",
+      "Freiheit und Unabhängigkeit"
+    ],
+    "NOT_topics": [
+      "KEINE normalen Banken oder Euro (das ist 'steuern' Modul)",
+      "KEINE Aktien oder Börse",
+      "NUR Bitcoin und Krypto!"
+    ],
+    "examples": [
+      "Was ist Bitcoin?",
+      "Wie viele Bitcoin wird es maximal geben?",
+      "Was ist eine Blockchain?",
+      "Braucht man eine Bank für Bitcoin?",
+      "Wer hat Bitcoin erfunden?"
+    ]
+  },
+  
+  "steuern": {
+    "name": "Steuern / Finanzen",
+    "definition": "Steuern ist das Thema Geld, Finanzen, Steuern zahlen und wirtschaftliche Grundlagen.",
+    "topics": [
+      "Was sind Steuern?",
+      "Einkommensteuer, Mehrwertsteuer",
+      "Sparen und Ausgeben",
+      "Bank und Konto",
+      "Wirtschaft und Handel",
+      "Geld verdienen und Budget"
+    ],
+    "NOT_topics": [
+      "KEINE Bitcoin (das ist 'bitcoin' Modul)",
+      "KEINE reine Mathematik (das ist 'mathematik' Modul)",
+      "NUR Finanzen und Steuern!"
+    ],
+    "examples": [
+      "Was sind Steuern?",
+      "Warum zahlt man Mehrwertsteuer?",
+      "Was ist ein Budget?",
+      "Was bedeutet 'sparen'?",
+      "Wofür werden Steuern verwendet?"
+    ]
+  },
+  
+  "wissenschaft": {
+    "name": "Wissenschaft / Science",
+    "definition": "Wissenschaft ist ein ÜBERGEORDNETES Fach. Es kombiniert Elemente aus Physik, Chemie, Biologie UND Erdkunde.",
+    "topics": [
+      "Naturphänomene allgemein",
+      "Experimente und Beobachtungen",
+      "Lebewesen und ihre Umwelt",
+      "Erde, Planeten, Weltall",
+      "Einfache physikalische Konzepte",
+      "Naturkreisläufe: Wasser, Jahreszeiten"
+    ],
+    "NOT_topics": [
+      "KEINE reine Mathematik",
+      "KEINE Sprachen (Deutsch, Englisch)",
+      "KEINE Geschichte oder Kunst"
+    ],
+    "examples": [
+      "Warum regnet es?",
+      "Wie entsteht ein Regenbogen?",
+      "Was ist der Unterschied zwischen Tag und Nacht?",
+      "Warum gibt es Jahreszeiten?",
+      "Was brauchen Pflanzen zum Wachsen?"
+    ]
+  }
+}

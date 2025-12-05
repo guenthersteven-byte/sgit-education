@@ -1,0 +1,100 @@
+# ============================================================================
+# sgiT Education Platform - Docker Compose
+# ============================================================================
+#
+# Startet die komplette Entwicklungsumgebung:
+# - nginx (Webserver)
+# - PHP-FPM 8.3 (Application)
+# - Ollama (AI/LLM) - Optional
+#
+# USAGE:
+#   docker-compose up -d          # Starten
+#   docker-compose down           # Stoppen
+#   docker-compose logs -f        # Logs
+#   docker-compose up -d --build  # Neu bauen
+#
+# @version 1.1
+# @date 05.12.2025
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # NGINX - Webserver & Reverse Proxy
+  # ==========================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: sgit_nginx
+    ports:
+      - "8080:80"          # http://localhost:8080
+      # - "443:443"        # HTTPS (Production)
+    volumes:
+      - ../:/var/www/html:ro                           # App Code (read-only)
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro    # nginx Config
+      - ./nginx/sites:/etc/nginx/conf.d:ro             # Site Configs
+    depends_on:
+      - php
+    networks:
+      - sgit_network
+    restart: unless-stopped
+
+  # ==========================================================================
+  # PHP-FPM - Application Server
+  # ==========================================================================
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sgit_php
+    volumes:
+      - ../:/var/www/html                              # App Code (read-write)
+      - ./php/php.ini:/usr/local/etc/php/php.ini:ro    # PHP Config
+      # SQLite DBs direkt aus dem Projekt-Ordner (kein separates Volume)
+      # Damit bleiben die bestehenden Daten erhalten!
+      # OneDrive Backup-Verzeichnis (Windows -> Container)
+      - /c/Users/SG/OneDrive/sgiT/sgiT/WebsiteSourcefiles_sgitspace/backups:/mnt/onedrive-backup
+    environment:
+      - APP_ENV=development
+      - APP_DEBUG=true
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+      - OLLAMA_MODEL=llama3.2:latest
+    networks:
+      - sgit_network
+    restart: unless-stopped
+
+  # ==========================================================================
+  # OLLAMA - AI/LLM Server (Optional)
+  # ==========================================================================
+  # Auskommentieren wenn Ollama auf dem Host läuft
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sgit_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - sgit_ollama:/root/.ollama                      # Models persistent
+    # GPU Support (NVIDIA) - auskommentieren wenn keine GPU
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    networks:
+      - sgit_network
+    restart: unless-stopped
+
+# ============================================================================
+# NETWORKS
+# ============================================================================
+networks:
+  sgit_network:
+    driver: bridge
+
+# ============================================================================
+# VOLUMES - Persistente Daten
+# ============================================================================
+volumes:
+  sgit_ollama:
+    name: sgit_ollama_models

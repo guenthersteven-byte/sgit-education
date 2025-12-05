@@ -1,0 +1,378 @@
+{
+  "mathematik": {
+    "name": "Mathematics",
+    "definition": "Mathematics is the science of numbers, calculations, and logical thinking.",
+    "topics": [
+      "Addition and subtraction",
+      "Multiplication and division",
+      "Fractions and decimals",
+      "Geometry: shapes, areas, volumes",
+      "Algebra: equations, variables"
+    ],
+    "NOT_topics": [
+      "NEVER geography topics (capitals, countries)",
+      "NEVER biology topics (animals, plants)",
+      "NEVER historical events"
+    ],
+    "examples_german": [
+      "Was ist 5 + 3?",
+      "Wie viel ist 7 × 8?",
+      "Was ist ein Quadrat?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "lesen": {
+    "name": "Reading/German Language",
+    "definition": "German language skills: reading, grammar, spelling, and comprehension.",
+    "topics": [
+      "Letters and sounds",
+      "Syllables and words",
+      "Sentences and grammar",
+      "Reading comprehension",
+      "Spelling and punctuation"
+    ],
+    "NOT_topics": [
+      "NEVER mathematics (numbers, calculations)",
+      "NEVER science topics",
+      "NEVER geography"
+    ],
+    "examples_german": [
+      "Welcher Buchstabe kommt nach M?",
+      "Wie viele Silben hat das Wort 'Banane'?",
+      "Was ist ein Nomen?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "physik": {
+    "name": "Physics",
+    "definition": "Physics is the science of matter, energy, forces and motion. IT IS ABOUT NATURAL LAWS!",
+    "topics": [
+      "Mechanics: motion, velocity, acceleration",
+      "Forces: gravity, friction, levers",
+      "Energy: kinetic, potential energy",
+      "Light: reflection, refraction, colors",
+      "Sound: tones, frequency, sound waves",
+      "Heat: temperature, heat conduction",
+      "Electricity: current, voltage, circuits",
+      "Magnetism: magnets, magnetic field"
+    ],
+    "NOT_topics": [
+      "NEVER capitals or countries (that's geography!)",
+      "NEVER animals or plants (that's biology!)",
+      "NEVER chemical reactions (that's chemistry!)",
+      "NEVER historical events (that's history!)",
+      "ONLY physical phenomena and laws!"
+    ],
+    "examples_german": [
+      "Was ist Schwerkraft?",
+      "Wie schnell ist Licht?",
+      "Was ist ein Hebel?",
+      "Warum fällt ein Apfel nach unten?",
+      "Was passiert wenn Licht auf einen Spiegel trifft?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "erdkunde": {
+    "name": "Geography",
+    "definition": "Geography is the science of Earth, countries, cities, landscapes, and natural features.",
+    "topics": [
+      "Countries and capitals",
+      "Continents and oceans",
+      "Mountains, rivers, lakes",
+      "Cities and regions",
+      "Climate and weather zones",
+      "Maps and navigation"
+    ],
+    "NOT_topics": [
+      "NEVER physics topics (forces, energy)",
+      "NEVER biology (animals, plants as main focus)",
+      "NEVER chemistry (chemical reactions)",
+      "FOCUS on locations, places, landscapes!"
+    ],
+    "examples_german": [
+      "Was ist die Hauptstadt von Deutschland?",
+      "Welcher ist der längste Fluss Europas?",
+      "Auf welchem Kontinent liegt Ägypten?",
+      "Wie heißt das höchste Gebirge der Welt?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "biologie": {
+    "name": "Biology",
+    "definition": "Biology is the science of living things: animals, plants, cells, and the human body.",
+    "topics": [
+      "Animals: mammals, birds, fish, insects",
+      "Plants: trees, flowers, photosynthesis",
+      "Human body: organs, skeleton, muscles",
+      "Cells and microorganisms",
+      "Nutrition and digestion",
+      "Reproduction and growth",
+      "Ecosystems and habitats"
+    ],
+    "NOT_topics": [
+      "NEVER geography (capitals, countries, rivers)",
+      "NEVER physics (forces, energy, motion)",
+      "NEVER pure chemistry (elements, reactions)",
+      "FOCUS on living organisms!"
+    ],
+    "examples_german": [
+      "Wie viele Beine hat eine Spinne?",
+      "Was brauchen Pflanzen zum Wachsen?",
+      "Wie viele Knochen hat der Mensch?",
+      "Was ist Photosynthese?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "chemie": {
+    "name": "Chemistry",
+    "definition": "Chemistry is the science of substances, elements, compounds, and chemical reactions.",
+    "topics": [
+      "Elements and periodic table",
+      "Chemical reactions",
+      "Acids and bases",
+      "States of matter: solid, liquid, gas",
+      "Atoms and molecules",
+      "Chemical formulas"
+    ],
+    "NOT_topics": [
+      "NEVER geography",
+      "NEVER pure biology (animals, plants)",
+      "NEVER physics (unless about matter structure)",
+      "FOCUS on chemical substances and reactions!"
+    ],
+    "examples_german": [
+      "Was ist Wasser chemisch?",
+      "Welches Element hat das Symbol O?",
+      "Was passiert wenn man Säure mit Base mischt?",
+      "Wie viele Aggregatzustände gibt es?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "geschichte": {
+    "name": "History",
+    "definition": "History is about past events, people, and periods in time.",
+    "topics": [
+      "Historical periods and epochs",
+      "Famous historical figures",
+      "Important events and dates",
+      "Ancient civilizations",
+      "Medieval times",
+      "Modern history",
+      "Wars and conflicts"
+    ],
+    "NOT_topics": [
+      "NEVER current geography (focus on historical context)",
+      "NEVER science topics",
+      "FOCUS on past events and people!"
+    ],
+    "examples_german": [
+      "Wann endete der Zweite Weltkrieg?",
+      "Wer war Julius Caesar?",
+      "Was waren die Römer bekannt für?",
+      "Wann begann das Mittelalter?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "kunst": {
+    "name": "Art",
+    "definition": "Art is about painting, drawing, colors, and famous artists.",
+    "topics": [
+      "Colors: primary, secondary colors",
+      "Drawing techniques",
+      "Painting styles",
+      "Famous artists",
+      "Art history",
+      "Sculptures and crafts"
+    ],
+    "NOT_topics": [
+      "NEVER science topics",
+      "NEVER mathematics",
+      "FOCUS on visual arts!"
+    ],
+    "examples_german": [
+      "Welche Farbe entsteht wenn man Rot und Blau mischt?",
+      "Wer malte die Mona Lisa?",
+      "Was sind Primärfarben?",
+      "Was ist ein Portrait?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "musik": {
+    "name": "Music",
+    "definition": "Music is about tones, instruments, notes, and composers.",
+    "topics": [
+      "Musical instruments",
+      "Notes and notation",
+      "Rhythms and tempo",
+      "Famous composers",
+      "Musical genres",
+      "Singing and melodies"
+    ],
+    "NOT_topics": [
+      "NEVER science topics",
+      "NEVER visual arts (unless music-related)",
+      "FOCUS on sounds and music!"
+    ],
+    "examples_german": [
+      "Wie viele Saiten hat eine Gitarre?",
+      "Wer komponierte die 5. Symphonie?",
+      "Was ist ein Notenschlüssel?",
+      "Welches Instrument hat 88 Tasten?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "computer": {
+    "name": "Computer Skills",
+    "definition": "Computer skills: hardware, software, internet, applications. NO programming!",
+    "topics": [
+      "Hardware: keyboard, mouse, screen, CPU",
+      "Software: programs, apps, operating systems",
+      "Internet: browsing, email, safety",
+      "Files and folders",
+      "Basic computer operations"
+    ],
+    "NOT_topics": [
+      "NEVER programming or coding (that's a separate subject!)",
+      "NEVER advanced technical details",
+      "FOCUS on basic computer usage!"
+    ],
+    "examples_german": [
+      "Was ist eine Maus?",
+      "Wofür steht CPU?",
+      "Was ist ein Browser?",
+      "Wie nennt man einen Ordner auf dem Computer?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "programmieren": {
+    "name": "Programming",
+    "definition": "Programming is writing code: algorithms, variables, loops, and functions.",
+    "topics": [
+      "Programming languages: Python, JavaScript",
+      "Variables and data types",
+      "Loops: for, while",
+      "Conditions: if, else",
+      "Functions and methods",
+      "Algorithms and logic"
+    ],
+    "NOT_topics": [
+      "NEVER basic computer usage (that's Computer Skills!)",
+      "NEVER hardware topics",
+      "FOCUS on writing code!"
+    ],
+    "examples_german": [
+      "Was ist eine Variable?",
+      "Was macht eine For-Schleife?",
+      "Was ist Python?",
+      "Wofür braucht man eine IF-Bedingung?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "bitcoin": {
+    "name": "Bitcoin",
+    "definition": "Bitcoin is digital money that works without banks. It is freedom technology based on Austrian Economics.",
+    "topics": [
+      "Bitcoin basics: digital money",
+      "Decentralization: works without banks",
+      "Limited supply: only 21 million",
+      "Blockchain technology",
+      "Mining and transactions",
+      "Freedom and sovereignty",
+      "Austrian School economics principles"
+    ],
+    "NOT_topics": [
+      "NEVER traditional banking details",
+      "NEVER other cryptocurrencies (focus on Bitcoin!)",
+      "NEVER complex technical details for young kids"
+    ],
+    "examples_german": [
+      "Was ist Bitcoin?",
+      "Wie viele Bitcoin gibt es maximal?",
+      "Braucht man eine Bank für Bitcoin?",
+      "Was ist Dezentralisierung?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "steuern": {
+    "name": "Taxes and Finance",
+    "definition": "Understanding money, taxes, budgeting, and basic economics.",
+    "topics": [
+      "What are taxes?",
+      "Income and expenses",
+      "Budgeting and saving",
+      "Basic economics",
+      "Work and wages",
+      "Financial responsibility"
+    ],
+    "NOT_topics": [
+      "NEVER complex tax law",
+      "NEVER advanced finance",
+      "KEEP it simple for kids!"
+    ],
+    "examples_german": [
+      "Was sind Steuern?",
+      "Warum spart man Geld?",
+      "Was ist ein Budget?",
+      "Wofür werden Steuern verwendet?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "wissenschaft": {
+    "name": "Science (General)",
+    "definition": "General science: combines physics, chemistry, biology, and geography. Umbrella subject.",
+    "topics": [
+      "Natural phenomena",
+      "Scientific method",
+      "Experiments and observations",
+      "Mix of physics, chemistry, biology",
+      "Earth science and nature"
+    ],
+    "NOT_topics": [
+      "Try to be specific when possible",
+      "Use specific subjects (Physics, Biology, etc.) when topic is clear"
+    ],
+    "examples_german": [
+      "Warum ist der Himmel blau?",
+      "Wie funktioniert ein Regenbogen?",
+      "Was ist ein Experiment?",
+      "Warum schwimmt Eis auf Wasser?"
+    ],
+    "output_language": "GERMAN"
+  },
+  
+  "englisch": {
+    "name": "English Language",
+    "definition": "English language learning: vocabulary, grammar, reading, and speaking.",
+    "topics": [
+      "English vocabulary",
+      "Basic grammar",
+      "Common phrases",
+      "Colors, numbers, animals in English",
+      "Simple conversations"
+    ],
+    "NOT_topics": [
+      "Questions should be in ENGLISH",
+      "Answers should be in ENGLISH",
+      "NOT in German for this subject!"
+    ],
+    "examples_english": [
+      "What color is the sky?",
+      "How do you say 'Hund' in English?",
+      "What is the plural of 'child'?"
+    ],
+    "output_language": "ENGLISH"
+  }
+}

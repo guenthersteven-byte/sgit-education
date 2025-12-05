@@ -1,0 +1,101 @@
+# ============================================
+# sgiT Education Platform - .gitignore
+# ============================================
+
+# --------------------------------------------
+# Datenbanken (User-Daten, NICHT questions.db!)
+# --------------------------------------------
+# Questions DB wird BEHALTEN für Distribution
+
+# User-spezifische Datenbanken
+# clippy/foxy_chat.db  # Wird mit hochgeladen (Foxy-Antworten)
+wallet/*.db
+wallet/*.db-journal
+wallet/*.db-wal
+wallet/*.db-shm
+
+# Alte DB-Backups
+AI/data/*.db.old.*
+AI/data/ai_questions.db
+
+# SQLite temporäre Dateien
+*.db-journal
+*.db-wal
+*.db-shm
+
+# --------------------------------------------
+# Backups & Logs
+# --------------------------------------------
+backups/*.zip
+backups/sgit-EDU-*/
+bots/logs/*.log
+*.log
+
+# --------------------------------------------
+# Konfiguration mit persönlichen Daten
+# --------------------------------------------
+config/backup_config.json
+
+# --------------------------------------------
+# Debug & Analyse Dateien
+# --------------------------------------------
+debug_*.php
+bug*_analyse.php
+*_test.php
+test_*.php
+quick_test.php
+
+# --------------------------------------------
+# Deaktivierte Module & alte Dateien
+# --------------------------------------------
+_DISABLED_*/
+*.OLD
+*.old
+*.bak
+*.backup
+
+# --------------------------------------------
+# Session-spezifische Dateien
+# --------------------------------------------
+sgit_education_status_report.md
+PROMPT_FOR_NEW_CHAT.txt
+session_update.txt
+
+# --------------------------------------------
+# Temporäre Dateien & OS-spezifisch
+# --------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+*.swp
+*~
+
+# --------------------------------------------
+# IDE & Editor
+# --------------------------------------------
+.idea/
+.vscode/
+*.sublime-*
+.project
+.settings/
+
+# --------------------------------------------
+# Dependencies (falls hinzugefügt)
+# --------------------------------------------
+node_modules/
+vendor/
+composer.lock
+
+# --------------------------------------------
+# Docker lokale Overrides
+# --------------------------------------------
+docker/.env
+docker/docker-compose.override.yml
+
+# --------------------------------------------
+# Uploads (User-generiert)
+# --------------------------------------------
+uploads/*
+!uploads/.gitkeep

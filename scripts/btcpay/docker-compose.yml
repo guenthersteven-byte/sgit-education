@@ -1,0 +1,199 @@
+# =============================================================================
+# sgiT Education Platform - BTCPay Server Setup (Regtest)
+# =============================================================================
+# Version: 1.0
+# Datum: 03.12.2025
+# Autor: sgiT Solution Engineering
+# 
+# Dieses Setup startet BTCPay Server im Regtest-Modus für lokale Entwicklung.
+# KEINE echten Bitcoin - nur für Tests!
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Datenbank für BTCPay Server
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: sgit-btcpay-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: btcpay
+      POSTGRES_PASSWORD: btcpay2025
+      POSTGRES_DB: btcpayserver
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - btcpay-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U btcpay"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Bitcoin Core (Regtest Mode)
+  # ---------------------------------------------------------------------------
+  bitcoind:
+    image: btcpayserver/bitcoin:26.0
+    container_name: sgit-bitcoind
+    restart: unless-stopped
+    environment:
+      BITCOIN_NETWORK: regtest
+      BITCOIN_WALLETDIR: /data/wallets
+      BITCOIN_EXTRA_ARGS: |
+        rpcuser=btcpay
+        rpcpassword=btcpay2025
+        rpcallowip=0.0.0.0/0
+        rpcbind=0.0.0.0
+        server=1
+        txindex=1
+        fallbackfee=0.00001
+        regtest=1
+        zmqpubrawblock=tcp://0.0.0.0:28332
+        zmqpubrawtx=tcp://0.0.0.0:28333
+        [regtest]
+        rpcport=18443
+    volumes:
+      - bitcoin_data:/data
+    ports:
+      - "18443:18443"  # RPC Port (Regtest)
+      - "18444:18444"  # P2P Port (Regtest)
+      - "28332:28332"  # ZMQ Block
+      - "28333:28333"  # ZMQ TX
+    networks:
+      - btcpay-network
+    healthcheck:
+      test: ["CMD", "bitcoin-cli", "-regtest", "-rpcuser=btcpay", "-rpcpassword=btcpay2025", "getblockchaininfo"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Lightning Network Daemon (LND) - Regtest
+  # ---------------------------------------------------------------------------
+  lnd:
+    image: lightninglabs/lnd:v0.18.0-beta
+    container_name: sgit-lnd
+    restart: unless-stopped
+    command:
+      - lnd
+      - --noseedbackup
+      - --restlisten=0.0.0.0:8080
+      - --rpclisten=0.0.0.0:10009
+      - --listen=0.0.0.0:9735
+      - --bitcoin.active
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=bitcoind:18443
+      - --bitcoind.rpcuser=btcpay
+      - --bitcoind.rpcpass=btcpay2025
+      - --bitcoind.zmqpubrawblock=tcp://bitcoind:28332
+      - --bitcoind.zmqpubrawtx=tcp://bitcoind:28333
+      - --tlsextradomain=lnd
+      - --tlsextraip=0.0.0.0
+    volumes:
+      - lnd_data:/root/.lnd
+    ports:
+      - "8080:8080"    # REST API
+      - "10009:10009"  # gRPC
+      - "9735:9735"    # P2P
+    depends_on:
+      bitcoind:
+        condition: service_healthy
+    networks:
+      - btcpay-network
+
+  # ---------------------------------------------------------------------------
+  # NBXplorer - Blockchain Indexer für BTCPay
+  # ---------------------------------------------------------------------------
+  nbxplorer:
+    image: nicolasdorier/nbxplorer:2.5.0
+    container_name: sgit-nbxplorer
+    restart: unless-stopped
+    environment:
+      NBXPLORER_NETWORK: regtest
+      NBXPLORER_BIND: 0.0.0.0:32838
+      NBXPLORER_CHAINS: btc
+      NBXPLORER_BTCRPCURL: http://bitcoind:18443
+      NBXPLORER_BTCRPCUSER: btcpay
+      NBXPLORER_BTCRPCPASSWORD: btcpay2025
+      NBXPLORER_BTCNODEENDPOINT: bitcoind:18444
+      NBXPLORER_POSTGRES: "Host=postgres;Database=btcpayserver;Username=btcpay;Password=btcpay2025"
+    volumes:
+      - nbxplorer_data:/data
+    ports:
+      - "32838:32838"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      bitcoind:
+        condition: service_healthy
+    networks:
+      - btcpay-network
+
+  # ---------------------------------------------------------------------------
+  # BTCPay Server
+  # ---------------------------------------------------------------------------
+  btcpayserver:
+    image: btcpayserver/btcpayserver:1.13.1
+    container_name: sgit-btcpayserver
+    restart: unless-stopped
+    environment:
+      BTCPAY_NETWORK: regtest
+      BTCPAY_BIND: 0.0.0.0:49392
+      BTCPAY_ROOTPATH: /
+      BTCPAY_CHAINS: btc
+      BTCPAY_POSTGRES: "Host=postgres;Database=btcpayserver;Username=btcpay;Password=btcpay2025"
+      BTCPAY_BTCEXPLORERURL: http://nbxplorer:32838
+      BTCPAY_BTCLIGHTNING: "type=lnd-rest;server=https://lnd:8080/;macaroonfilepath=/lnd/.lnd/data/chain/bitcoin/regtest/admin.macaroon;allowinsecure=true"
+      BTCPAY_EXPLORERPOSTGRES: "Host=postgres;Database=btcpayserver;Username=btcpay;Password=btcpay2025"
+      BTCPAY_SSHCONNECTION: ""
+      BTCPAY_DEBUGLOG: "btcpay.log"
+      ASPNETCORE_URLS: "http://0.0.0.0:49392"
+    volumes:
+      - btcpay_data:/data
+      - lnd_data:/lnd/.lnd:ro
+    ports:
+      - "49392:49392"  # BTCPay Server Web UI
+    depends_on:
+      - postgres
+      - nbxplorer
+      - lnd
+    networks:
+      - btcpay-network
+    labels:
+      - "sgit.project=education"
+      - "sgit.component=btcpay"
+
+# =============================================================================
+# Volumes - Persistente Daten
+# =============================================================================
+volumes:
+  postgres_data:
+    name: sgit-btcpay-postgres
+  bitcoin_data:
+    name: sgit-btcpay-bitcoin
+  lnd_data:
+    name: sgit-btcpay-lnd
+  nbxplorer_data:
+    name: sgit-btcpay-nbxplorer
+  btcpay_data:
+    name: sgit-btcpay-data
+
+# =============================================================================
+# Network
+# =============================================================================
+networks:
+  btcpay-network:
+    name: sgit-btcpay-network
+    driver: bridge
+
+# =============================================================================
+# ZUGRIFF NACH START:
+# -----------------------------------------------------------------------------
+# BTCPay Server:  http://localhost:49392
+# Bitcoin RPC:    localhost:18443 (user: btcpay, pass: btcpay2025)
+# LND REST:       https://localhost:8080
+# NBXplorer:      http://localhost:32838
+# =============================================================================

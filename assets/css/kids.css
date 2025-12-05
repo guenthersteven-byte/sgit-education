@@ -1,0 +1,583 @@
+/**
+ * sgiT Education Platform - Kids Stylesheet
+ * 
+ * Kinderfreundliche Ergänzungen mit spielerischen Animationen und Interaktionen.
+ * 
+ * @package sgiT_Education
+ * @version 1.0.0
+ * @author deStevie / sgiT Solution Engineering & IT Services
+ */
+
+/* ============================================================================
+   ÜBUNGS-CONTAINER (MATHE-AUFGABEN)
+   ============================================================================ */
+
+.exercise-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--color-primary-bright);
+}
+
+.task-counter {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+.points-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary-bright);
+}
+
+/* ============================================================================
+   AUFGABEN-ANZEIGE
+   ============================================================================ */
+
+.task-display {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 25px;
+    margin-bottom: 2rem;
+    border: 3px solid var(--color-primary-bright);
+}
+
+.task-question {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    margin: 0;
+    letter-spacing: 0.5rem;
+    user-select: none;
+}
+
+.task-operand {
+    display: inline-block;
+    animation: bounceIn 0.5s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Unterschiedliche Animations-Verzögerungen für Operanden */
+.task-operand:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.task-operand:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.task-operand:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.task-operand:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.task-operand:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+/* ============================================================================
+   ANTWORT-EINGABE
+   ============================================================================ */
+
+.answer-section {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.answer-input {
+    font-size: 3rem;
+    text-align: center;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+    border: 4px solid var(--color-primary-dark);
+    border-radius: 20px;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+    outline: none;
+    border-color: var(--color-primary-bright);
+    box-shadow: 0 0 0 5px rgba(67, 210, 64, 0.2);
+    transform: scale(1.05);
+}
+
+.answer-input.correct {
+    border-color: var(--color-success);
+    background: #d4edda;
+    animation: successShake 0.5s ease;
+}
+
+.answer-input.incorrect {
+    border-color: var(--color-error);
+    background: #f8d7da;
+    animation: errorShake 0.5s ease;
+}
+
+@keyframes successShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px) rotate(-5deg); }
+    75% { transform: translateX(10px) rotate(5deg); }
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* ============================================================================
+   FEEDBACK & TIPPS
+   ============================================================================ */
+
+.feedback-box {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 20px;
+    margin: 2rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-correct {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border: 3px solid var(--color-success);
+}
+
+.feedback-incorrect {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border: 3px solid var(--color-error);
+}
+
+.feedback-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    animation: pulse 1s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.hint-box {
+    background: #fff3cd;
+    border: 3px solid var(--color-warning);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.hint-icon {
+    font-size: 2rem;
+    margin-right: 0.5rem;
+}
+
+.hint-text {
+    font-size: 1.2rem;
+    color: #856404;
+    font-weight: 500;
+}
+
+/* ============================================================================
+   ZAHLENVERGLEICH BUTTONS
+   ============================================================================ */
+
+.comparison-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.comparison-btn {
+    width: 120px;
+    height: 120px;
+    font-size: 4rem;
+    background: white;
+    border: 4px solid var(--color-primary-dark);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-btn:hover {
+    background: var(--color-primary-bright);
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+    border-color: var(--color-primary-bright);
+}
+
+.comparison-btn:active {
+    transform: scale(0.95);
+}
+
+/* ============================================================================
+   FORTSCHRITTS-ANZEIGE
+   ============================================================================ */
+
+.task-progress {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.progress-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: all 0.3s ease;
+}
+
+.progress-dot.completed {
+    background: var(--color-success);
+    animation: completeDot 0.3s ease;
+}
+
+.progress-dot.current {
+    background: var(--color-primary-bright);
+    transform: scale(1.3);
+    box-shadow: 0 0 10px var(--color-primary-bright);
+}
+
+@keyframes completeDot {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+
+/* ============================================================================
+   ERFOLGS-CELEBRATION
+   ============================================================================ */
+
+.celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.celebration-content {
+    background: white;
+    padding: 3rem;
+    border-radius: 30px;
+    text-align: center;
+    max-width: 500px;
+    animation: celebrationPop 0.5s ease;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes celebrationPop {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(10deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.celebration-icon {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+    animation: celebrationBounce 1s ease infinite;
+}
+
+@keyframes celebrationBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.celebration-title {
+    font-size: 2.5rem;
+    color: var(--color-primary-dark);
+    margin-bottom: 1rem;
+}
+
+.celebration-stats {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--color-background);
+    border-radius: 15px;
+}
+
+.celebration-stat {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.celebration-stat strong {
+    color: var(--color-primary-bright);
+    font-size: 1.5rem;
+}
+
+/* ============================================================================
+   KONFETTI ANIMATION (Optional)
+   ============================================================================ */
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--color-primary-bright);
+    animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ============================================================================
+   INTERAKTIVE ZAHLEN-HILFE
+   ============================================================================ */
+
+.number-helper {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.number-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-primary-bright);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.number-dot:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.number-dot.counted {
+    background: var(--color-primary-dark);
+    animation: countDot 0.3s ease;
+}
+
+@keyframes countDot {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+/* ============================================================================
+   LOADING & TRANSITIONS
+   ============================================================================ */
+
+.loading-spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--color-background);
+    border-top-color: var(--color-primary-bright);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   TOUCH-OPTIMIERUNG FÜR TABLETS/SMARTPHONES
+   ============================================================================ */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Größere Touch-Targets für Kinder */
+    .btn {
+        min-height: 60px;
+        font-size: 1.3rem;
+    }
+    
+    .answer-input {
+        font-size: 4rem;
+        padding: 2rem;
+    }
+    
+    .comparison-btn {
+        width: 150px;
+        height: 150px;
+        font-size: 5rem;
+    }
+    
+    .number-dot {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .task-question {
+        font-size: 3rem;
+        letter-spacing: 0.3rem;
+    }
+    
+    .answer-input {
+        font-size: 2.5rem;
+        max-width: 100%;
+    }
+    
+    .comparison-btn {
+        width: 100px;
+        height: 100px;
+        font-size: 3rem;
+    }
+    
+    .celebration-content {
+        padding: 2rem;
+        margin: 1rem;
+    }
+    
+    .celebration-icon {
+        font-size: 4rem;
+    }
+    
+    .celebration-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .exercise-container {
+        padding: 1rem;
+    }
+    
+    .task-display {
+        padding: 2rem 1rem;
+    }
+    
+    .task-question {
+        font-size: 2.5rem;
+    }
+    
+    .comparison-buttons {
+        gap: 1rem;
+    }
+    
+    .comparison-btn {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY & ANIMATIONS-REDUZIERUNG
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================================
+   PRINT STYLES (falls jemand Übungen ausdrucken möchte)
+   ============================================================================ */
+
+@media print {
+    .main-header,
+    .main-nav,
+    .main-footer,
+    .user-info,
+    .btn,
+    .hint-box {
+        display: none;
+    }
+    
+    .exercise-container {
+        box-shadow: none;
+        border: 2px solid #000;
+    }
+    
+    body {
+        background: white;
+    }
+}

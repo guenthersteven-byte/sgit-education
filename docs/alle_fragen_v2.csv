@@ -1,0 +1,11 @@
+modul;frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+verkehr;Was bedeutet eine rote Ampel?;Langsam gehen;Schnell laufen;Tanzen;Stehen bleiben;D;1;5;8;Bei Rot müssen alle stehen bleiben. Das ist die wichtigste Regel!;basic
+verkehr;Was bedeutet eine grüne Ampel für Fußgänger?;Du darfst gehen;Du darfst nicht gehen;Du musst rennen;Du musst warten;A;1;5;8;Grün bedeutet: Du darfst jetzt sicher über die Straße gehen.;basic
+verkehr;Welche Farbe hat die Ampel wenn du warten musst?;Lila;Rot;Blau;Grün;B;1;5;8;Rot bedeutet immer: Warten und stehen bleiben!;basic
+verkehr;Was machst du bei einer gelben Ampel?;Zurück gehen;Vorbereiten und warten;Schnell rennen;Hüpfen;B;1;5;8;Gelb bedeutet: Die Ampel wechselt gleich. Bereite dich vor!;basic
+verkehr;Wie viele Farben hat eine normale Ampel?;5;2;4;3;D;1;5;8;Eine Ampel hat 3 Farben: Rot, Gelb und Grün.;basic
+verkehr;Wofür ist ein Zebrastreifen da?;Zum sicheren Überqueren der Straße;Zum Spielen;Für Zebras;Zum Malen;A;1;5;8;Der Zebrastreifen hilft dir, sicher über die Straße zu kommen.;basic
+verkehr;Warum heißt der Zebrastreifen so?;Weil er in Afrika ist;Weil Zebras ihn erfunden haben;Weil er gestreift klingt;Wegen der schwarz-weißen Streifen;D;1;5;8;Die schwarz-weißen Streifen sehen aus wie das Fell eines Zebras.;basic
+verkehr;Was musst du am Zebrastreifen tun bevor du gehst?;Nach links und rechts schauen;Singen;Die Augen schließen;Rückwärts gehen;A;1;5;8;Schau immer erst nach links, dann nach rechts, ob kein Auto kommt.;basic
+verkehr;Wer hat Vorrang am Zebrastreifen?;Fußgänger;Fahrräder;Autos;Busse;A;1;5;8;Am Zebrastreifen haben Fußgänger immer Vorrang. Autos müssen anhalten.;basic
+verkehr;Welches Fahrzeug hat ein Blaulicht?;Taxi;Polizeiauto;Fahrrad;Bus;B;1;5;8;Polizei, Feuerwehr und Krankenwagen haben Blaulicht für Notfälle.;basic

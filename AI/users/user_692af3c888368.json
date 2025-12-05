@@ -1,0 +1,176 @@
+{
+    "id": "user_692af3c888368",
+    "created": "2025-11-29 14:23:20",
+    "age": 10,
+    "name": "colin",
+    "performance": {
+        "global": {
+            "level": 5,
+            "total_questions": 106,
+            "correct_answers": 96,
+            "success_rate": 90.6
+        },
+        "modules": {
+            "mathematik": {
+                "level": 16,
+                "total_questions": 33,
+                "correct_answers": 31,
+                "success_rate": 93.9,
+                "last_5_results": [
+                    1,
+                    0,
+                    1,
+                    1,
+                    1
+                ],
+                "weak_topics": [],
+                "strong_topics": [],
+                "score": 50
+            },
+            "lesen": {
+                "level": 12,
+                "total_questions": 17,
+                "correct_answers": 14,
+                "success_rate": 82.4,
+                "last_5_results": [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0
+                ],
+                "weak_topics": [],
+                "strong_topics": [],
+                "score": 20
+            },
+            "erdkunde": {
+                "total_questions": 8,
+                "correct_answers": 7,
+                "success_rate": 87.5,
+                "last_5_results": [
+                    1,
+                    0,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 6
+            },
+            "englisch": {
+                "total_questions": 9,
+                "correct_answers": 9,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 7,
+                "score": 10
+            },
+            "chemie": {
+                "total_questions": 10,
+                "success_rate": 60,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 4,
+                "correct_answers": 6
+            },
+            "musik": {
+                "total_questions": 6,
+                "correct_answers": 6,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 4
+            },
+            "kunst": {
+                "total_questions": 9,
+                "correct_answers": 9,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 7
+            },
+            "physik": {
+                "total_questions": 12,
+                "correct_answers": 12,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 10
+            },
+            "bitcoin": {
+                "total_questions": 1,
+                "correct_answers": 1,
+                "score": 10,
+                "success_rate": 100,
+                "last_5_results": [
+                    1
+                ]
+            },
+            "computer": {
+                "total_questions": 1,
+                "correct_answers": 1,
+                "score": 10,
+                "success_rate": 100,
+                "last_5_results": [
+                    1
+                ]
+            }
+        },
+        "initial_level_set": true
+    },
+    "learning_path": [
+        {
+            "module": "mathematik",
+            "question_id": "q_692af3f900dcd",
+            "difficulty": 5,
+            "timestamp": "2025-11-29 14:24:09"
+        },
+        {
+            "module": "lesen",
+            "question_id": "q_692af40fb0710",
+            "difficulty": 5,
+            "timestamp": "2025-11-29 14:24:31"
+        }
+    ],
+    "achievements": [
+        "first_10",
+        "first_50",
+        "speed_demon",
+        "streak_5"
+    ],
+    "preferences": {
+        "difficulty_adjustment_speed": "normal",
+        "question_types": "all",
+        "motivation_messages": true
+    },
+    "level": 1,
+    "total_xp": 100,
+    "stickers": [],
+    "current_streak": 1,
+    "best_streak": 7
+}

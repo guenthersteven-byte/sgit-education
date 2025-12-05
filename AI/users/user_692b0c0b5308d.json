@@ -1,0 +1,51 @@
+{
+    "id": "user_692b0c0b5308d",
+    "created": "2025-11-29 16:06:51",
+    "age": 7,
+    "name": "colin",
+    "performance": {
+        "global": {
+            "level": 5,
+            "total_questions": 3,
+            "correct_answers": 3,
+            "success_rate": 100
+        },
+        "modules": {
+            "mathematik": {
+                "total_questions": 1,
+                "correct_answers": 1,
+                "score": 10,
+                "success_rate": 100,
+                "last_5_results": [
+                    1
+                ]
+            },
+            "lesen": {
+                "total_questions": 1,
+                "correct_answers": 1,
+                "score": 10,
+                "success_rate": 100,
+                "last_5_results": [
+                    1
+                ]
+            },
+            "englisch": {
+                "total_questions": 1,
+                "correct_answers": 1,
+                "score": 10,
+                "success_rate": 100,
+                "last_5_results": [
+                    1
+                ]
+            }
+        }
+    },
+    "achievements": [
+        "first_correct"
+    ],
+    "level": 0,
+    "total_xp": 30,
+    "stickers": [],
+    "current_streak": 3,
+    "best_streak": 3
+}

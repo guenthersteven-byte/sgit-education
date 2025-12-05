@@ -1,0 +1,69 @@
+{
+    "id": "user_692b0847e6f9a",
+    "created": "2025-11-29 15:50:47",
+    "age": 10,
+    "name": "",
+    "performance": {
+        "global": {
+            "level": 5,
+            "total_questions": 22,
+            "correct_answers": 22,
+            "success_rate": 100
+        },
+        "modules": {
+            "mathematik": {
+                "total_questions": 6,
+                "correct_answers": 6,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 4
+            },
+            "lesen": {
+                "total_questions": 4,
+                "correct_answers": 4,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 2
+            },
+            "wissenschaft": {
+                "total_questions": 4,
+                "correct_answers": 4,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 2
+            },
+            "kunst": {
+                "total_questions": 8,
+                "correct_answers": 8,
+                "success_rate": 100,
+                "last_5_results": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "level": 6
+            }
+        }
+    },
+    "achievements": [
+        "first_10"
+    ]
+}

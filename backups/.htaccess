@@ -1,0 +1,12 @@
+# sgiT Education - Backup-Verzeichnis Schutz
+# Verhindert direkten Zugriff auf Backup-Dateien
+
+# Deny all direct access
+Order deny,allow
+Deny from all
+
+# Only allow access via PHP scripts
+<FilesMatch "\.zip$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
