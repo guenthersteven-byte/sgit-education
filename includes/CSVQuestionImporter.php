@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - CSV Question Importer v1.2
+ * sgiT Education - CSV Question Importer v1.3
  * ============================================================================
  * 
  * Importiert Fragen aus CSV-Dateien in die questions.db Datenbank.
@@ -15,8 +15,11 @@
  * - Robustes Error-Handling (UNIQUE constraint)
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 1.2
+ * @version 1.3
  * @date 07.12.2025
+ * 
+ * Changelog v1.3:
+ * - BUG-042 FIX: max_alter Validierung auf 5-99 erweitert (für Erwachsene 18-99)
  * 
  * Changelog v1.2:
  * - FIX: PHP 8.3 Deprecated Warning für enableExceptions(false)
@@ -247,12 +250,13 @@ class CSVQuestionImporter {
         $minAlter = (int) $row['min_alter'];
         $maxAlter = (int) $row['max_alter'];
         
+        // BUG-042 FIX: min_alter 5-21, max_alter 5-99 (für Erwachsene 18-99)
         if ($minAlter < 5 || $minAlter > 21) {
             return "Zeile $lineNum: 'min_alter' muss 5-21 sein (ist: {$row['min_alter']})";
         }
         
-        if ($maxAlter < 5 || $maxAlter > 21) {
-            return "Zeile $lineNum: 'max_alter' muss 5-21 sein (ist: {$row['max_alter']})";
+        if ($maxAlter < 5 || $maxAlter > 99) {
+            return "Zeile $lineNum: 'max_alter' muss 5-99 sein (ist: {$row['max_alter']})";
         }
         
         if ($minAlter > $maxAlter) {
