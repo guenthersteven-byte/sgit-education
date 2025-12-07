@@ -1,8 +1,10 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Adaptive Learning v3.15
+ * sgiT Education - Adaptive Learning
  * ============================================================================
+ * 
+ * Version: Siehe /includes/version.php (zentrale Versionsverwaltung)
  * 
  * NEUERUNGEN v5.9 (06.12.2025):
  * - BUG-028/029 FIX: Performance-Optimierung!
@@ -51,6 +53,7 @@
  */
 
 require_once 'config.php';
+require_once __DIR__ . '/includes/version.php';
 initSession();
 
 // ============================================================================
@@ -1579,7 +1582,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         <div class="logo-section">
             <img src="assets/images/base_icon_transparent_background.png" alt="sgiT" class="logo">
             <div>
-                <div class="app-title">Adaptive Learning <span class="version">v3.15</span></div>
+                <div class="app-title">Adaptive Learning <span class="version">v<?php echo SGIT_VERSION; ?></span></div>
             </div>
         </div>
         <div class="user-info">
