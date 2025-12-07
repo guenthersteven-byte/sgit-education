@@ -1,0 +1,238 @@
+{
+    "created_at": "2025-12-07 23:54:19",
+    "version": "3.16.9",
+    "moved_files": [
+        {
+            "original": "LEVEL_SYSTEM_PATCH.php",
+            "moved_to": "_cleanup\/LEVEL_SYSTEM_PATCH.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "PATCH_7_ALL_MODULES.php",
+            "moved_to": "_cleanup\/PATCH_7_ALL_MODULES.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "apply_v10.2_update.php",
+            "moved_to": "_cleanup\/apply_v10.2_update.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "apply_v10.3_update.php",
+            "moved_to": "_cleanup\/apply_v10.3_update.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "mega_update_all_modules.php",
+            "moved_to": "_cleanup\/mega_update_all_modules.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "patch_generator_v10.php",
+            "moved_to": "_cleanup\/patch_generator_v10.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "normalize_modules.php",
+            "moved_to": "_cleanup\/normalize_modules.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "switch_to_llama32.php",
+            "moved_to": "_cleanup\/switch_to_llama32.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "update_fallback_erklaerungen.php",
+            "moved_to": "_cleanup\/update_fallback_erklaerungen.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "bug016_analyse.php",
+            "moved_to": "_cleanup\/bug016_analyse.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "analyze_db.php",
+            "moved_to": "_cleanup\/analyze_db.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "check_question_stats.php",
+            "moved_to": "_cleanup\/check_question_stats.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "check_questions.php",
+            "moved_to": "_cleanup\/check_questions.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "check_schema.php",
+            "moved_to": "_cleanup\/check_schema.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "db_check.php",
+            "moved_to": "_cleanup\/db_check.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "db_check_quick.php",
+            "moved_to": "_cleanup\/db_check_quick.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "csv_import.php",
+            "moved_to": "_cleanup\/csv_import.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "import_all_questions.php",
+            "moved_to": "_cleanup\/import_all_questions.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "import_sport.php",
+            "moved_to": "_cleanup\/import_sport.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "import_unnuetzes_wissen.php",
+            "moved_to": "_cleanup\/import_unnuetzes_wissen.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "import_v2_questions.php",
+            "moved_to": "_cleanup\/import_v2_questions.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "adaptive_learning_backup\/adaptive_learning_old.php",
+            "moved_to": "_cleanup\/adaptive_learning_backup\/adaptive_learning_old.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "profil\/index_backup.php",
+            "moved_to": "_cleanup\/profil\/index_backup.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "wallet\/_wallet_dashboard_old.php",
+            "moved_to": "_cleanup\/wallet\/_wallet_dashboard_old.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "ai_test.php",
+            "moved_to": "_cleanup\/ai_test.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "quick_test.php",
+            "moved_to": "_cleanup\/quick_test.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "sqlite3_test.php",
+            "moved_to": "_cleanup\/sqlite3_test.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "javis_test_bots_simple.php",
+            "moved_to": "_cleanup\/javis_test_bots_simple.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "scripts\/php\/complete_fix_all_modules.php",
+            "moved_to": "_cleanup\/scripts\/php\/complete_fix_all_modules.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "scripts\/php\/db_fix_ai_generated.php",
+            "moved_to": "_cleanup\/scripts\/php\/db_fix_ai_generated.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "scripts\/php\/final_complete_fix.php",
+            "moved_to": "_cleanup\/scripts\/php\/final_complete_fix.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "scripts\/php\/install_v10_fixes.php",
+            "moved_to": "_cleanup\/scripts\/php\/install_v10_fixes.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "scripts\/php\/ollama_debug.php",
+            "moved_to": "_cleanup\/scripts\/php\/ollama_debug.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "generate_questions.php",
+            "moved_to": "_cleanup\/generate_questions.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "generate_questions_full.php",
+            "moved_to": "_cleanup\/generate_questions_full.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "improved_question_engine.php",
+            "moved_to": "_cleanup\/improved_question_engine.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "install_improved_system.php",
+            "moved_to": "_cleanup\/install_improved_system.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "reset_db_completely.php",
+            "moved_to": "_cleanup\/reset_db_completely.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "seed_zeichnen_foxy.php",
+            "moved_to": "_cleanup\/seed_zeichnen_foxy.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "universal_module_template.php",
+            "moved_to": "_cleanup\/universal_module_template.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "remove_duplicates.php",
+            "moved_to": "_cleanup\/remove_duplicates.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "rename_module_steuern_to_finanzen.php",
+            "moved_to": "_cleanup\/rename_module_steuern_to_finanzen.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "AI\/config\/ollama_cloud.php",
+            "moved_to": "_cleanup\/AI\/config\/ollama_cloud.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "bots\/cleanup_suggestions.php",
+            "moved_to": "_cleanup\/bots\/cleanup_suggestions.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "wallet_debug.php",
+            "moved_to": "_cleanup\/wallet_debug.php",
+            "moved_at": "2025-12-07 23:54:19"
+        },
+        {
+            "original": "debug_pattern.php",
+            "moved_to": "_cleanup\/debug_pattern.php",
+            "moved_at": "2025-12-07 23:54:19"
+        }
+    ],
+    "skipped_files": [],
+    "errors": []
+}

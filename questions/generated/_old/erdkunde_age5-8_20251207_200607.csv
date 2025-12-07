@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Welches Land ist bekannt für die Pyramiden?;Japan;Ägypten;China;USA;B;1;5;8;In Ägypten wurden viele antike Pyramiden gebaut, die bis heute faszinieren.;ai_generated
+Welches ist der Name der Hauptstadt Deutschlands?;Berlin;München;Hamburg;Köln;A;1;5;8;Berlin ist die Hauptstadt von Deutschland, ein Ort voller Geschichte und Kultur.;ai_generated
+Was ist der Unterschied zwischen einem Kontinent und einer Region?;Ein Kontinent ist großartig, eine Region etwas kleiner.;Regionen sind immer größer als Kontinente;Eine Region hat kein Ende;Es gibt nur Kontinente;A;1;5;8;Der Kontinent ist gross und hat viele Regionen, die zusammen gehören.;ai_generated
+Welches Land hat das schönste Wetter?;Australien;Mexiko;Deutschland;Frankreich;C;1;5;8;In Deutschland gibt es im Frühling und Sommer oft schöne und warme Temperaturen.;ai_generated
+Was ist das größte Land der Erde?;Russland;Indien;USA;China;A;1;5;8;Russland hat eine große Fläche und ist das größte Land in der Welt.;ai_generated

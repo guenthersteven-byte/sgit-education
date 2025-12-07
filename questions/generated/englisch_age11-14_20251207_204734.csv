@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Which preposition is used to indicate the place of something in relation to another word or phrase?;in, at, on, for;of;out;with;A;3;11;14;Prepositions like 'in,' 'at,' 'on,' and 'for' are used to show location and relation.  They describe the relationship between things or objects.;ai_generated
+What is the past tense of 'go'?;going;gone;went;go;C;3;11;14;The past tense of 'go' is 'went.';ai_generated
+"Which type of sentence starts with a question mark and ends with a colon? ""What is the weather like?""";It rains today.;How are you doing?;;Is it going to rain?;C;3;11;14;"This structure of a question followed by an exclamation point after the colon and then the answer, ""What is the weather like?""";ai_generated
+"Choose the correct word that completes this sentence: ""She is very _____ about learning English."" ";optimistic;excited;enthusiastic;happy;C;3;11;14;Enthusiasm means strong feeling of interest or excitement. It's a positive word choice that fits the context.;ai_generated
+"Choose the correct form of 'to be' for the sentence: ""She ____ a teacher."" ";are;be;is;am;C;3;11;14;We use 'is' to talk about someone's state or identity. The subject is singular.;ai_generated

@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Was sind die Namen der drei Buchstaben, die im Wort 'Hund' vorkommen? Welche Silbe hat das Wort?;p, h, g;o, u, r;h, u, n;s, p, e;C;2;8;11;Die Buchstaben 'h', 'u', und 'n' bilden den Anfang von 'Hund'. Das Wort hat die Silbe 'uhn'.;ai_generated
+Welche Wörter sind im Satz 'Der Mann liest ein Buch' Beispiele für eine bestimmte Art von Wörtern? ;Stadt, Straße, Park;Schmetterling, fliegen, grün;Mann, lesen, Buch;Haus, Hund, Katze;C;2;8;11;Im Satz 'Der Mann liest ein Buch' sind 'Mann', 'lesen' und 'Buch' Beispiele für Wörter mit bestimmten Eigenschaften. Sie sind alle verschiedene Arten von Wörtern. ;ai_generated
+Welche der folgenden Wörter ist eine Zahl? ;Kleines;Hund;Orange;Dreißig;D;2;8;11;Die Zahl 'dreißig' kann in Zahlen form gebracht werden. Die anderen Wörter sind keine Zahlen.;ai_generated
+Wie heißt die richtige Schreibweise des Wortes 'Haus'? ;Haas;Hauas;Haus;haus;C;2;8;11;Die richtige Schreibweise ist immer 'Haus' mit dem ersten und zweiten Buchstaben gleich groß.  ;ai_generated
+Welches Wort gehört zu den Wörtern, die eine bestimmte Farbe beschreiben? ;Fahrrad;Kleid;Rot;Essen;C;2;8;11;Die Wörter 'rot' und 'blau' beschreiben eine Farbe. Der erste Buchstaben der Wörter ist immer gleich groß.;ai_generated

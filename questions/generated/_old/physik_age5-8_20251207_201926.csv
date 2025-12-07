@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Beine hat ein Hund?;6;8;2;4;D;1;5;8;Hunde haben vier Beine zum Laufen, wie es auch auf den Bildern zu sehen ist. ;ai_generated
+Was macht Licht beim Aufprall?;Das Licht wird schwächer;Das Licht wird stärker.;Das Licht ist weg;Die Farbe ändert sich.;D;1;5;8;Wenn Licht auf etwas trifft, kann es neue Farben zeigen. Das heißt, dass die Farbe des Lichts verändert wird.;ai_generated
+Wie nennt man die Kraft, die einen Gegenstand an eine andere Stelle bewegt?;Kraft;Lichtkraft;Energie;Magnetkraft;A;1;5;8;Das ist die Kraft. Sie macht ein Objekt bewegen und ist notwendig, um etwas zu bewegen, z.B. einen Ball.;ai_generated
+Was passiert, wenn man eine warme Tasse mit kaltem Wasser überträgt?;Die Wärme bewegt sich in das kalte Wasser;Die Tasse wird heißer;Das kalte Wasser wird wärmer;Es passiert nichts;A;1;5;8;Kaltes Wasser nimmt die Wärme aus der heißen Tasse. Das ist so einfach wie es klingt.;ai_generated
+Was passiert, wenn man ein Lichtschwertrum in eine andere Richtung hält?;Es wird schwächer;Es wird lauter;Es ändert die Richtung des Lichts;Es verschwindet;C;1;5;8;Licht kann von einer Seite zur anderen wandern, also in eine andere Richtung. Das heißt, es verändert die Richtung.;ai_generated

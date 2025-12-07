@@ -59,6 +59,7 @@ class DependencyCheckBot {
             'vendor',
             'node_modules',
             '_DISABLED_',
+            '_cleanup',
             'backups',
             'logs'
         ],
@@ -377,21 +378,60 @@ class DependencyCheckBot {
         $deps = [];
         $currentDir = dirname($currentFile);
         
-        // Patterns für require/include
-        $patterns = [
+        // Pattern 1: Einfache Strings - require_once 'file.php' oder require_once('file.php')
+        $simplePatterns = [
             '/require_once\s*[\(\s]*[\'"]([^\'"]+)[\'"]\s*[\)]?\s*;/i',
             '/require\s*[\(\s]*[\'"]([^\'"]+)[\'"]\s*[\)]?\s*;/i',
             '/include_once\s*[\(\s]*[\'"]([^\'"]+)[\'"]\s*[\)]?\s*;/i',
             '/include\s*[\(\s]*[\'"]([^\'"]+)[\'"]\s*[\)]?\s*;/i'
         ];
         
-        foreach ($patterns as $pattern) {
+        foreach ($simplePatterns as $pattern) {
             if (preg_match_all($pattern, $content, $matches)) {
                 foreach ($matches[1] as $match) {
                     $resolvedPath = $this->resolvePath($match, $currentDir);
                     if ($resolvedPath && !in_array($resolvedPath, $deps)) {
                         $deps[] = $resolvedPath;
                     }
+                }
+            }
+        }
+        
+        // Pattern 2: dirname(__DIR__) . '/path/file.php'
+        $dirnamePattern = '/(require|include)(_once)?\s+dirname\s*\(\s*__DIR__\s*\)\s*\.\s*[\'"]([^\'"]+)[\'"]\s*;/i';
+        if (preg_match_all($dirnamePattern, $content, $matches)) {
+            foreach ($matches[3] as $match) {
+                // dirname(__DIR__) = Parent-Verzeichnis
+                $parentDir = dirname($currentDir);
+                if ($parentDir === '.') $parentDir = '';
+                $resolvedPath = $this->normalizePath($parentDir . '/' . ltrim($match, '/'));
+                if (in_array($resolvedPath, $this->allFiles) && !in_array($resolvedPath, $deps)) {
+                    $deps[] = $resolvedPath;
+                }
+            }
+        }
+        
+        // Pattern 3: dirname(dirname(__DIR__)) . '/path/file.php'
+        $dirname2Pattern = '/(require|include)(_once)?\s+dirname\s*\(\s*dirname\s*\(\s*__DIR__\s*\)\s*\)\s*\.\s*[\'"]([^\'"]+)[\'"]\s*;/i';
+        if (preg_match_all($dirname2Pattern, $content, $matches)) {
+            foreach ($matches[3] as $match) {
+                // dirname(dirname(__DIR__)) = Grandparent-Verzeichnis
+                $grandparentDir = dirname(dirname($currentDir));
+                if ($grandparentDir === '.') $grandparentDir = '';
+                $resolvedPath = $this->normalizePath($grandparentDir . '/' . ltrim($match, '/'));
+                if (in_array($resolvedPath, $this->allFiles) && !in_array($resolvedPath, $deps)) {
+                    $deps[] = $resolvedPath;
+                }
+            }
+        }
+        
+        // Pattern 4: __DIR__ . '/path/file.php'
+        $dirPattern = '/(require|include)(_once)?\s+__DIR__\s*\.\s*[\'"]([^\'"]+)[\'"]\s*;/i';
+        if (preg_match_all($dirPattern, $content, $matches)) {
+            foreach ($matches[3] as $match) {
+                $resolvedPath = $this->normalizePath($currentDir . '/' . ltrim($match, '/'));
+                if (in_array($resolvedPath, $this->allFiles) && !in_array($resolvedPath, $deps)) {
+                    $deps[] = $resolvedPath;
                 }
             }
         }
@@ -474,6 +514,8 @@ class DependencyCheckBot {
         $path = str_replace('\\', '/', $path);
         $path = preg_replace('#/+#', '/', $path);
         $path = trim($path, '/');
+        // Führende ./ entfernen
+        $path = preg_replace('#^\./#', '', $path);
         return $path;
     }
     

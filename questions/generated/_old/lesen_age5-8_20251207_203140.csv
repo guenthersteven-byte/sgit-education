@@ -1,0 +1,5 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Buchstaben sind in dem Wort 'Katze'?;8;9;6;4;D;1;5;8;Es gibt 4 Buchstaben in der Wörter 'Katze'.;ai_generated
+Welche Silben hat das Wort 'Baum'?;Baumh;baus;baum;bamm;C;1;5;8;In dem Wort 'Baum' sind die Silben 'ba', 'um' und es ist ein gesprochenes Wort.;ai_generated
+Welche Wörter sind im Satz 'Die Katze spielt im Garten' eine Subjekt?;die;Garten;Katze, spielt;im;C;1;5;8;Das Subjekt ist das, was die Handlung ausführt, und es gibt 2 Subjekt in dem Satz. 'Katze' und 'spielt'.;ai_generated
+Welches Wort gehört zu den Eigennamen?;Buch;Haus;Hund;Max;D;1;5;8;Ein Eigenname ist ein Wort, das sich auf einen Menschen bezieht. 'Max' ist ein eigen Name.;ai_generated

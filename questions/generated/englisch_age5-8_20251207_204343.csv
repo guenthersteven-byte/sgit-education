@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+How many eyes does a cat have?;8;6;2;4;D;1;5;8;Cats have four eyes to see the world!;ai_generated
+Where does a cat sleep?;Under a table;On a bed;In the sun;In a tree;B;1;5;8;Cats like to sleep on soft things, like beds.;ai_generated
+What is the opposite of hot?;Wet;Damp;Warm;Cold;D;1;5;8;When something is cold, it feels chilly! The word 'cold' is the opposite of 'hot'.;ai_generated
+What do you call a group of children?;A team;A family;A school;A gang;C;1;5;8;Children who study together are called a 'school'.;ai_generated
+What do you use to open a door?;An apple;A hammer;Your hands;A key;D;1;5;8;Keys help unlock doors, making it easy to enter and exit!;ai_generated

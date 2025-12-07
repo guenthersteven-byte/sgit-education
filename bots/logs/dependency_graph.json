@@ -1,0 +1,794 @@
+{
+    "generated": "2025-12-07 23:55:02",
+    "stats": {
+        "total_files": 425,
+        "php_files": 75,
+        "total_dependencies": 63,
+        "unused_files": 12,
+        "missing_files": 2,
+        "circular_deps": 0,
+        "ajax_references": 194,
+        "dynamic_includes": 5
+    },
+    "nodes": [
+        {
+            "id": "adaptive_learning.php",
+            "label": "adaptive_learning.php",
+            "unused": false,
+            "dependencies": 5,
+            "dependents": 18
+        },
+        {
+            "id": "adaptive_learning_v5.1.php",
+            "label": "adaptive_learning_v5.1.php",
+            "unused": false,
+            "dependencies": 3,
+            "dependents": 1
+        },
+        {
+            "id": "admin_v4.php",
+            "label": "admin_v4.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 22
+        },
+        {
+            "id": "backup_config_admin.php",
+            "label": "backup_config_admin.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "backup_manager.php",
+            "label": "backup_manager.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 4
+        },
+        {
+            "id": "batch_ai_generator.php",
+            "label": "batch_ai_generator.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "batch_import.php",
+            "label": "batch_import.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 1
+        },
+        {
+            "id": "bots\/bot_control.php",
+            "label": "bot_control.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "bots\/bot_health_check.php",
+            "label": "bot_health_check.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "bots\/bot_logger.php",
+            "label": "bot_logger.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 7
+        },
+        {
+            "id": "bots\/bot_output_helper.php",
+            "label": "bot_output_helper.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 6
+        },
+        {
+            "id": "bots\/bot_runner.php",
+            "label": "bot_runner.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 0
+        },
+        {
+            "id": "bots\/bot_summary.php",
+            "label": "bot_summary.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 8
+        },
+        {
+            "id": "bots\/run_dependency_check.php",
+            "label": "run_dependency_check.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 1
+        },
+        {
+            "id": "bots\/tests\/AIGeneratorBot.php",
+            "label": "AIGeneratorBot.php",
+            "unused": false,
+            "dependencies": 4,
+            "dependents": 5
+        },
+        {
+            "id": "bots\/tests\/DependencyCheckBot.php",
+            "label": "DependencyCheckBot.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 1
+        },
+        {
+            "id": "bots\/tests\/FunctionTestBot.php",
+            "label": "FunctionTestBot.php",
+            "unused": false,
+            "dependencies": 4,
+            "dependents": 1
+        },
+        {
+            "id": "bots\/tests\/LoadTestBot.php",
+            "label": "LoadTestBot.php",
+            "unused": false,
+            "dependencies": 4,
+            "dependents": 1
+        },
+        {
+            "id": "bots\/tests\/SecurityBot.php",
+            "label": "SecurityBot.php",
+            "unused": false,
+            "dependencies": 4,
+            "dependents": 1
+        },
+        {
+            "id": "bug005_analyse.php",
+            "label": "bug005_analyse.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "check_module_consistency.php",
+            "label": "check_module_consistency.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "clippy\/ClippyChat.php",
+            "label": "ClippyChat.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "clippy\/api.php",
+            "label": "api.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 2
+        },
+        {
+            "id": "clippy\/include.php",
+            "label": "include.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "clippy\/seed_responses.php",
+            "label": "seed_responses.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "clippy\/test.php",
+            "label": "test.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "config.php",
+            "label": "config.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "db_analyse.php",
+            "label": "db_analyse.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "db_config.php",
+            "label": "db_config.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "includes\/CSVQuestionImporter.php",
+            "label": "CSVQuestionImporter.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "includes\/OptimizedPrompts.php",
+            "label": "OptimizedPrompts.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "includes\/functions.php",
+            "label": "functions.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "includes\/security.php",
+            "label": "security.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "includes\/version.php",
+            "label": "version.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 13
+        },
+        {
+            "id": "index.php",
+            "label": "index.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 6
+        },
+        {
+            "id": "kochen\/api\/update_session.php",
+            "label": "update_session.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 6
+        },
+        {
+            "id": "kochen\/index.php",
+            "label": "index.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 9
+        },
+        {
+            "id": "kochen\/kuechenwissen.php",
+            "label": "kuechenwissen.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "kochen\/quiz.php",
+            "label": "quiz.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "kochen\/zuordnen.php",
+            "label": "zuordnen.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "leaderboard.php",
+            "label": "leaderboard.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 2
+        },
+        {
+            "id": "logik\/api\/update_session.php",
+            "label": "update_session.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "logik\/ausreisser.php",
+            "label": "ausreisser.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "logik\/index.php",
+            "label": "index.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 9
+        },
+        {
+            "id": "logik\/muster.php",
+            "label": "muster.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "logik\/zahlenreihe.php",
+            "label": "zahlenreihe.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "profil\/index.php",
+            "label": "index.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "questions\/generate_module_csv.php",
+            "label": "generate_module_csv.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
+        {
+            "id": "session.php",
+            "label": "session.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "session_manager.php",
+            "label": "session_manager.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "session_start.php",
+            "label": "session_start.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "setup_database.php",
+            "label": "setup_database.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "statistics.php",
+            "label": "statistics.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 4
+        },
+        {
+            "id": "wallet\/AchievementManager.php",
+            "label": "AchievementManager.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 6
+        },
+        {
+            "id": "wallet\/BTCPayManager.php",
+            "label": "BTCPayManager.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 4
+        },
+        {
+            "id": "wallet\/SessionManager.php",
+            "label": "SessionManager.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 6
+        },
+        {
+            "id": "wallet\/WalletManager.php",
+            "label": "WalletManager.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 11
+        },
+        {
+            "id": "wallet\/api.php",
+            "label": "api.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 6
+        },
+        {
+            "id": "wallet\/btcpay_config.php",
+            "label": "btcpay_config.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "wallet\/btcpay_setup.php",
+            "label": "btcpay_setup.php",
+            "unused": true,
+            "dependencies": 1,
+            "dependents": 0
+        },
+        {
+            "id": "wallet\/btcpay_webhook.php",
+            "label": "btcpay_webhook.php",
+            "unused": true,
+            "dependencies": 3,
+            "dependents": 0
+        },
+        {
+            "id": "wallet\/child_dashboard.php",
+            "label": "child_dashboard.php",
+            "unused": false,
+            "dependencies": 3,
+            "dependents": 4
+        },
+        {
+            "id": "wallet\/deposit.php",
+            "label": "deposit.php",
+            "unused": true,
+            "dependencies": 2,
+            "dependents": 0
+        },
+        {
+            "id": "wallet\/login.php",
+            "label": "login.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 12
+        },
+        {
+            "id": "wallet\/register.php",
+            "label": "register.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 6
+        },
+        {
+            "id": "wallet\/setup_wallet_db.php",
+            "label": "setup_wallet_db.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        },
+        {
+            "id": "wallet\/wallet_admin.php",
+            "label": "wallet_admin.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 5
+        },
+        {
+            "id": "wallet\/weekly_summary.php",
+            "label": "weekly_summary.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 1
+        },
+        {
+            "id": "wallet\/withdraw.php",
+            "label": "withdraw.php",
+            "unused": true,
+            "dependencies": 3,
+            "dependents": 0
+        },
+        {
+            "id": "windows_ai_generator.php",
+            "label": "windows_ai_generator.php",
+            "unused": false,
+            "dependencies": 2,
+            "dependents": 4
+        },
+        {
+            "id": "zeichnen\/canvas.php",
+            "label": "canvas.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 4
+        },
+        {
+            "id": "zeichnen\/gallery.php",
+            "label": "gallery.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 3
+        },
+        {
+            "id": "zeichnen\/index.php",
+            "label": "index.php",
+            "unused": false,
+            "dependencies": 1,
+            "dependents": 2
+        },
+        {
+            "id": "zeichnen\/save.php",
+            "label": "save.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "zeichnen\/save_drawing.php",
+            "label": "save_drawing.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 1
+        }
+    ],
+    "edges": [
+        {
+            "from": "adaptive_learning.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "adaptive_learning.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "adaptive_learning.php",
+            "to": "wallet\/AchievementManager.php"
+        },
+        {
+            "from": "adaptive_learning.php",
+            "to": "wallet\/SessionManager.php"
+        },
+        {
+            "from": "adaptive_learning.php",
+            "to": "clippy\/include.php"
+        },
+        {
+            "from": "adaptive_learning_v5.1.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "adaptive_learning_v5.1.php",
+            "to": "wallet\/AchievementManager.php"
+        },
+        {
+            "from": "adaptive_learning_v5.1.php",
+            "to": "wallet\/SessionManager.php"
+        },
+        {
+            "from": "admin_v4.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "batch_import.php",
+            "to": "includes\/CSVQuestionImporter.php"
+        },
+        {
+            "from": "bots\/bot_runner.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/bot_summary.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "bots\/bot_summary.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/run_dependency_check.php",
+            "to": "bots\/bot_output_helper.php"
+        },
+        {
+            "from": "bots\/run_dependency_check.php",
+            "to": "bots\/tests\/DependencyCheckBot.php"
+        },
+        {
+            "from": "bots\/tests\/AIGeneratorBot.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/tests\/AIGeneratorBot.php",
+            "to": "bots\/bot_output_helper.php"
+        },
+        {
+            "from": "bots\/tests\/AIGeneratorBot.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "bots\/tests\/AIGeneratorBot.php",
+            "to": "windows_ai_generator.php"
+        },
+        {
+            "from": "bots\/tests\/DependencyCheckBot.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/tests\/DependencyCheckBot.php",
+            "to": "bots\/bot_output_helper.php"
+        },
+        {
+            "from": "bots\/tests\/FunctionTestBot.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/tests\/FunctionTestBot.php",
+            "to": "bots\/bot_output_helper.php"
+        },
+        {
+            "from": "bots\/tests\/FunctionTestBot.php",
+            "to": "bots\/bot_health_check.php"
+        },
+        {
+            "from": "bots\/tests\/FunctionTestBot.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "bots\/tests\/LoadTestBot.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/tests\/LoadTestBot.php",
+            "to": "bots\/bot_output_helper.php"
+        },
+        {
+            "from": "bots\/tests\/LoadTestBot.php",
+            "to": "bots\/bot_health_check.php"
+        },
+        {
+            "from": "bots\/tests\/LoadTestBot.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "bots\/tests\/SecurityBot.php",
+            "to": "bots\/bot_logger.php"
+        },
+        {
+            "from": "bots\/tests\/SecurityBot.php",
+            "to": "bots\/bot_output_helper.php"
+        },
+        {
+            "from": "bots\/tests\/SecurityBot.php",
+            "to": "bots\/bot_health_check.php"
+        },
+        {
+            "from": "bots\/tests\/SecurityBot.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "clippy\/api.php",
+            "to": "clippy\/ClippyChat.php"
+        },
+        {
+            "from": "kochen\/index.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "leaderboard.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "logik\/index.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "statistics.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "wallet\/api.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/api.php",
+            "to": "wallet\/AchievementManager.php"
+        },
+        {
+            "from": "wallet\/btcpay_setup.php",
+            "to": "wallet\/BTCPayManager.php"
+        },
+        {
+            "from": "wallet\/btcpay_webhook.php",
+            "to": "wallet\/BTCPayManager.php"
+        },
+        {
+            "from": "wallet\/btcpay_webhook.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/btcpay_webhook.php",
+            "to": "wallet\/btcpay_config.php"
+        },
+        {
+            "from": "wallet\/child_dashboard.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/child_dashboard.php",
+            "to": "wallet\/AchievementManager.php"
+        },
+        {
+            "from": "wallet\/child_dashboard.php",
+            "to": "wallet\/SessionManager.php"
+        },
+        {
+            "from": "wallet\/deposit.php",
+            "to": "wallet\/BTCPayManager.php"
+        },
+        {
+            "from": "wallet\/deposit.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/login.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/login.php",
+            "to": "wallet\/SessionManager.php"
+        },
+        {
+            "from": "wallet\/register.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/register.php",
+            "to": "wallet\/SessionManager.php"
+        },
+        {
+            "from": "wallet\/wallet_admin.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/wallet_admin.php",
+            "to": "wallet\/AchievementManager.php"
+        },
+        {
+            "from": "wallet\/weekly_summary.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/weekly_summary.php",
+            "to": "wallet\/AchievementManager.php"
+        },
+        {
+            "from": "wallet\/withdraw.php",
+            "to": "wallet\/SessionManager.php"
+        },
+        {
+            "from": "wallet\/withdraw.php",
+            "to": "wallet\/WalletManager.php"
+        },
+        {
+            "from": "wallet\/withdraw.php",
+            "to": "wallet\/BTCPayManager.php"
+        },
+        {
+            "from": "windows_ai_generator.php",
+            "to": "includes\/version.php"
+        },
+        {
+            "from": "windows_ai_generator.php",
+            "to": "includes\/OptimizedPrompts.php"
+        },
+        {
+            "from": "zeichnen\/index.php",
+            "to": "includes\/version.php"
+        }
+    ]
+}
