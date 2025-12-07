@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Was ist ein Atom?;Ein winziger Teil von etwas.;Ein kleiner Ballon;Ein großer Stein;Eine riesige Schale!;A;1;5;8;Atom sind die kleinsten Teile, aus denen alle Dinge bestehen. Sie sind so klein, dass man sie nicht mit dem Auge sehen kann.;ai_generated
+Was ist ein Molekül?;Ein großer Fluss;Eine Katze;Viele kleine Atom, verbunden zueinander.;Ein großes Loch!;C;1;5;8;Moleküle sind die kleinen Teile von Elementen, die zusammengedrückt werden. Es entstehen neue Moleküle, wenn es viele kleine Atom gibt.;ai_generated
+Was ist ein Element?;Eine Blume;Ein Auto;Ein Typ von Atom.;Ein Haus;C;1;5;8;Jeder Stoff besteht aus verschiedenen Elementen. Man nennt die Elementen einfach Elemente.;ai_generated
+Welche Farbe hat Wasserstoff?;Blau!;Schwarz;Rot;Gelb;A;1;5;8;Wasserstoff ist ein sehr leichter Stoff und hat eine blaue Farbe. Es ist leicht zu erkennen.;ai_generated
+Was passiert, wenn man zwei Wasserstoffmoleküle zusammenbringt?;Sie werden etwas kleiner;Sie formen ein Molekül.;Sie werden nichts verändern;Sie machen ein Feuer!;B;1;5;8;Wenn zwei Wasserstoffmoleküle zusammengebracht werden, bildet sich ein neues Molekül.;ai_generated
