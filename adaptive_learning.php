@@ -1527,10 +1527,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <span>sgiT Education</span>
         </div>
         <div class="nav-links">
-            <a href="adaptive_learning.php" class="nav-link active">
-                <span class="nav-link-icon">🎮</span>
-                <span>Lernen</span>
-            </a>
             <a href="leaderboard.php" class="nav-link">
                 <span class="nav-link-icon">🏆</span>
                 <span>Leaderboard</span>
