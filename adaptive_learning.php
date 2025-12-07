@@ -1387,14 +1387,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             border-radius: 12px;
             margin-bottom: 15px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             box-shadow: 0 3px 15px rgba(0,0,0,0.15);
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
         
         .nav-links {
@@ -1486,6 +1486,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             border-radius: 8px;
             font-weight: bold;
             font-size: 14px;
+            margin-left: auto;
         }
         
         @media (max-width: 768px) {
@@ -1548,7 +1549,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
          ======================================== -->
     <nav class="main-nav" id="mainNavigation">
         <div class="nav-brand">
-            <img src="assets/images/base_icon_transparent_background.png" alt="sgiT">
             <span>sgiT Education</span>
         </div>
         
