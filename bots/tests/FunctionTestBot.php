@@ -22,6 +22,7 @@ require_once dirname(dirname(__DIR__)) . '/includes/version.php';
 
 require_once dirname(__DIR__) . '/bot_logger.php';
 require_once dirname(__DIR__) . '/bot_output_helper.php';
+require_once dirname(__DIR__) . '/bot_health_check.php';  // BUG-030 FIX
 
 class FunctionTestBot {
     
@@ -99,7 +100,7 @@ class FunctionTestBot {
             unlink($this->stopFile);
         }
         
-        $this->logger->startRun('Function Test Bot v1.3', $this->config);
+        $this->logger->startRun('Function Test Bot v1.4', $this->config);
         $startTime = microtime(true);
         
         $this->logger->info("═══════════════════════════════════════════════════════");
@@ -108,6 +109,44 @@ class FunctionTestBot {
         $this->logger->info("   Module: " . count($this->modules));
         $this->logger->info("   Tests pro Modul: ~7");
         $this->logger->info("═══════════════════════════════════════════════════════");
+        
+        // ================================================================
+        // BUG-030 FIX: Health-Check mit Retry-Logik vor Tests
+        // ================================================================
+        $this->logger->info("");
+        $this->logger->info("🏥 Pre-Flight Health-Check...");
+        
+        $healthResult = BotHealthCheck::waitForServer($this->baseUrl, function($msg) {
+            $this->logger->info("   " . $msg);
+        });
+        
+        if ($healthResult['status'] === BotHealthCheck::STATUS_OFFLINE) {
+            $this->logger->error("❌ Server nicht erreichbar!");
+            $this->logger->error("   " . $healthResult['message']);
+            
+            // Hilfreiche Fehlermeldung ausgeben
+            foreach (BotHealthCheck::getHelpMessage(BotHealthCheck::STATUS_OFFLINE, $this->baseUrl) as $line) {
+                $this->logger->info($line);
+            }
+            
+            $this->stats['failed']++;
+            $this->logger->endRun("ABGEBROCHEN - Server offline");
+            
+            return [
+                'status' => 'aborted',
+                'reason' => 'server_offline',
+                'message' => $healthResult['message'],
+                'stats' => $this->stats
+            ];
+        }
+        
+        if ($healthResult['status'] === BotHealthCheck::STATUS_DEGRADED) {
+            $this->logger->warning("⚠️ Server antwortet mit Einschränkungen");
+            $this->logger->warning("   Tests werden trotzdem ausgeführt...");
+        }
+        
+        $this->logger->success("✅ Health-Check bestanden ({$healthResult['responseTime']}ms)");
+        $this->logger->info("");
         
         // v1.3: Session initialisieren durch Test-Login
         $this->initTestSession();

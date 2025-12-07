@@ -21,6 +21,7 @@
 require_once dirname(dirname(__DIR__)) . '/includes/version.php';
 require_once dirname(__DIR__) . '/bot_logger.php';
 require_once dirname(__DIR__) . '/bot_output_helper.php';
+require_once dirname(__DIR__) . '/bot_health_check.php';  // BUG-030 FIX
 
 class LoadTestBot {
     
@@ -109,7 +110,7 @@ class LoadTestBot {
             unlink($this->stopFile);
         }
         
-        $this->logger->startRun('Load Test Bot v1.0', $this->config);
+        $this->logger->startRun('Load Test Bot v1.1', $this->config);
         $startTime = microtime(true);
         
         $this->logger->info("═══════════════════════════════════════════════════════");
@@ -117,6 +118,28 @@ class LoadTestBot {
         $this->logger->info("   Base URL: {$this->baseUrl}");
         $this->logger->info("   Module: " . count($this->modules));
         $this->logger->info("═══════════════════════════════════════════════════════");
+        
+        // ================================================================
+        // BUG-030 FIX: Health-Check mit Retry-Logik vor Tests
+        // ================================================================
+        $this->logger->info("");
+        $this->logger->info("🏥 Pre-Flight Health-Check...");
+        
+        $healthResult = BotHealthCheck::waitForServer($this->baseUrl, function($msg) {
+            $this->logger->info("   " . $msg);
+        });
+        
+        if ($healthResult['status'] === BotHealthCheck::STATUS_OFFLINE) {
+            $this->logger->error("❌ Server nicht erreichbar!");
+            foreach (BotHealthCheck::getHelpMessage(BotHealthCheck::STATUS_OFFLINE, $this->baseUrl) as $line) {
+                $this->logger->info($line);
+            }
+            $this->logger->endRun("ABGEBROCHEN - Server offline");
+            return ['status' => 'aborted', 'reason' => 'server_offline'];
+        }
+        
+        $this->logger->success("✅ Health-Check bestanden ({$healthResult['responseTime']}ms)");
+        $this->logger->info("");
         
         if ($scenarioName === 'all') {
             foreach ($this->scenarios as $name => $config) {
