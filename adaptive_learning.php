@@ -6,6 +6,20 @@
  * 
  * Version: Siehe /includes/version.php (zentrale Versionsverwaltung)
  * 
+ * NEUERUNGEN v6.1 (08.12.2025) - BUG-053 FIX:
+ * - Bessere Zufälligkeit über mehrere Sessions!
+ *   - Rolling Window: Letzte 50 Fragen pro Modul werden nicht wiederholt
+ *   - KEINE times_used Sortierung mehr (verhinderte echte Zufälligkeit)
+ *   - Kein kompletter Reset nach 10 Fragen
+ *   - Automatisches Trimmen auf 50 wenn History zu groß wird
+ *
+ * NEUERUNGEN v6.0 (08.12.2025) - BUG-044 FIX:
+ * - Doppelte Fragen in Quiz-Runde verhindert!
+ *   - Session-Array $_SESSION['asked_question_ids'][$module] speichert IDs
+ *   - NOT IN Klausel filtert bereits gestellte Fragen aus SQL
+ *   - Automatischer Reset nach 10 Fragen (Session-Ende)
+ *   - Fallback: Pool-Reset wenn alle Fragen gestellt wurden
+ *
  * NEUERUNGEN v5.9 (06.12.2025):
  * - BUG-028/029 FIX: Performance-Optimierung!
  *   - ORDER BY RANDOM() entfernt (verursachte TEMP B-TREE bei jeder Query)
@@ -47,8 +61,8 @@
  * - Error-Feedback bei fehlgeschlagenen Rewards
  * - Wallet-ID wird bei jedem AJAX-Request erneut geprüft
  * 
- * @version 5.9
- * @date 06.12.2025
+ * @version 6.1
+ * @date 08.12.2025
  * ============================================================================
  */
 
@@ -354,7 +368,17 @@ function updateUserLevel() {
 }
 
 /**
- * Frage aus DB laden - MIT ALTERSFILTERUNG
+ * Frage aus DB laden - MIT ALTERSFILTERUNG + DUPLIKAT-PRÄVENTION
+ * 
+ * BUG-053 FIX: Bessere Zufälligkeit über mehrere Sessions!
+ * - Rolling Window: Letzte 50 Fragen pro Modul werden nicht wiederholt
+ * - KEINE times_used Sortierung mehr (verhinderte echte Zufälligkeit)
+ * - Kein kompletter Reset nach 10 Fragen, nur Trimmen auf 50
+ * 
+ * BUG-044 FIX: Doppelte Fragen in Quiz-Runde verhindern!
+ * - Session-Array speichert bereits gestellte Fragen-IDs
+ * - NOT IN Klausel filtert diese aus der SQL-Query
+ * - Fallback: Bei zu wenig Fragen wird Pool zurückgesetzt
  * 
  * BUG-028/029 FIX: Performance-Optimierung!
  * - ORDER BY RANDOM() entfernt (verursachte TEMP B-TREE)
@@ -366,7 +390,7 @@ function updateUserLevel() {
  * 
  * @param string $module Das gewählte Modul
  * @return array|false Frage-Daten oder false
- * @version 2.0 - Performance optimiert
+ * @version 4.0 - BUG-053 Fix (Bessere Zufälligkeit)
  */
 function getQuestionFromDB($module) {
     $db = getDBConnection();
@@ -375,33 +399,69 @@ function getQuestionFromDB($module) {
     // User-Alter aus Session holen
     $userAge = isset($_SESSION['user_age']) ? (int)$_SESSION['user_age'] : 10;
     
+    // ========================================================================
+    // BUG-044 + BUG-053: Session-Tracking mit Rolling Window (50 Fragen)
+    // ========================================================================
+    // Initialisiere das Array für dieses Modul falls nicht vorhanden
+    if (!isset($_SESSION['asked_question_ids'])) {
+        $_SESSION['asked_question_ids'] = [];
+    }
+    if (!isset($_SESSION['asked_question_ids'][$module])) {
+        $_SESSION['asked_question_ids'][$module] = [];
+    }
+    
+    // BUG-053: Rolling Window - behalte nur die letzten 50 Fragen
+    $maxHistory = 50;
+    if (count($_SESSION['asked_question_ids'][$module]) > $maxHistory) {
+        // Entferne die ältesten Einträge, behalte die neuesten 50
+        $_SESSION['asked_question_ids'][$module] = array_slice(
+            $_SESSION['asked_question_ids'][$module], 
+            -$maxHistory
+        );
+    }
+    
+    // Hole die bereits gestellten IDs (als Integer-Array für Sicherheit)
+    $excludeIds = array_map('intval', $_SESSION['asked_question_ids'][$module]);
+    
+    // Baue die NOT IN Klausel (nur wenn es IDs zum Ausschließen gibt)
+    $excludeClause = '';
+    if (!empty($excludeIds)) {
+        // Direkte Integer-Werte in Query (sicher, da aus Session + intval)
+        $excludeClause = ' AND id NOT IN (' . implode(',', $excludeIds) . ')';
+    }
+    
     $row = null;
     
     // ========================================================================
-    // SCHRITT 1: Versuche altersgerechte Frage zu finden
+    // SCHRITT 1: Versuche altersgerechte Frage zu finden (ohne Duplikate)
+    // BUG-053: KEINE times_used Sortierung mehr - echte Zufallsauswahl!
     // ========================================================================
-    // Erst COUNT holen, dann mit OFFSET zufällige Frage wählen (SCHNELL!)
-    $countStmt = $db->prepare("
+    $countSql = "
         SELECT COUNT(*) FROM questions 
         WHERE module = :module
         AND age_min <= :user_age
         AND age_max >= :user_age
-    ");
+        $excludeClause
+    ";
+    $countStmt = $db->prepare($countSql);
     $countStmt->execute([':module' => $module, ':user_age' => $userAge]);
     $count = (int) $countStmt->fetchColumn();
     
     if ($count > 0) {
-        // Zufälliger Offset (ohne ORDER BY RANDOM!)
+        // Zufälliger Offset - ECHTE Zufallsauswahl ohne Sortierung!
         $offset = mt_rand(0, $count - 1);
         
-        $stmt = $db->prepare("
+        // BUG-053: Keine ORDER BY times_used mehr - nur nach ID für Konsistenz
+        $querySql = "
             SELECT * FROM questions 
             WHERE module = :module
             AND age_min <= :user_age
             AND age_max >= :user_age
-            ORDER BY times_used ASC
+            $excludeClause
+            ORDER BY id
             LIMIT 1 OFFSET :offset
-        ");
+        ";
+        $stmt = $db->prepare($querySql);
         $stmt->bindValue(':module', $module, PDO::PARAM_STR);
         $stmt->bindValue(':user_age', $userAge, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -413,24 +473,29 @@ function getQuestionFromDB($module) {
     // SCHRITT 2: Fallback für jüngere Kinder (erweiterte Altersspanne)
     // ========================================================================
     if (!$row && $userAge <= 10) {
-        $countStmt = $db->prepare("
+        $countSql = "
             SELECT COUNT(*) FROM questions 
             WHERE module = :module
             AND age_min <= :max_age
-        ");
+            $excludeClause
+        ";
+        $countStmt = $db->prepare($countSql);
         $countStmt->execute([':module' => $module, ':max_age' => $userAge + 2]);
         $count = (int) $countStmt->fetchColumn();
         
         if ($count > 0) {
             $offset = mt_rand(0, $count - 1);
             
-            $stmt = $db->prepare("
+            // BUG-053: Nur nach age_min sortieren für Kinder, nicht times_used
+            $querySql = "
                 SELECT * FROM questions 
                 WHERE module = :module
                 AND age_min <= :max_age
-                ORDER BY age_min ASC, times_used ASC
+                $excludeClause
+                ORDER BY age_min ASC, id
                 LIMIT 1 OFFSET :offset
-            ");
+            ";
+            $stmt = $db->prepare($querySql);
             $stmt->bindValue(':module', $module, PDO::PARAM_STR);
             $stmt->bindValue(':max_age', $userAge + 2, PDO::PARAM_INT);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -444,7 +509,8 @@ function getQuestionFromDB($module) {
     // BUG-018: Erwachsene bekommen die schwierigsten Fragen
     // ========================================================================
     if (!$row) {
-        $countStmt = $db->prepare("SELECT COUNT(*) FROM questions WHERE module = :module");
+        $countSql = "SELECT COUNT(*) FROM questions WHERE module = :module $excludeClause";
+        $countStmt = $db->prepare($countSql);
         $countStmt->execute([':module' => $module]);
         $count = (int) $countStmt->fetchColumn();
         
@@ -454,12 +520,15 @@ function getQuestionFromDB($module) {
             // Sortierung: Erwachsene (>21) = schwierigste, Kinder = einfachste
             $sortOrder = ($userAge > 21) ? 'DESC' : 'ASC';
             
-            $stmt = $db->prepare("
+            // BUG-053: Nur age_min Sortierung, nicht times_used
+            $querySql = "
                 SELECT * FROM questions 
                 WHERE module = :module
-                ORDER BY age_min $sortOrder, times_used ASC
+                $excludeClause
+                ORDER BY age_min $sortOrder, id
                 LIMIT 1 OFFSET :offset
-            ");
+            ";
+            $stmt = $db->prepare($querySql);
             $stmt->bindValue(':module', $module, PDO::PARAM_STR);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
@@ -473,10 +542,44 @@ function getQuestionFromDB($module) {
     }
     
     // ========================================================================
-    // Frage gefunden: times_used erhöhen und zurückgeben
+    // SCHRITT 4: Pool erschöpft - Rolling Window leeren und erneut versuchen
+    // ========================================================================
+    if (!$row && !empty($excludeIds)) {
+        error_log("[BUG-053] Fragen-Pool erschöpft für Modul $module (". count($excludeIds) ." im History). Setze Rolling Window zurück.");
+        
+        // Rolling Window zurücksetzen
+        $_SESSION['asked_question_ids'][$module] = [];
+        
+        // Erneut versuchen ohne Exclude-Klausel
+        $countStmt = $db->prepare("SELECT COUNT(*) FROM questions WHERE module = :module");
+        $countStmt->execute([':module' => $module]);
+        $count = (int) $countStmt->fetchColumn();
+        
+        if ($count > 0) {
+            $offset = mt_rand(0, $count - 1);
+            $sortOrder = ($userAge > 21) ? 'DESC' : 'ASC';
+            
+            $stmt = $db->prepare("
+                SELECT * FROM questions 
+                WHERE module = :module
+                ORDER BY age_min $sortOrder, id
+                LIMIT 1 OFFSET :offset
+            ");
+            $stmt->bindValue(':module', $module, PDO::PARAM_STR);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+    }
+    
+    // ========================================================================
+    // Frage gefunden: ID speichern, times_used erhöhen und zurückgeben
     // ========================================================================
     if ($row) {
-        // Asynchron: times_used erhöhen (non-blocking)
+        // BUG-044/053: Frage-ID im Session-Array speichern (Rolling Window)
+        $_SESSION['asked_question_ids'][$module][] = (int) $row['id'];
+        
+        // times_used erhöhen (für Statistik, nicht mehr für Sortierung)
         $updateStmt = $db->prepare("UPDATE questions SET times_used = times_used + 1 WHERE id = :id");
         $updateStmt->execute([':id' => $row['id']]);
         
@@ -493,7 +596,8 @@ function getQuestionFromDB($module) {
             'question' => $row['question'],
             'correct' => $row['answer'],
             'options' => $options,
-            'explanation' => $explanation
+            'explanation' => $explanation,
+            'id' => (int) $row['id']  // BUG-044: ID für Debug-Zwecke
         ];
     }
     
@@ -603,6 +707,18 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             'correct' => 0,
             'score' => 0
         ];
+        
+        // ================================================================
+        // BUG-053 FIX: KEIN Reset mehr - Rolling Window bleibt erhalten!
+        // Das Trimmen auf 50 Fragen passiert automatisch in getQuestionFromDB()
+        // ================================================================
+        if (isset($_SESSION['asked_question_ids'][$module])) {
+            walletDebugLog("BUG-053: Session-Ende - Rolling Window bleibt erhalten", [
+                'module' => $module,
+                'history_size' => count($_SESSION['asked_question_ids'][$module])
+            ]);
+            // KEIN RESET: $_SESSION['asked_question_ids'][$module] = [];
+        }
         
         // ================================================================
         // WALLET INTEGRATION v5.3: Robuste Sats-Vergabe
