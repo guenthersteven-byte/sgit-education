@@ -1,27 +1,24 @@
 <?php
 /**
- * sgiT Education - Function Test Bot v1.5
+ * ============================================================================
+ * sgiT Education - Function Test Bot
+ * ============================================================================
  * 
  * Systematisches Testen aller 15 Module
  * - HTTP-Status, DOM-Struktur, AJAX-API
  * - Session-Handling, Score-Tracking
  * - Navigation, Datenbank-Persistenz
  * 
- * v1.5: FIX - Automatische Docker-Erkennung (BUG-033)
- *       In Docker: http://nginx/ statt localhost:8080
- * v1.4: FIX - Live-Output für Docker/nginx/PHP-FPM (BUG-032)
- * v1.3: KOMPLETT NEU - Angepasst an adaptive_learning.php Architektur
- *       - Testet AJAX-API statt Forms
- *       - Prüft auf Module-Cards, Quiz-Modal, JavaScript-Funktionen
- *       - Testet get_question und check_answer Endpoints
- * v1.2: FIX - Testet jetzt adaptive_learning.php statt alte Modul-Ordner
- * v1.1: DOM-Check korrigiert - sucht jetzt nach button.option statt radio inputs
- * v1.0: Initial Version
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * @author sgiT Solution Engineering & IT Services
- * @version 1.5
- * @date 06.12.2025
+ * ============================================================================
  */
+
+// Zentrale Versionsverwaltung
+require_once dirname(dirname(__DIR__)) . '/includes/version.php';
 
 require_once dirname(__DIR__) . '/bot_logger.php';
 require_once dirname(__DIR__) . '/bot_output_helper.php';

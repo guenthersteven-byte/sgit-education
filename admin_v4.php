@@ -1,17 +1,16 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education Platform - Admin Dashboard v7.5
+ * sgiT Education Platform - Admin Dashboard
  * ============================================================================
  * 
  * VEREINFACHT - Nur Navigation, Bitcoin, Quick-Links
  * Statistiken → statistics.php
  * 
- * v7.5: BUG-026 Fix Link hinzugefügt (WAL Mode)
- * v7.4: BUG-020 FIX - Ollama Status Check für Docker
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
- * @version 7.5
- * @date 05.12.2025
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * ============================================================================
  */
 
@@ -20,7 +19,9 @@ ini_set('display_errors', 0);
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-define('DASHBOARD_VERSION', '7.5');
+// Zentrale Versionsverwaltung
+require_once __DIR__ . '/includes/version.php';
+
 define('ADMIN_PASSWORD', 'sgit2025');
 
 // Login/Logout
@@ -109,7 +110,7 @@ function showLoginPage($error = null) {
 <body>
     <div class="login-box">
         <div class="logo">sgiT</div>
-        <h1>Admin Dashboard v<?= DASHBOARD_VERSION ?></h1>
+        <h1>Admin Dashboard v<?= SGIT_VERSION ?></h1>
         <?php if ($error): ?><div class="error">⚠️ <?= $error ?></div><?php endif; ?>
         <form method="POST">
             <input type="password" name="admin_password" placeholder="🔐 Passwort" required autofocus>
@@ -125,7 +126,7 @@ function showLoginPage($error = null) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sgiT Admin v<?= DASHBOARD_VERSION ?></title>
+    <title>sgiT Admin v<?= SGIT_VERSION ?></title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -200,7 +201,7 @@ function showLoginPage($error = null) {
     <header class="header">
         <div class="brand">
             <div class="logo">sgiT</div>
-            <h1>Admin Dashboard <small>v<?= DASHBOARD_VERSION ?></small></h1>
+            <h1>Admin Dashboard <small>v<?= SGIT_VERSION ?></small></h1>
         </div>
         <nav class="header-nav">
             <a href="adaptive_learning.php" class="nav-secondary">📚 Lernen</a>
@@ -315,7 +316,7 @@ function showLoginPage($error = null) {
     </div>
     
     <footer>
-        sgiT Education Platform v<?= DASHBOARD_VERSION ?> | <a href="https://sgit.space">sgiT Solution Engineering</a>
+        sgiT Education Platform v<?= SGIT_VERSION ?> | <a href="https://sgit.space">sgiT Solution Engineering</a>
     </footer>
     
     <script>

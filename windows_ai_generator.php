@@ -1,33 +1,27 @@
 <?php
 /**
- * sgiT Education - AI Generator v11.1 + ERKLÄRUNGEN
+ * ============================================================================
+ * sgiT Education - AI Generator
+ * ============================================================================
  * 
- * ============================================
- * CHANGELOG v11.1 (03.12.2025) - BUG-007b FINAL:
- * ============================================
- * ✅ NEU #1: Erklärungsfeld (E:) - kindgerechte Erläuterungen
- * ✅ NEU #2: OptimizedPrompts v5.0 mit Seed-Topics für Variabilität
- * ✅ NEU #3: Parser erkennt jetzt E: Feld
- * ✅ NEU #4: erklaerung wird in DB gespeichert
- * ✅ NEU #5: Fallback-Erklärungen für alle Module
+ * AI-gesteuerte Fragen-Generierung via Ollama
+ * - Cloud-Modelle Support (deepseek, qwen3, gpt-oss, etc.)
+ * - Erklärungsfeld (E:) - kindgerechte Erläuterungen
+ * - OptimizedPrompts mit Seed-Topics für Variabilität
+ * - 4 Altersgruppen (young/medium/advanced/expert)
  * 
- * ============================================
- * CHANGELOG v11.0 (02.12.2025):
- * ============================================
- * ✅ NEU #1: Cloud-Modelle Support (deepseek, qwen3, gpt-oss, etc.)
- * ✅ NEU #2: getCloudModels() - Liste verfügbarer Cloud-Modelle
- * ✅ NEU #3: getAllModels() - Kombiniert lokal + Cloud
- * ✅ NEU #4: Cloud-Modelle erfordern keine lokale Verfügbarkeitsprüfung
- * ✅ NEU #5: Erhöhter Timeout für Cloud-Modelle (180s)
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
- * ============================================
- * CHANGELOG v10.9 (02.12.2025):
- * ============================================
- * ✅ NEU #1: OptimizedPrompts v3.0 - MATH mit echten Rechnungen!
- * ✅ NEU #2: CSV-basierte Beispiele in jedem Prompt
- * ✅ NEU #3: 4 Altersgruppen (young/medium/advanced/expert)
- * ✅ NEU #4: Modul-spezifische ALLOWED/FORBIDDEN topics
- * ✅ NEU #5: VERKEHR-Modul mit Bild-Support
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
+ * @author sgiT Solution Engineering & IT Services
+ * ============================================================================
+ */
+
+// Zentrale Versionsverwaltung
+require_once __DIR__ . '/includes/version.php';
+
+/*
  * ✅ NEU #6: Verbessertes Parsing für Q:/A:/W1:/W2:/W3: Format
  * 
  * WICHTIG: Prompts sind auf ENGLISCH für bessere LLM-Performance!
@@ -1281,7 +1275,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>sgiT AI Generator v10.6 PERFORMANCE 🚀</title>
+    <title>sgiT AI Generator v<?= SGIT_VERSION ?> 🚀</title>
     <style>
         body { font-family: 'Segoe UI', Arial; background: linear-gradient(135deg, #1A3503, #2d5a06); padding: 20px; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }

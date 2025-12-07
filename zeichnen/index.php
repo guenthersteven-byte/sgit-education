@@ -1,19 +1,23 @@
 <?php
 /**
- * sgiT Education - Zeichnen Modul v2.0
+ * ============================================================================
+ * sgiT Education - Zeichnen Modul
+ * ============================================================================
+ * 
  * Hauptseite / Übersicht mit allen Tutorials
+ * 15+ Tutorials für alle Altersgruppen
+ * Kategorien: Grundformen, Tiere, Natur, Fortgeschritten
  * 
- * NEUERUNGEN v2.0 (07.12.2025):
- * - 15+ Tutorials für alle Altersgruppen
- * - Kategorien: Grundformen, Tiere, Natur, Fortgeschritten
- * - Foxy-Integration
- * - Verbesserte Aktivitäts-Karten
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
- * @version 2.0
- * @date 07.12.2025
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
+ * @author sgiT Solution Engineering & IT Services
+ * ============================================================================
  */
 
 session_start();
+require_once dirname(__DIR__) . '/includes/version.php';
 
 // Prüfen ob eingeloggt
 if (!isset($_SESSION['user_id'])) {

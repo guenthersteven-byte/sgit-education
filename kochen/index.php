@@ -1,9 +1,21 @@
 <?php
 /**
- * Kochen Modul - Übersicht v3.0
- * Design angepasst an restliche Module
+ * ============================================================================
+ * sgiT Education - Kochen Modul
+ * ============================================================================
+ * 
+ * Interaktives Modul für Ernährung und Kochen.
+ * Altersgerecht angepasst (5-99 Jahre).
+ * 
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
+ * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
+ * @author sgiT Solution Engineering & IT Services
+ * ============================================================================
  */
 session_start();
+require_once dirname(__DIR__) . '/includes/version.php';
 
 $userAge = $_SESSION['user_age'] ?? 10;
 $userName = $_SESSION['child_name'] ?? 'Küchenchef';

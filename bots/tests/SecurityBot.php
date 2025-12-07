@@ -1,6 +1,8 @@
 <?php
 /**
- * sgiT Education - Security Bot v1.4
+ * ============================================================================
+ * sgiT Education - Security Bot
+ * ============================================================================
  * 
  * Automatisierte Sicherheitsprüfung
  * - SQL Injection Tests
@@ -9,19 +11,16 @@
  * - Session Security Tests
  * - Input Validation Tests
  * 
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
+ * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * @author sgiT Solution Engineering & IT Services
- * @version 1.4
- * @date 06.12.2025
- * 
- * v1.4 Änderungen:
- * - FIX: Automatische Docker-Erkennung (BUG-033)
- *   In Docker: http://nginx/ statt localhost:8080
- * 
- * v1.3 Änderungen:
- * - FIX: Live-Output für Docker/nginx/PHP-FPM (BUG-032)
- * 
- * v1.2 Änderungen:
- * - FIX: Testet adaptive_learning.php statt alte Modul-Ordner
+ * ============================================================================
+ */
+
+// Zentrale Versionsverwaltung
+require_once dirname(dirname(__DIR__)) . '/includes/version.php';
  * 
  * v1.1 Änderungen:
  * - XSS Detection verbessert: Prüft nur noch ob der eigene Payload in der Response erscheint

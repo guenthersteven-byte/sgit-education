@@ -1,23 +1,24 @@
 <?php
 /**
- * sgiT Education - Load Test Bot v1.3
+ * ============================================================================
+ * sgiT Education - Load Test Bot
+ * ============================================================================
  * 
  * Performance- und Last-Tests
  * - Simuliert mehrere gleichzeitige User
  * - Misst Response-Zeiten und Fehlerraten
  * - Findet Bottlenecks und Breaking Points
  * 
- * v1.3: FIX - Automatische Docker-Erkennung (BUG-033)
- *       In Docker: http://nginx/ statt localhost:8080
- * v1.2: FIX - Live-Output für Docker/nginx/PHP-FPM (BUG-032)
- * v1.1: FIX - Testet adaptive_learning.php statt alte Modul-Ordner
- * v1.0: Initial Version
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * @author sgiT Solution Engineering & IT Services
- * @version 1.3
- * @date 06.12.2025
+ * ============================================================================
  */
 
+// Zentrale Versionsverwaltung
+require_once dirname(dirname(__DIR__)) . '/includes/version.php';
 require_once dirname(__DIR__) . '/bot_logger.php';
 require_once dirname(__DIR__) . '/bot_output_helper.php';
 

@@ -1,23 +1,24 @@
 <?php
 /**
- * sgiT Education - AI Generator Bot v1.6
+ * ============================================================================
+ * sgiT Education - AI Generator Bot
+ * ============================================================================
  * 
  * LANGSAMER DAUERLAUF-BOT für Massen-Generierung
  * - Alle 2 Minuten eine Frage pro Modul
  * - Läuft bis manuell gestoppt
  * - Überlastet Ollama nicht
  * 
- * v1.6: + CSV Generator Link, BUG-035 FIX: steuern→finanzen
- * v1.5: FIX - Live-Output für Docker/nginx/PHP-FPM (BUG-032)
- * v1.4: + BUG-019 FIX: Verkehr-Modul hinzugefügt (fehlte in beiden Arrays)
- * v1.3: + Einzelne Fragen löschen, Pagination, mehr Fragen anzeigen
- * v1.2: + Modul-DB-Manager (Einträge löschen)
- * v1.1: + Fehlerbehandlung, Stop-Signal
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * @author sgiT Solution Engineering & IT Services
- * @version 1.6
- * @date 06.12.2025
+ * ============================================================================
  */
+
+// Zentrale Versionsverwaltung
+require_once dirname(dirname(__DIR__)) . '/includes/version.php';
 
 // WICHTIG: Korrekter Pfad zum bot_logger (eine Ebene höher)
 require_once dirname(__DIR__) . '/bot_logger.php';

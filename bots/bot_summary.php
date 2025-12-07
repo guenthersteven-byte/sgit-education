@@ -1,17 +1,20 @@
 <?php
 /**
- * sgiT Education - Bot Summary Dashboard v1.2
+ * ============================================================================
+ * sgiT Education - Bot Summary Dashboard
+ * ============================================================================
  * 
  * Zeigt alle Bot-Ergebnisse, Fehler, Warnungen und Verbesserungsvorschläge
  * 
- * v1.2: Alle 4 Bots verlinkt und aktiv
- * v1.1: Robustere Fehlerbehandlung
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * @author sgiT Solution Engineering & IT Services
- * @version 1.2
- * @date 01.12.2025
+ * ============================================================================
  */
 
+require_once dirname(__DIR__) . '/includes/version.php';
 require_once __DIR__ . '/bot_logger.php';
 
 // Daten laden (mit Fehlerbehandlung)

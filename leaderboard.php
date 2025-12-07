@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Leaderboard v1.0 🏆
+ * sgiT Education - Leaderboard 🏆
  * ============================================================================
  * 
  * MOTIVIERENDES LEADERBOARD FÜR KIDS
@@ -12,13 +12,18 @@
  * - ⚡ Längste Streaks
  * - 📚 Modul-Champions
  * 
- * @version 1.0
- * @date 05.12.2025
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
+ * 
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * @author sgiT Solution Engineering & IT Services
  * ============================================================================
  */
 
 session_start();
+
+// Zentrale Versionsverwaltung
+require_once __DIR__ . '/includes/version.php';
 
 // ============================================================================
 // DATEN LADEN

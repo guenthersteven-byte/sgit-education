@@ -1,20 +1,23 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Statistik Dashboard v2.1
+ * sgiT Education - Statistik Dashboard
  * ============================================================================
  * 
  * ZENTRALE STATISTIK-SEITE
  * Alle Daten: Fragen, Module, Wallet, Foxy, Bot-Ergebnisse
  * 
- * v2.1: BUG-022 FIX - Sats verteilt Query korrigiert
+ * Nutzt zentrale Versionsverwaltung via /includes/version.php
  * 
- * @version 2.1
- * @date 05.12.2025
+ * @version Siehe SGIT_VERSION
+ * @date Siehe SGIT_VERSION_DATE
  * ============================================================================
  */
 
 session_start();
+
+// Zentrale Versionsverwaltung
+require_once __DIR__ . '/includes/version.php';
 
 // ============================================================================
 // DATEN SAMMELN

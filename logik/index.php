@@ -1,19 +1,18 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Logik & Rätsel Modul v1.0
+ * sgiT Education - Logik & Rätsel Modul
  * ============================================================================
  * 
  * Interaktives Modul für logisches Denken mit verschiedenen Rätseltypen.
- * Altersgerecht angepasst (5-21 Jahre).
+ * Altersgerecht angepasst (5-99 Jahre).
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 1.0
- * @date 07.12.2025
  * ============================================================================
  */
 
 session_start();
+require_once dirname(__DIR__) . '/includes/version.php';
 
 // Alter aus Session oder Default
 $userAge = $_SESSION['user_age'] ?? 10;
