@@ -407,7 +407,8 @@ PROMPT;
             'kunst' => 'Kunst', 'musik' => 'Musik', 'computer' => 'Computer',
             'programmieren' => 'Programmieren', 'bitcoin' => 'Bitcoin', 'steuern' => 'Finanzen',
             'englisch' => 'Englisch', 'lesen' => 'Lesen', 'wissenschaft' => 'Wissenschaft',
-            'verkehr' => 'Verkehr'
+            'verkehr' => 'Verkehr', 'unnuetzes_wissen' => 'Unnützes Wissen',
+            'sport' => 'Sport'
         ];
         
         $moduleName = $moduleNames[strtolower($module)] ?? $module;

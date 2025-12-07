@@ -1,0 +1,32 @@
+{
+    "id": "landscape",
+    "title": "🏔️ Landschaft zeichnen",
+    "description": "Eine schöne Berglandschaft mit Wiese und Himmel!",
+    "age_min": 8,
+    "age_max": 14,
+    "sats_reward": 20,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Teile das Bild: Unten Grün (Wiese), Oben Blau (Himmel)! 🌿☁️",
+            "tip": "Die Horizontlinie in der Mitte!"
+        },
+        {
+            "instruction": "Zeichne Berge im Hintergrund - Zickzack-Linien! 🏔️",
+            "tip": "Spitzen nach oben!"
+        },
+        {
+            "instruction": "Füge eine Sonne oder Wolken am Himmel hinzu! ☀️☁️",
+            "tip": "Die Sonne in einer Ecke!"
+        },
+        {
+            "instruction": "Male einen Baum oder Blumen in den Vordergrund! 🌳🌸",
+            "tip": "Vorne größer, hinten kleiner!"
+        },
+        {
+            "instruction": "Füge Details hinzu: Gras, Vögel, ein Weg! 🌾🐦",
+            "tip": "Details machen das Bild lebendig!"
+        }
+    ],
+    "sats_reward": 20
+}

@@ -1,0 +1,32 @@
+{
+    "id": "house",
+    "title": "🏠 Haus zeichnen",
+    "description": "Ein süßes Häuschen mit Dach!",
+    "age_min": 5,
+    "age_max": 10,
+    "sats_reward": 10,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne zuerst ein großes Quadrat - das ist die Wand 🧱",
+            "tip": "Vier gleiche Seiten!"
+        },
+        {
+            "instruction": "Oben drauf kommt ein Dreieck - das Dach 🏠",
+            "tip": "Spitz nach oben!"
+        },
+        {
+            "instruction": "Mal eine Tür in die Mitte - ein kleines Rechteck 🚪",
+            "tip": "Unten am Boden!"
+        },
+        {
+            "instruction": "Und ein oder zwei Fenster ⬜",
+            "tip": "Kleine Quadrate an den Seiten"
+        },
+        {
+            "instruction": "Fertig! Du kannst es jetzt bunt anmalen! 🎨",
+            "tip": "Welche Farbe hat dein Traumhaus?"
+        }
+    ],
+    "sats_reward": 10
+}

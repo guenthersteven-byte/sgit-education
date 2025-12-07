@@ -1,0 +1,24 @@
+{
+    "id": "flower",
+    "title": "🌸 Blume zeichnen",
+    "description": "Eine wunderschöne Blume mit Blütenblättern!",
+    "age_min": 5,
+    "age_max": 10,
+    "sats_reward": 8,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Male einen kleinen Kreis in die Mitte - das Blütenzentrum! 🟡",
+            "tip": "Gelb wie Sonnenschein!"
+        },
+        {
+            "instruction": "Zeichne Blütenblätter drumherum - wie Ovale! 🌸",
+            "tip": "5-6 Blütenblätter sind perfekt!"
+        },
+        {
+            "instruction": "Füge einen grünen Stiel nach unten hinzu! 🌱",
+            "tip": "Zwei Blätter am Stiel machen es komplett!"
+        }
+    ],
+    "sats_reward": 8
+}

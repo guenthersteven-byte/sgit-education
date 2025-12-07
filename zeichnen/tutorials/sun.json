@@ -1,0 +1,24 @@
+{
+    "id": "sun",
+    "title": "☀️ Sonne malen",
+    "description": "Eine strahlende Sonne mit Strahlen!",
+    "age_min": 5,
+    "age_max": 8,
+    "sats_reward": 8,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Male einen großen gelben Kreis in die Mitte! 🟡",
+            "tip": "Das ist der Körper der Sonne!"
+        },
+        {
+            "instruction": "Zeichne Strahlen drumherum - wie Striche nach außen! ☀️",
+            "tip": "Mindestens 8 Strahlen!"
+        },
+        {
+            "instruction": "Male ein lächelndes Gesicht in die Sonne! 😊",
+            "tip": "Zwei Augen und ein Mund!"
+        }
+    ],
+    "sats_reward": 8
+}

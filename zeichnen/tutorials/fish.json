@@ -1,0 +1,32 @@
+{
+    "id": "fish",
+    "title": "🐟 Fisch zeichnen",
+    "description": "Ein bunter Fisch im Wasser!",
+    "age_min": 6,
+    "age_max": 12,
+    "sats_reward": 10,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Zeichne ein liegendes Oval - der Fischkörper! 🐟",
+            "tip": "Wie ein Ei auf der Seite!"
+        },
+        {
+            "instruction": "Füge ein Dreieck am Ende hinzu - die Schwanzflosse! 🔺",
+            "tip": "Spitze zeigt nach hinten!"
+        },
+        {
+            "instruction": "Male ein Auge vorne und einen lächelnden Mund! 👁️",
+            "tip": "Fische können auch lächeln!"
+        },
+        {
+            "instruction": "Zeichne kleine Flossen oben und unten! 🐠",
+            "tip": "Wie kleine Dreiecke!"
+        },
+        {
+            "instruction": "Verziere mit Schuppen oder Streifen! ✨",
+            "tip": "Bunte Farben machen ihn schön!"
+        }
+    ],
+    "sats_reward": 10
+}

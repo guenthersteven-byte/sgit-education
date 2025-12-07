@@ -1,12 +1,13 @@
 <?php
 /**
- * sgiT Education - AI Generator Bot v1.5
+ * sgiT Education - AI Generator Bot v1.6
  * 
  * LANGSAMER DAUERLAUF-BOT für Massen-Generierung
  * - Alle 2 Minuten eine Frage pro Modul
  * - Läuft bis manuell gestoppt
  * - Überlastet Ollama nicht
  * 
+ * v1.6: + CSV Generator Link, BUG-035 FIX: steuern→finanzen
  * v1.5: FIX - Live-Output für Docker/nginx/PHP-FPM (BUG-032)
  * v1.4: + BUG-019 FIX: Verkehr-Modul hinzugefügt (fehlte in beiden Arrays)
  * v1.3: + Einzelne Fragen löschen, Pagination, mehr Fragen anzeigen
@@ -14,7 +15,7 @@
  * v1.1: + Fehlerbehandlung, Stop-Signal
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 1.5
+ * @version 1.6
  * @date 06.12.2025
  */
 
@@ -31,11 +32,12 @@ class AIGeneratorBot {
     private $isRunning = false;
     private $stopFile;
     
-    // Alle 16 Module
+    // Alle 18 Quiz-Module
     private $modules = [
         'mathematik', 'physik', 'chemie', 'biologie', 'erdkunde',
         'geschichte', 'kunst', 'musik', 'computer', 'programmieren',
-        'bitcoin', 'steuern', 'englisch', 'lesen', 'wissenschaft', 'verkehr'
+        'bitcoin', 'finanzen', 'englisch', 'lesen', 'wissenschaft', 'verkehr',
+        'unnuetzes_wissen', 'sport'
     ];
     
     // Standard-Konfiguration für LANGSAMEN Dauerlauf
@@ -367,11 +369,12 @@ class AIGeneratorBot {
         try {
             $db = new SQLite3($dbPath);
             
-            // Alle 16 Module mit Fragen zählen
+            // Alle 18 Quiz-Module mit Fragen zählen
             $allModules = [
                 'mathematik', 'physik', 'chemie', 'biologie', 'erdkunde',
                 'geschichte', 'kunst', 'musik', 'computer', 'programmieren',
-                'bitcoin', 'steuern', 'englisch', 'lesen', 'wissenschaft', 'verkehr'
+                'bitcoin', 'finanzen', 'englisch', 'lesen', 'wissenschaft', 'verkehr',
+                'unnuetzes_wissen', 'sport'
             ];
             
             $stats = [];
@@ -959,7 +962,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </head>
 <body>
 <div class="container">
-    <h1>🤖 AI Generator Bot <span class="badge slow">Dauerlauf</span> <span class="badge v13">v1.4</span></h1>
+    <h1>🤖 AI Generator Bot <span class="badge slow">Dauerlauf</span> <span class="badge v13">v1.6</span></h1>
     
     <?php if (isset($_GET['stopped'])): ?>
     <div class="success-box">
@@ -970,6 +973,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     <!-- Tabs Navigation -->
     <div class="tabs">
         <button class="tab active" onclick="showTab('generator')">🚀 Generator</button>
+        <button class="tab" onclick="window.location.href='/questions/generate_module_csv.php'">📝 CSV Generator</button>
         <button class="tab" onclick="showTab('dbmanager')">🗄️ DB-Manager</button>
     </div>
     

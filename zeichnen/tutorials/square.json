@@ -1,0 +1,28 @@
+{
+    "id": "square",
+    "title": "🟦 Quadrat malen",
+    "description": "Ein Quadrat hat vier gleich lange Seiten!",
+    "age_min": 5,
+    "age_max": 8,
+    "sats_reward": 5,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Zeichne eine gerade Linie nach rechts →",
+            "tip": "Halte die Maus ruhig!"
+        },
+        {
+            "instruction": "Jetzt eine Linie nach unten ↓",
+            "tip": "Gleich lang wie die erste!"
+        },
+        {
+            "instruction": "Dann nach links ←",
+            "tip": "Fast geschafft!"
+        },
+        {
+            "instruction": "Zum Schluss nach oben zum Start ↑",
+            "tip": "Vier Seiten = Quadrat! 🎉"
+        }
+    ],
+    "sats_reward": 5
+}

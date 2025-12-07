@@ -64,7 +64,9 @@ $modules = [
     'biologie' => ['icon' => '🧬', 'name' => 'Biologie'],
     'steuern' => ['icon' => '💰', 'name' => 'Finanzen/Steuern'],
     'programmieren' => ['icon' => '👨‍💻', 'name' => 'Programmieren'],
-    'verkehr' => ['icon' => '🚗', 'name' => 'Verkehr']
+    'verkehr' => ['icon' => '🚗', 'name' => 'Verkehr'],
+    'unnuetzes_wissen' => ['icon' => '🤯', 'name' => 'Unnützes Wissen'],
+    'sport' => ['icon' => '🏃', 'name' => 'Sport']
 ];
 
 // CSV-Mapping für Batch-Import aus docs/

@@ -1,0 +1,36 @@
+{
+    "id": "cat",
+    "title": "🐱 Katze zeichnen",
+    "description": "Eine süße Katze Schritt für Schritt!",
+    "age_min": 8,
+    "age_max": 14,
+    "sats_reward": 20,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne einen Kreis für den Kopf! ⭕",
+            "tip": "Nicht zu groß!"
+        },
+        {
+            "instruction": "Füge zwei spitze Dreiecke oben hinzu - die Ohren! 🔺🔺",
+            "tip": "Katzenohren sind spitz!"
+        },
+        {
+            "instruction": "Male zwei große Augen mit Pupillen! 👀",
+            "tip": "Katzen haben mandelförmige Augen!"
+        },
+        {
+            "instruction": "Eine kleine Dreiecks-Nase und ein W für den Mund! 👃",
+            "tip": "Das W gibt den typischen Katzenmund!"
+        },
+        {
+            "instruction": "Zeichne Schnurrhaare - 3 auf jeder Seite! 🐱",
+            "tip": "Leicht nach außen gebogen!"
+        },
+        {
+            "instruction": "Male den Körper - ein Oval unter dem Kopf! 🐈",
+            "tip": "Vergiss den Schwanz nicht!"
+        }
+    ],
+    "sats_reward": 20
+}

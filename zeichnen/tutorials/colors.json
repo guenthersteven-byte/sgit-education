@@ -1,0 +1,38 @@
+{
+    "id": "colors",
+    "title": "🎨 Farbenlehre - Mischen",
+    "description": "Lerne wie man Farben mischt und neue Farben erschafft!",
+    "age_min": 6,
+    "age_max": 14,
+    "sats_reward": 15,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Male drei Kreise: ROT, GELB, BLAU - die Grundfarben! 🔴🟡🔵",
+            "tip": "Das sind die Primärfarben!"
+        },
+        {
+            "instruction": "Zwischen Rot und Gelb: Male ORANGE! 🟠",
+            "tip": "Rot + Gelb = Orange!"
+        },
+        {
+            "instruction": "Zwischen Gelb und Blau: Male GRÜN! 🟢",
+            "tip": "Gelb + Blau = Grün!"
+        },
+        {
+            "instruction": "Zwischen Blau und Rot: Male LILA/VIOLETT! 🟣",
+            "tip": "Blau + Rot = Lila!"
+        },
+        {
+            "instruction": "Du hast einen Farbkreis erstellt! 🌈",
+            "tip": "So funktioniert Farbmischung!"
+        }
+    ],
+    "theory": {
+        "primary": ["Rot", "Gelb", "Blau"],
+        "secondary": ["Orange", "Grün", "Violett"],
+        "warm": ["Rot", "Orange", "Gelb"],
+        "cool": ["Grün", "Blau", "Violett"]
+    },
+    "sats_reward": 15
+}

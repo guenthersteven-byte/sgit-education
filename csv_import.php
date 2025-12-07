@@ -115,7 +115,9 @@ $modules = [
     'biologie' => '🧬 Biologie',
     'steuern' => '💰 Steuern',
     'programmieren' => '👨‍💻 Programmieren',
-    'verkehr' => '🚗 Verkehr'
+    'verkehr' => '🚗 Verkehr',
+    'unnuetzes_wissen' => '🤯 Unnützes Wissen',
+    'sport' => '🏃 Sport'
 ];
 ?>
 <!DOCTYPE html>

@@ -1,0 +1,25 @@
+{
+    "id": "rainbow",
+    "title": "🌈 Regenbogen malen",
+    "description": "Ein bunter Regenbogen mit allen Farben!",
+    "age_min": 5,
+    "age_max": 10,
+    "sats_reward": 12,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Zeichne einen großen Halbkreis in ROT! 🔴",
+            "tip": "Von links nach rechts!"
+        },
+        {
+            "instruction": "Darunter einen in ORANGE! 🟠",
+            "tip": "Etwas kleiner als der rote!"
+        },
+        {
+            "instruction": "Dann GELB, GRÜN, BLAU und LILA! 🟡🟢🔵🟣",
+            "tip": "Jeder Bogen etwas kleiner - fertig ist der Regenbogen!"
+        }
+    ],
+    "sats_reward": 12,
+    "colors_needed": ["#FF0000", "#FF8000", "#FFFF00", "#00FF00", "#0000FF", "#8000FF"]
+}

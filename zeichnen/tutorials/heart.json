@@ -1,0 +1,24 @@
+{
+    "id": "heart",
+    "title": "❤️ Herz zeichnen",
+    "description": "Ein perfektes Herz für jemand Besonderen!",
+    "age_min": 5,
+    "age_max": 99,
+    "sats_reward": 5,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Zeichne zwei Halbkreise oben nebeneinander! )",
+            "tip": "Wie zwei Hügel die sich berühren!"
+        },
+        {
+            "instruction": "Führe Linien von außen nach unten zur Spitze! 💕",
+            "tip": "Sie treffen sich in der Mitte unten!"
+        },
+        {
+            "instruction": "Male es rot aus! ❤️",
+            "tip": "Oder pink für extra Liebe! 💗"
+        }
+    ],
+    "sats_reward": 5
+}

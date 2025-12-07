@@ -1,0 +1,32 @@
+{
+    "id": "rocket",
+    "title": "🚀 Rakete zeichnen",
+    "description": "Eine Weltraum-Rakete die zum Mond fliegt!",
+    "age_min": 6,
+    "age_max": 12,
+    "sats_reward": 12,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne ein langes Rechteck - der Raketenkörper! 🚀",
+            "tip": "Senkrecht, schön hoch!"
+        },
+        {
+            "instruction": "Oben drauf ein Dreieck - die Spitze! 🔺",
+            "tip": "Spitz nach oben!"
+        },
+        {
+            "instruction": "Male zwei Flügel an die Seiten unten! ◀️▶️",
+            "tip": "Wie kleine Dreiecke!"
+        },
+        {
+            "instruction": "Zeichne ein rundes Fenster in die Mitte! ⭕",
+            "tip": "Hier sitzt der Astronaut!"
+        },
+        {
+            "instruction": "Füge Feuer unten hinzu - orange und gelbe Flammen! 🔥",
+            "tip": "Die Rakete startet!"
+        }
+    ],
+    "sats_reward": 12
+}

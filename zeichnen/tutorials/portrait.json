@@ -1,0 +1,40 @@
+{
+    "id": "portrait",
+    "title": "👤 Gesicht/Porträt",
+    "description": "Lerne die Proportionen eines Gesichts!",
+    "age_min": 12,
+    "age_max": 21,
+    "sats_reward": 35,
+    "difficulty": "schwer",
+    "steps": [
+        {
+            "instruction": "Zeichne ein Oval für den Kopf! ⭕",
+            "tip": "Eierförmig, unten schmaler!"
+        },
+        {
+            "instruction": "Teile es horizontal in der Mitte - hier kommen die Augen! 👀",
+            "tip": "Die Augen sind GENAU in der Mitte des Kopfes!"
+        },
+        {
+            "instruction": "Die Nase endet auf halber Strecke zwischen Augen und Kinn! 👃",
+            "tip": "Zeichne eine leichte Hilfslinie!"
+        },
+        {
+            "instruction": "Der Mund liegt zwischen Nase und Kinn! 👄",
+            "tip": "Ungefähr ein Drittel unter der Nase!"
+        },
+        {
+            "instruction": "Die Augen sind ein Auge breit auseinander! 👁️ 👁️",
+            "tip": "Zwischen beiden Augen passt ein drittes!"
+        },
+        {
+            "instruction": "Füge Augenbrauen, Ohren und Haare hinzu! 👂💇",
+            "tip": "Ohren gehen von Augenhöhe bis zur Nase!"
+        },
+        {
+            "instruction": "Schattiere leicht unter Nase, Lippen und Kinn! 🎨",
+            "tip": "Schatten geben dem Gesicht Tiefe!"
+        }
+    ],
+    "sats_reward": 35
+}

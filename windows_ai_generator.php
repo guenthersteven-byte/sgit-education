@@ -1135,6 +1135,20 @@ Generate ONE question:";
                 12 => ['q' => 'Wie schnell darf man innerorts maximal fahren?', 'a' => '50 km/h', 'options' => ['30 km/h', '50 km/h', '70 km/h', '100 km/h']],
                 15 => ['q' => 'Ab wann darf man begleitet Auto fahren?', 'a' => '17 Jahre', 'options' => ['16 Jahre', '17 Jahre', '18 Jahre', '15 Jahre']]
             ],
+            'unnuetzes_wissen' => [
+                5 => ['q' => 'Welches Tier kann nicht rückwärts laufen?', 'a' => 'Känguru', 'options' => ['Hund', 'Känguru', 'Katze', 'Elefant']],
+                7 => ['q' => 'Wie viele Nasen hat eine Schnecke?', 'a' => '4', 'options' => ['1', '2', '4', 'Keine']],
+                10 => ['q' => 'Welche Farbe hat das Blut eines Oktopus?', 'a' => 'Blau', 'options' => ['Rot', 'Blau', 'Grün', 'Gelb']],
+                12 => ['q' => 'Was ist das einzige Lebensmittel das niemals verdirbt?', 'a' => 'Honig', 'options' => ['Salz', 'Honig', 'Reis', 'Zucker']],
+                15 => ['q' => 'Wie viel Prozent der DNA teilen Menschen mit Bananen?', 'a' => '60%', 'options' => ['10%', '30%', '60%', '0%']]
+            ],
+            'sport' => [
+                5 => ['q' => 'Wie viele Spieler hat eine Fußballmannschaft?', 'a' => '11', 'options' => ['9', '10', '11', '12']],
+                7 => ['q' => 'Was braucht man zum Schwimmen?', 'a' => 'Wasser', 'options' => ['Einen Ball', 'Wasser', 'Schuhe', 'Einen Schläger']],
+                10 => ['q' => 'Wie viele Ringe hat das Olympia-Symbol?', 'a' => '5', 'options' => ['3', '4', '5', '6']],
+                12 => ['q' => 'Was ist ein Elfmeter?', 'a' => 'Ein Strafstoß vom Elfmeterpunkt', 'options' => ['Ein Freistoß', 'Ein Strafstoß vom Elfmeterpunkt', 'Ein Einwurf', 'Ein Eckball']],
+                15 => ['q' => 'Welches Land hat die meisten Fußball-WM Titel?', 'a' => 'Brasilien', 'options' => ['Deutschland', 'Argentinien', 'Brasilien', 'Italien']]
+            ],
             'default' => [
                 'q' => 'Was ist 2 + 2?',
                 'a' => '4',
@@ -1346,6 +1360,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             <option value="biologie">🧬 Biologie</option>
             <option value="steuern">💰 Steuern</option>
             <option value="verkehr">🚦 Verkehr</option>
+            <option value="unnuetzes_wissen">🤯 Unnützes Wissen</option>
+            <option value="sport">🏃 Sport</option>
         </select></label>
         <label>Alter: <input type="number" name="age" min="5" max="15" value="10"></label>
         <br><br>

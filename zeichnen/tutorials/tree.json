@@ -1,0 +1,24 @@
+{
+    "id": "tree",
+    "title": "🌳 Baum zeichnen",
+    "description": "Ein schöner Baum mit Stamm und Krone!",
+    "age_min": 5,
+    "age_max": 10,
+    "sats_reward": 10,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Zeichne zwei Linien nach unten - der Baumstamm! 🪵",
+            "tip": "Braun ist die perfekte Farbe!"
+        },
+        {
+            "instruction": "Male oben eine große grüne Wolke - die Baumkrone! 🌳",
+            "tip": "Schön buschig und rund!"
+        },
+        {
+            "instruction": "Füge ein paar Äste hinzu die aus dem Stamm kommen! 🌿",
+            "tip": "Optional: Male Äpfel oder Blätter dazu!"
+        }
+    ],
+    "sats_reward": 10
+}

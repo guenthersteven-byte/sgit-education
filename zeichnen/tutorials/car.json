@@ -1,0 +1,32 @@
+{
+    "id": "car",
+    "title": "🚗 Auto zeichnen",
+    "description": "Ein cooles Auto von der Seite!",
+    "age_min": 6,
+    "age_max": 12,
+    "sats_reward": 15,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne ein langes Rechteck - das ist die Karosserie! 🚗",
+            "tip": "Breiter als hoch!"
+        },
+        {
+            "instruction": "Oben drauf ein kleineres Rechteck - die Kabine! 🪟",
+            "tip": "Für die Fenster!"
+        },
+        {
+            "instruction": "Male zwei Kreise unten - die Räder! ⭕⭕",
+            "tip": "Gleich groß und rund!"
+        },
+        {
+            "instruction": "Füge Fenster ein und Türlinien! 🚙",
+            "tip": "Rechtecke in der Kabine!"
+        },
+        {
+            "instruction": "Scheinwerfer vorne, Rücklichter hinten! 💡",
+            "tip": "Gelb vorne, rot hinten!"
+        }
+    ],
+    "sats_reward": 15
+}

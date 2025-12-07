@@ -1,0 +1,36 @@
+{
+    "id": "star",
+    "title": "⭐ Stern zeichnen",
+    "description": "Ein 5-zackiger Stern wie am Himmel!",
+    "age_min": 8,
+    "age_max": 12,
+    "sats_reward": 10,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Starte oben in der Mitte - das ist die erste Spitze ⬆️",
+            "tip": "Ganz oben!"
+        },
+        {
+            "instruction": "Zeichne schräg nach links unten ↙️",
+            "tip": "Nicht zu steil!"
+        },
+        {
+            "instruction": "Dann gerade nach rechts →",
+            "tip": "Eine horizontale Linie"
+        },
+        {
+            "instruction": "Schräg nach links oben ↖️",
+            "tip": "Jetzt wird's knifflig!"
+        },
+        {
+            "instruction": "Gerade nach unten ↓",
+            "tip": "Fast fertig!"
+        },
+        {
+            "instruction": "Zurück zum Start - schräg nach rechts oben ↗️",
+            "tip": "⭐ Ein perfekter Stern!"
+        }
+    ],
+    "sats_reward": 10
+}

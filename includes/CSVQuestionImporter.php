@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - CSV Question Importer v1.1
+ * sgiT Education - CSV Question Importer v1.2
  * ============================================================================
  * 
  * Importiert Fragen aus CSV-Dateien in die questions.db Datenbank.
@@ -15,8 +15,12 @@
  * - Robustes Error-Handling (UNIQUE constraint)
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 1.1
- * @date 02.12.2025
+ * @version 1.2
+ * @date 07.12.2025
+ * 
+ * Changelog v1.2:
+ * - FIX: PHP 8.3 Deprecated Warning für enableExceptions(false)
+ * - enableExceptions(true) für besseres Error-Handling
  * 
  * Changelog v1.1:
  * - FIX: Duplikat-Check auch auf (question, module), nicht nur Hash
@@ -59,8 +63,9 @@ class CSVQuestionImporter {
      */
     private function initDatabase(): void {
         $this->db = new SQLite3($this->dbPath);
-        // v1.1: Exceptions NICHT global aktivieren - wir fangen sie manuell
-        $this->db->enableExceptions(false);
+        // v1.2: Exceptions aktivieren (PHP 8.3+ Kompatibilität)
+        // Alte Methode enableExceptions(false) ist deprecated
+        $this->db->enableExceptions(true);
         
         $this->extendSchema();
     }

@@ -22,7 +22,8 @@ echo "<p>Diese werden gesendet:</p><ul>";
 $adaptiveModules = [
     'mathematik', 'lesen', 'englisch', 'wissenschaft', 'erdkunde',
     'chemie', 'physik', 'kunst', 'musik', 'computer', 'bitcoin',
-    'geschichte', 'biologie', 'steuern', 'programmieren', 'verkehr'
+    'geschichte', 'biologie', 'steuern', 'programmieren', 'verkehr',
+    'unnuetzes_wissen', 'sport'
 ];
 foreach ($adaptiveModules as $mod) {
     $inDb = in_array($mod, $dbModules);

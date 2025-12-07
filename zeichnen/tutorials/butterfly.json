@@ -1,0 +1,32 @@
+{
+    "id": "butterfly",
+    "title": "🦋 Schmetterling",
+    "description": "Ein symmetrischer Schmetterling mit bunten Flügeln!",
+    "age_min": 8,
+    "age_max": 14,
+    "sats_reward": 15,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne einen länglichen Körper in der Mitte - wie ein Oval! 🪱",
+            "tip": "Der Körper ist lang und dünn!"
+        },
+        {
+            "instruction": "Male zwei Fühler oben am Kopf! 📡",
+            "tip": "Mit kleinen Kugeln am Ende!"
+        },
+        {
+            "instruction": "Zeichne einen großen Flügel links - wie ein D! 🦋",
+            "tip": "Oben größer als unten!"
+        },
+        {
+            "instruction": "Jetzt den gleichen Flügel rechts - gespiegelt! ✨",
+            "tip": "Symmetrie ist wichtig!"
+        },
+        {
+            "instruction": "Verziere die Flügel mit Mustern und Farben! 🎨",
+            "tip": "Kreise, Punkte, Wellen - sei kreativ!"
+        }
+    ],
+    "sats_reward": 15
+}

@@ -1,0 +1,34 @@
+{
+    "id": "smiley",
+    "title": "😊 Smiley/Emoji zeichnen",
+    "description": "Verschiedene Emojis und Gesichtsausdrücke!",
+    "age_min": 5,
+    "age_max": 10,
+    "sats_reward": 6,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Male einen großen gelben Kreis! 🟡",
+            "tip": "Schön rund wie eine Sonne!"
+        },
+        {
+            "instruction": "Zeichne zwei Punkte oder Ovale für die Augen! 👀",
+            "tip": "Nicht zu weit unten!"
+        },
+        {
+            "instruction": "Male einen lächelnden Mund - ein Halbkreis nach oben! 😊",
+            "tip": "Breit grinsen! U-Form!"
+        },
+        {
+            "instruction": "Optional: Rote Wangen für extra Niedlichkeit! 😳",
+            "tip": "Zwei kleine rosa Kreise!"
+        }
+    ],
+    "variations": [
+        {"name": "Traurig 😢", "mouth": "Halbkreis nach unten"},
+        {"name": "Zwinkern 😉", "eyes": "Ein Auge zu"},
+        {"name": "Lachend 😂", "eyes": "Geschlossene Bogen", "extras": "Tränen"},
+        {"name": "Cool 😎", "extras": "Sonnenbrille"}
+    ],
+    "sats_reward": 6
+}

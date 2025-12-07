@@ -56,6 +56,18 @@ class OptimizedPrompts {
             'medium' => ['21 Millionen', 'Satoshis', 'Blockchain einfach', 'Ohne Bank'],
             'advanced' => ['Mining', 'Halving', 'Wallet Sicherheit', 'Transaktionen'],
             'expert' => ['Lightning Network', 'Proof of Work', 'Dezentralisierung', 'Kryptografie']
+        ],
+        'unnuetzes_wissen' => [
+            'young' => ['Tiere', 'Körper', 'Natur', 'Essen', 'Farben'],
+            'medium' => ['Rekorde', 'Tiere Superkräfte', 'Weltall', 'Erfindungen', 'Kurioses'],
+            'advanced' => ['Wissenschaft', 'Geschichte', 'Geografie', 'Biologie', 'Physik'],
+            'expert' => ['Statistiken', 'Forschung', 'Psychologie', 'Evolution', 'Rekorde']
+        ],
+        'sport' => [
+            'young' => ['Fußball', 'Schwimmen', 'Laufen', 'Ballspiele', 'Turnen'],
+            'medium' => ['Olympia', 'Mannschaftssport', 'Regeln', 'Rekorde', 'Sportarten'],
+            'advanced' => ['Taktik', 'Training', 'Geschichte', 'Wettkämpfe', 'Athleten'],
+            'expert' => ['Sportwissenschaft', 'Doping', 'Psychologie', 'Rekorde', 'Regeln']
         ]
     ];
     
@@ -79,6 +91,8 @@ class OptimizedPrompts {
             'lesen' => self::getLesenPrompt($age),
             'wissenschaft' => self::getWissenschaftPrompt($age),
             'verkehr' => self::getVerkehrPrompt($age),
+            'unnuetzes_wissen' => self::getUnnuetzesWissenPrompt($age),
+            'sport' => self::getSportPrompt($age),
         ];
         
         return $prompts[$module] ?? self::getGenericPrompt($module, $age);
@@ -875,6 +889,98 @@ EXAMPLE:
 " . self::getRules() . "
 
 Create ONE traffic question:
+Q:";
+    }
+    
+    // ========================================================================
+    // UNNÜTZES WISSEN - v5.0 Fun Facts & Kurioses
+    // ========================================================================
+    private static function getUnnuetzesWissenPrompt(int $age): string {
+        $group = self::getAgeGroup($age);
+        
+        $examples = [
+            'young' => "Q: Welches Tier kann nicht rückwärts laufen?
+A: Känguru
+B: Hund
+C: Katze
+D: Elefant
+E: Kängurus können wegen ihrer großen Hinterbeine nicht rückwärts laufen!",
+            'medium' => "Q: Wie viele Nasen hat eine Schnecke?
+A: 4
+B: 1
+C: 2
+D: Keine
+E: Schnecken haben 4 Nasen - zwei zum Riechen und zwei zum Tasten!",
+            'advanced' => "Q: Was ist das einzige Lebensmittel das niemals verdirbt?
+A: Honig
+B: Salz
+C: Reis
+D: Zucker
+E: Honig verdirbt niemals - 3000 Jahre alter Honig aus Ägypten war noch essbar!",
+            'expert' => "Q: Wie viel Prozent der DNA teilen Menschen mit Bananen?
+A: 60%
+B: 10%
+C: 30%
+D: 0%
+E: Menschen teilen etwa 60% ihrer DNA mit Bananen - alle Lebewesen sind verwandt!"
+        ];
+        
+        return "You are creating a FUN FACTS quiz with amazing, surprising trivia for {$age}-year-old students.
+
+Topics: Animals, nature, human body, world records, science facts, bizarre truths
+
+EXAMPLE:
+{$examples[$group]}
+
+" . self::getRules() . "
+
+Create ONE surprising fun fact question:
+Q:";
+    }
+    
+    // ========================================================================
+    // SPORT - v5.0 Sportarten, Regeln, Rekorde
+    // ========================================================================
+    private static function getSportPrompt(int $age): string {
+        $group = self::getAgeGroup($age);
+        
+        $examples = [
+            'young' => "Q: Wie viele Spieler hat eine Fußballmannschaft?
+A: 11
+B: 9
+C: 10
+D: 12
+E: Eine Fußballmannschaft hat 11 Spieler auf dem Feld - inklusive Torwart!",
+            'medium' => "Q: Wie viele Ringe hat das Olympia-Symbol?
+A: 5
+B: 3
+C: 4
+D: 6
+E: Die 5 olympischen Ringe stehen für die 5 bewohnten Kontinente der Welt!",
+            'advanced' => "Q: Was ist ein Elfmeter?
+A: Ein Strafstoß vom Elfmeterpunkt
+B: Ein Freistoß
+C: Ein Einwurf
+D: Ein Eckball
+E: Ein Elfmeter wird 11 Meter vor dem Tor geschossen - daher der Name!",
+            'expert' => "Q: Welches Land hat die meisten Fußball-WM Titel gewonnen?
+A: Brasilien
+B: Deutschland
+C: Argentinien
+D: Italien
+E: Brasilien hat 5 WM-Titel gewonnen - mehr als jedes andere Land!"
+        ];
+        
+        return "You are creating an educational SPORTS quiz for {$age}-year-old students.
+
+Topics: Football, tennis, swimming, Olympics, sports rules, records, famous athletes
+
+EXAMPLE:
+{$examples[$group]}
+
+" . self::getRules() . "
+
+Create ONE sports question:
 Q:";
     }
     

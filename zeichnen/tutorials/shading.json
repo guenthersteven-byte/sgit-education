@@ -1,0 +1,46 @@
+{
+    "id": "shading",
+    "title": "💡 Schattierung lernen",
+    "description": "Bringe Tiefe in deine Zeichnungen mit Licht und Schatten!",
+    "age_min": 12,
+    "age_max": 21,
+    "sats_reward": 30,
+    "difficulty": "schwer",
+    "steps": [
+        {
+            "instruction": "Zeichne eine Kugel (Kreis) in die Mitte! ⭕",
+            "tip": "Stell dir vor, das ist ein Ball!"
+        },
+        {
+            "instruction": "Entscheide wo das Licht herkommt - markiere es! ☀️",
+            "tip": "Wir nehmen: Oben links!"
+        },
+        {
+            "instruction": "Die Lichtseite (oben links) bleibt HELL! ⬜",
+            "tip": "Hier trifft das Licht direkt auf!"
+        },
+        {
+            "instruction": "Die Schattenseite (unten rechts) wird DUNKEL! ⬛",
+            "tip": "Hier kommt kein Licht hin!"
+        },
+        {
+            "instruction": "Dazwischen: Sanfter Übergang von hell zu dunkel! 🎨",
+            "tip": "Das nennt man Verlauf oder Gradient!"
+        },
+        {
+            "instruction": "Füge einen Schlagschatten unter der Kugel hinzu! 🌑",
+            "tip": "Der Schatten zeigt die Richtung des Lichts!"
+        },
+        {
+            "instruction": "Optional: Ein kleiner heller Punkt (Highlight) auf der Lichtseite! ✨",
+            "tip": "Das ist die Reflexion des Lichts!"
+        }
+    ],
+    "theory": {
+        "highlight": "Hellster Punkt - direktes Licht",
+        "midtone": "Mittlerer Bereich - indirektes Licht",
+        "core_shadow": "Dunkelster Bereich am Objekt",
+        "cast_shadow": "Schatten auf dem Boden"
+    },
+    "sats_reward": 30
+}

@@ -1656,6 +1656,26 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <div class="module-icon">🚗</div>
             <div>Verkehr</div>
         </div>
+        <div class="module-card" onclick="startQuiz('unnuetzes_wissen')">
+            <div class="module-icon">🤯</div>
+            <div>Unnützes Wissen</div>
+        </div>
+        <div class="module-card" onclick="startQuiz('sport')">
+            <div class="module-icon">🏃</div>
+            <div>Sport</div>
+        </div>
+        <div class="module-card" onclick="window.location.href='/zeichnen/'">
+            <div class="module-icon">✏️</div>
+            <div>Zeichnen</div>
+        </div>
+        <div class="module-card" onclick="window.location.href='/logik/'">
+            <div class="module-icon">🧩</div>
+            <div>Logik & Rätsel</div>
+        </div>
+        <div class="module-card" onclick="window.location.href='/kochen/'" style="border: 2px dashed var(--accent);">
+            <div class="module-icon">🍳</div>
+            <div>Kochen <span style="font-size: 10px; color: var(--accent);">NEU!</span></div>
+        </div>
     </div>
     
     <!-- Quiz Modal -->

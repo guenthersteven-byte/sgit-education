@@ -1,0 +1,41 @@
+{
+    "id": "circle",
+    "title": "🔴 Kreis malen",
+    "description": "Lerne, einen schönen runden Kreis zu zeichnen!",
+    "age_min": 5,
+    "age_max": 8,
+    "sats_reward": 5,
+    "difficulty": "leicht",
+    "steps": [
+        {
+            "instruction": "Wähle eine schöne Farbe aus! 🎨",
+            "tip": "Klicke auf das bunte Quadrat oben."
+        },
+        {
+            "instruction": "Setze deinen Stift in die Mitte der Leinwand.",
+            "tip": "Stell dir vor, da ist ein Punkt."
+        },
+        {
+            "instruction": "Zeichne langsam einen großen Bogen nach oben ↑",
+            "tip": "Wie ein Regenbogen!"
+        },
+        {
+            "instruction": "Führe den Bogen zur Seite und nach unten ↓",
+            "tip": "Immer schön rund bleiben..."
+        },
+        {
+            "instruction": "Schließe den Kreis! Der Anfang und das Ende treffen sich. ⭕",
+            "tip": "Geschafft! 🎉"
+        }
+    ],
+    "validation": {
+        "type": "shape_match",
+        "target": "circle",
+        "tolerance": 0.6
+    },
+    "hints": [
+        "Zeichne langsam - das hilft!",
+        "Ein Kreis hat keine Ecken",
+        "Versuche, wieder am Start anzukommen"
+    ]
+}

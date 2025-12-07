@@ -1,0 +1,36 @@
+{
+    "id": "cube3d",
+    "title": "📦 3D-Würfel zeichnen",
+    "description": "Ein Würfel mit Tiefe und Perspektive!",
+    "age_min": 10,
+    "age_max": 18,
+    "sats_reward": 25,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne ein Quadrat - die Vorderseite! ⬜",
+            "tip": "Gerade Linien!"
+        },
+        {
+            "instruction": "Zeichne von jeder oberen Ecke eine Linie schräg nach rechts oben! ↗️",
+            "tip": "Gleiche Länge und gleicher Winkel!"
+        },
+        {
+            "instruction": "Verbinde die Enden dieser Linien horizontal! ➡️",
+            "tip": "Das ist die Oberkante!"
+        },
+        {
+            "instruction": "Zeichne eine senkrechte Linie nach unten von der rechten oberen Ecke! ⬇️",
+            "tip": "Parallel zur Vorderkante!"
+        },
+        {
+            "instruction": "Verbinde zur Vervollständigung der rechten Seite! 📦",
+            "tip": "Jetzt siehst du 3 Seiten - ein 3D-Würfel!"
+        },
+        {
+            "instruction": "Schattiere die rechte Seite dunkler, die Oberseite heller! 🎨",
+            "tip": "Das gibt echte Tiefe!"
+        }
+    ],
+    "sats_reward": 25
+}

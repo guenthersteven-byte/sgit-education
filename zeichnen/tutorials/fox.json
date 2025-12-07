@@ -1,0 +1,42 @@
+{
+    "id": "fox",
+    "title": "🦊 Fuchs (wie Foxy!) zeichnen",
+    "description": "Zeichne deinen eigenen süßen Fuchs wie Foxy!",
+    "age_min": 7,
+    "age_max": 14,
+    "sats_reward": 18,
+    "difficulty": "mittel",
+    "steps": [
+        {
+            "instruction": "Zeichne einen Kreis für den Kopf! ⭕",
+            "tip": "Das wird Foxys Gesicht!"
+        },
+        {
+            "instruction": "Füge zwei große spitze Dreiecke oben hinzu - die Ohren! 🔺🔺",
+            "tip": "Fuchsohren sind GROSS und spitz!"
+        },
+        {
+            "instruction": "Male die Ohren innen weiß oder rosa! 👂",
+            "tip": "Füchse haben helle Ohr-Innenseiten!"
+        },
+        {
+            "instruction": "Zeichne zwei mandelförmige Augen und eine schwarze Nase! 👃",
+            "tip": "Die Nase ist ein kleines Dreieck!"
+        },
+        {
+            "instruction": "Male weiße Bereiche: Unter der Nase, auf den Wangen! ⚪",
+            "tip": "Das typische Fuchsmuster!"
+        },
+        {
+            "instruction": "Füge einen ovalen Körper und den buschigen Schwanz hinzu! 🦊",
+            "tip": "Der Schwanz hat eine weiße Spitze!"
+        },
+        {
+            "instruction": "Alles in Orange ausmalen - fertig ist dein Foxy! 🧡",
+            "tip": "Du hast Foxy gezeichnet! 🎉"
+        }
+    ],
+    "sats_reward": 18,
+    "special": true,
+    "badge": "Foxy-Freund"
+}
