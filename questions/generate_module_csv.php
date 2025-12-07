@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Module CSV Generator v2.7
+ * sgiT Education - Module CSV Generator v2.8
  * ============================================================================
  * 
  * KOMPLETT ÜBERARBEITETE VERSION mit besserem UX:
@@ -20,9 +20,12 @@
  *   - Deutsche Spalten: frage, antwort_a, antwort_b, etc.
  *   - Semikolon-Trennung
  *   - Antworten werden gemischt, richtig=A/B/C/D
+ * - BUG-043 FIX: PHP-Fehler als JSON zurückgeben statt Raw-Output (v2.8)
+ *   - Output Buffering für saubere JSON-Responses
+ *   - Try-Catch für alle API-Aufrufe
  * 
  * @author Claude AI für sgiT
- * @version 2.7
+ * @version 2.8
  * @date 07.12.2025
  * ============================================================================
  */
@@ -461,9 +464,18 @@ function saveQuestionsToCSV($questions, $module, $ageGroup, $outputDir, $existin
 // ============================================================================
 
 if (isset($_GET['api'])) {
-    header('Content-Type: application/json');
+    // BUG-043 FIX: Output Buffering um PHP-Fehler abzufangen
+    ob_start();
     
-    $action = $_GET['api'];
+    // Fehler-Handler für saubere JSON-Antworten
+    set_error_handler(function($severity, $message, $file, $line) {
+        throw new ErrorException($message, 0, $severity, $file, $line);
+    });
+    
+    try {
+        header('Content-Type: application/json');
+        
+        $action = $_GET['api'];
     
     // Status-Check
     if ($action === 'status') {
@@ -589,7 +601,32 @@ if (isset($_GET['api'])) {
     }
     
     echo json_encode(['error' => 'Unbekannte API-Aktion']);
-    exit;
+        exit;
+        
+    } catch (Exception $e) {
+        // BUG-043: PHP-Fehler als JSON zurückgeben
+        ob_end_clean(); // Buffer leeren falls PHP-Fehler drin sind
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Server-Fehler: ' . $e->getMessage(),
+            'file' => basename($e->getFile()),
+            'line' => $e->getLine()
+        ]);
+        exit;
+    } catch (Error $e) {
+        // BUG-043: Fatale PHP-Fehler abfangen
+        ob_end_clean();
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Fataler Fehler: ' . $e->getMessage()
+        ]);
+        exit;
+    } finally {
+        restore_error_handler();
+        ob_end_flush();
+    }
 }
 
 
