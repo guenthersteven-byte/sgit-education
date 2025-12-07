@@ -1447,6 +1447,37 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             width: 28px;
         }
         
+        /* BUG-047 FIX: Bitcoin-Info in Navigation */
+        .nav-btc-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--bitcoin), #E88A00);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: white;
+        }
+        .btc-warning {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        .btc-price {
+            font-weight: bold;
+        }
+        .btc-dashboard-link {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btc-dashboard-link:hover {
+            background: rgba(255,255,255,0.35);
+        }
+        
         @media (max-width: 768px) {
             .main-nav {
                 flex-direction: column;
@@ -1501,31 +1532,26 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
 
     <?php if (!$needsLogin): ?>
     
-    <!-- Test-Sats Banner (nur wenn Wallet aktiv) -->
-    <?php if ($walletEnabled): ?>
-    <div class="test-sats-banner">
-        <div class="warning">
-            <span>⚠️</span>
-            <span>TEST-SATS - Keine echten Satoshis!</span>
-        </div>
-        <div class="btc-info">
-            <?php if ($btcPrice > 0): ?>
-                <span>₿ BTC: $<?php echo number_format($btcPrice); ?></span>
-                <span>|</span>
-            <?php endif; ?>
-            <a href="wallet/child_dashboard.php" class="dashboard-link">🏆 Mein Dashboard</a>
-        </div>
-    </div>
-    <?php endif; ?>
-    
     <!-- ========================================
          BUG-027 FIX: Main Navigation Bar
+         BUG-047 FIX: Bitcoin-Info in Nav integriert
          ======================================== -->
     <nav class="main-nav" id="mainNavigation">
         <div class="nav-brand">
             <img src="assets/images/base_icon_transparent_background.png" alt="sgiT">
             <span>sgiT Education</span>
         </div>
+        
+        <?php if ($walletEnabled): ?>
+        <div class="nav-btc-info">
+            <span class="btc-warning">⚠️ TEST-SATS</span>
+            <?php if ($btcPrice > 0): ?>
+                <span class="btc-price">₿ $<?php echo number_format($btcPrice); ?></span>
+            <?php endif; ?>
+            <a href="wallet/child_dashboard.php" class="btc-dashboard-link">🏆 Dashboard</a>
+        </div>
+        <?php endif; ?>
+        
         <div class="nav-links">
             <a href="leaderboard.php" class="nav-link">
                 <span class="nav-link-icon">🏆</span>
