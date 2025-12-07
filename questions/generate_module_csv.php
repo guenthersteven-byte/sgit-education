@@ -225,7 +225,7 @@ function extractAndParseJson($rawResponse) {
  * Fragt Ollama nach Fragen für ein Modul (EINZELNE Altersgruppe)
  * @version 2.0 - BUG-036 Fix mit Retry-Logik und JSON-Reparatur
  */
-function generateQuestionsForAgeGroup($ollamaUrl, $module, $themen, $ageGroup, $model = 'tinyllama') {
+function generateQuestionsForAgeGroup($ollamaUrl, $module, $themen, $ageGroup, $model = 'gemma2:2b') {
     $count = $ageGroup['count'];
     $maxRetries = 3;
     
@@ -510,8 +510,8 @@ if (isset($_GET['api'])) {
         $mod = $modules[$module];
         $existingHashes = loadExistingHashes($dbPath);
         
-        // Modell aus Parameter holen (default: tinyllama)
-        $model = $_GET['model'] ?? 'tinyllama';
+        // Modell aus Parameter holen (default: gemma2:2b - EMPFOHLEN)
+        $model = $_GET['model'] ?? 'gemma2:2b';
         
         // Generieren mit gewähltem Modell
         $result = generateQuestionsForAgeGroup($ollamaUrl, $mod['name'], $mod['themen'], $ageGroup, $model);
@@ -1157,13 +1157,13 @@ if (isset($_GET['api'])) {
     
     // Model-Info für bessere UX
     const modelInfo = {
-        'tinyllama:latest': {name: '🐰 TinyLlama', desc: 'Schnell, einfache Antworten', quality: 1},
-        'tinyllama': {name: '🐰 TinyLlama', desc: 'Schnell, einfache Antworten', quality: 1},
-        'llama3.2:1b': {name: '🦙 Llama 3.2 1B', desc: 'Ausgewogen', quality: 2},
-        'llama3.2:3b': {name: '🦙 Llama 3.2 3B', desc: 'Gute Qualität', quality: 3},
-        'mistral:latest': {name: '🌟 Mistral 7B', desc: 'Sehr gut', quality: 4},
-        'mistral': {name: '🌟 Mistral 7B', desc: 'Sehr gut', quality: 4},
-        'gemma2:2b': {name: '💎 Gemma2 2B', desc: 'Google AI', quality: 3}
+        'gemma2:2b': {name: '💎 Gemma2 2B - EMPFOHLEN', desc: 'Beste Qualität für CPU', quality: 5},
+        'llama3.2:1b': {name: '🦙 Llama 3.2 1B', desc: 'Schnell, akzeptable Qualität', quality: 3},
+        'llama3.2:3b': {name: '🦙 Llama 3.2 3B', desc: 'Gute Qualität', quality: 4},
+        'tinyllama:latest': {name: '🐰 TinyLlama', desc: 'Sehr schnell, einfache Antworten', quality: 1},
+        'tinyllama': {name: '🐰 TinyLlama', desc: 'Sehr schnell, einfache Antworten', quality: 1},
+        'mistral:latest': {name: '⚠️ Mistral 7B', desc: 'NUR MIT GPU!', quality: 4},
+        'mistral': {name: '⚠️ Mistral 7B', desc: 'NUR MIT GPU!', quality: 4}
     };
     
     // Status beim Laden prüfen
@@ -1215,7 +1215,7 @@ if (isset($_GET['api'])) {
     }
     
     function getSelectedModel() {
-        return document.getElementById('modelSelect').value || 'tinyllama';
+        return document.getElementById('modelSelect').value || 'gemma2:2b';
     }
     
     function updateModelInfo() {

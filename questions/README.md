@@ -2,8 +2,8 @@
 
 ## Übersicht
 
-**Version:** 1.0  
-**Datum:** 08. Dezember 2025  
+**Version:** 2.8  
+**Datum:** 07. Dezember 2025  
 **Pfad:** `/questions/generate_module_csv.php`
 
 ---
@@ -12,21 +12,39 @@
 
 Der CSV Generator ermöglicht die strukturierte Erstellung von Quiz-Fragen per Modul:
 
-1. **AI-gestützte Generierung** via Ollama (tinyllama)
+1. **AI-gestützte Generierung** via Ollama mit **Gemma2:2b** (empfohlen)
 2. **CSV-Export** zur Qualitätskontrolle
 3. **Duplikat-Erkennung** via MD5-Hash
 4. **Altersgruppen-Segmentierung** (5 Stufen)
+5. **Few-Shot Learning** für bessere Fragen-Qualität
+
+---
+
+## 🤖 AI-Modell Empfehlung
+
+| Modell | Größe | CPU-Zeit | Qualität | Status |
+|--------|-------|----------|----------|--------|
+| **gemma2:2b** | 1.6 GB | ~60-100s | ⭐⭐⭐⭐⭐ | ✅ **EMPFOHLEN** |
+| llama3.2:1b | 1.3 GB | ~10s | ⭐⭐⭐ | ⚠️ Akzeptabel |
+| tinyllama | 637 MB | ~5s | ⭐⭐ | ❌ Zu einfach |
+| mistral:7b | 4.4 GB | 10-30 Min | ⭐⭐⭐⭐ | ❌ Nur mit GPU! |
+
+### Modell installieren
+```bash
+docker exec sgit_ollama ollama pull gemma2:2b
+```
 
 ---
 
 ## 📂 Verzeichnisstruktur
 
 ```
-C:\xampp\htdocs\Education\questions\
-├── generate_module_csv.php    # Haupt-Generator
-└── generated\                 # Output-Verzeichnis
-    ├── mathematik_age5-8_20251208_100000.csv
-    ├── mathematik_age8-11_20251208_100100.csv
+/questions/
+├── generate_module_csv.php    # Haupt-Generator v2.8
+├── README.md                  # Diese Datei
+└── generated/                 # Output-Verzeichnis
+    ├── mathematik_age5-8_20251207_*.csv
+    ├── mathematik_age8-11_20251207_*.csv
     └── ...
 ```
 
@@ -39,28 +57,30 @@ C:\xampp\htdocs\Education\questions\
 URL: http://localhost:8080/questions/generate_module_csv.php
 ```
 
-### Schritt 2: Modul auswählen
+### Schritt 2: Modul & Modell wählen
+- Modell auf **Gemma2 2B** setzen (Default)
 - Klick auf eines der 18 Quiz-Module
 - Generator startet automatisch
 
 ### Schritt 3: AI generiert Fragen
 Pro Modul werden 5 CSV-Dateien erstellt (eine pro Altersgruppe):
 
-| Altersgruppe | Schwierigkeit | Fragen |
-|--------------|---------------|--------|
-| 5-8 Jahre | 1 (sehr leicht) | 5 |
-| 8-11 Jahre | 2 (leicht) | 5 |
-| 11-14 Jahre | 3 (mittel) | 5 |
-| 14-18 Jahre | 4 (schwer) | 5 |
-| 18+ Jahre | 5 (sehr schwer) | 5 |
+| Altersgruppe | Schwierigkeit | Fragen | max_alter |
+|--------------|---------------|--------|-----------|
+| 5-8 Jahre | 1 (sehr leicht) | 5 | 8 |
+| 8-11 Jahre | 2 (leicht) | 5 | 11 |
+| 11-14 Jahre | 3 (mittel) | 5 | 14 |
+| 14-18 Jahre | 4 (schwer) | 5 | 18 |
+| 18+ Jahre | 5 (sehr schwer) | 5 | **99** |
 
-**Gesamt pro Modul:** 25 Fragen
+**Gesamt pro Modul:** 25 Fragen (~10 Min mit Gemma2:2b)
+
 
 ### Schritt 4: CSV prüfen
-- Dateien in `/questions/generated/` öffnen
+- Klick auf "CSV-Ordner öffnen" → Modal mit Dateiliste
+- Windows-Pfad kopieren für Explorer
+- Download einzelner CSVs möglich
 - Fragen auf Qualität prüfen
-- Ggf. manuell korrigieren
-- `DUPLICATE`-markierte Fragen entfernen oder ändern
 
 ### Schritt 5: Import
 ```
@@ -69,27 +89,31 @@ URL: http://localhost:8080/batch_import.php
 
 ---
 
-## 📋 CSV-Format
+## 📋 CSV-Format (v2.7+)
+
+Das Format ist kompatibel mit dem CSVQuestionImporter:
 
 | Spalte | Beschreibung |
 |--------|--------------|
-| question | Die Frage |
-| correct_answer | Richtige Antwort |
-| wrong_answer_1 | Falsche Antwort 1 |
-| wrong_answer_2 | Falsche Antwort 2 |
-| wrong_answer_3 | Falsche Antwort 3 |
-| explanation | Erklärung (max. 100 Zeichen) |
-| difficulty | Schwierigkeit (1-5) |
-| age_min | Mindestalter |
-| age_max | Maximalalter |
-| hash | MD5-Hash für Duplikat-Check |
-| status | NEW oder DUPLICATE |
+| frage | Die Frage |
+| antwort_a | Antwort A |
+| antwort_b | Antwort B |
+| antwort_c | Antwort C |
+| antwort_d | Antwort D |
+| richtig | A, B, C oder D |
+| schwierigkeit | 1-5 |
+| min_alter | 5-21 |
+| max_alter | 5-99 |
+| erklaerung | Kurze Erklärung |
+| typ | ai_generated |
+
+**Trennzeichen:** Semikolon (`;`)
 
 ---
 
 ## 🔐 Duplikat-Erkennung
 
-Der Generator prüft jede Frage gegen existierende Hashes in der Datenbank:
+Duplikate werden vor dem Speichern gefiltert:
 
 ```php
 $hash = md5(
@@ -101,52 +125,30 @@ $hash = md5(
 );
 ```
 
-- **NEW:** Frage ist neu, kann importiert werden
-- **DUPLICATE:** Frage existiert bereits, wird beim Import übersprungen
-
 ---
 
-## 📊 Verfügbare Module
+## 📊 Verfügbare Module (18)
 
-| Modul | Themen |
-|-------|--------|
-| 🔢 Mathematik | Grundrechenarten, Geometrie, Algebra, Brüche |
-| 🇬🇧 Englisch | Vokabeln, Grammatik, Zeiten |
-| 📖 Lesen | Buchstaben, Silben, Wortarten |
-| ⚛️ Physik | Mechanik, Optik, Elektrizität |
-| 🌍 Erdkunde | Kontinente, Länder, Hauptstädte |
-| 🔬 Wissenschaft | Experimente, Planeten, Naturgesetze |
-| 📜 Geschichte | Antike, Mittelalter, Neuzeit |
-| 💻 Computer | Hardware, Software, Internet |
-| ⚗️ Chemie | Elemente, Reaktionen, Atome |
-| 🧬 Biologie | Tiere, Pflanzen, Körper |
-| 🎵 Musik | Noten, Instrumente, Komponisten |
-| 👨‍💻 Programmieren | Variablen, Schleifen, Funktionen |
-| ₿ Bitcoin | Satoshi, Blockchain, Mining |
-| 💰 Finanzen | Geld, Sparen, Steuern |
-| 🎨 Kunst | Farben, Techniken, Künstler |
-| 🚗 Verkehr | Verkehrszeichen, Regeln, Sicherheit |
-| 🏃 Sport | Sportarten, Regeln, Olympia |
-| 🤯 Unnützes Wissen | Fun Facts, Kurioses, Rekorde |
-
----
-
-## ⚙️ Technische Details
-
-### Voraussetzungen
-- Docker Container laufen (`sgit_php`, `sgit_ollama`)
-- Ollama mit `tinyllama` Modell
-
-### Konfiguration
-```php
-// Docker-Erkennung
-$isDocker = (strpos($_SERVER['DOCUMENT_ROOT'], '/var/www/html') !== false);
-$ollamaUrl = $isDocker ? 'http://ollama:11434' : 'http://localhost:11434';
-
-// Timeouts
-curl_setopt($ch, CURLOPT_TIMEOUT, 120);  // 2 Minuten pro Request
-set_time_limit(600);                      // 10 Minuten Gesamtlaufzeit
-```
+| Modul | Icon | Themen |
+|-------|------|--------|
+| Mathematik | 🔢 | Grundrechenarten, Geometrie, Algebra |
+| Englisch | 🇬🇧 | Vokabeln, Grammatik, Zeiten |
+| Lesen | 📖 | Buchstaben, Silben, Wortarten |
+| Physik | ⚛️ | Mechanik, Optik, Elektrizität |
+| Erdkunde | 🌍 | Kontinente, Länder, Hauptstädte |
+| Wissenschaft | 🔬 | Experimente, Planeten |
+| Geschichte | 📜 | Antike, Mittelalter, Neuzeit |
+| Computer | 💻 | Hardware, Software, Internet |
+| Chemie | ⚗️ | Elemente, Reaktionen, Atome |
+| Biologie | 🧬 | Tiere, Pflanzen, Körper |
+| Musik | 🎵 | Noten, Instrumente |
+| Programmieren | 👨‍💻 | Variablen, Schleifen |
+| Bitcoin | ₿ | Satoshi, Blockchain |
+| Finanzen | 💰 | Geld, Sparen, Steuern |
+| Kunst | 🎨 | Farben, Techniken |
+| Verkehr | 🚗 | Verkehrszeichen, Regeln |
+| Sport | 🏃 | Sportarten, Olympia |
+| Unnützes Wissen | 🤯 | Fun Facts, Rekorde |
 
 ---
 
@@ -154,10 +156,10 @@ set_time_limit(600);                      // 10 Minuten Gesamtlaufzeit
 
 | Problem | Lösung |
 |---------|--------|
-| "Keine Antwort von Ollama" | Docker-Container prüfen: `docker ps` |
-| "Kein JSON gefunden" | AI-Modell liefert ungültiges Format, erneut versuchen |
-| Zu wenige neue Fragen | Themengebiete im Prompt erweitern |
-| Encoding-Fehler | Umlaute als ae/oe/ue verwenden |
+| "Keine Antwort von Ollama" | `docker ps` prüfen, Ollama neu starten |
+| "Netzwerkfehler" | Seite neu laden, erneut versuchen |
+| Langsame Generierung | Gemma2:2b statt Mistral nutzen |
+| Import-Fehler | CSV-Format prüfen (Semikolon-Trennung) |
 
 ---
 
@@ -165,8 +167,13 @@ set_time_limit(600);                      // 10 Minuten Gesamtlaufzeit
 
 | Version | Datum | Änderungen |
 |---------|-------|------------|
-| 1.0 | 08.12.2025 | Initial Release |
+| 2.8 | 07.12.2025 | Error Handling, Output Buffering |
+| 2.7 | 07.12.2025 | Import-kompatibles CSV-Format |
+| 2.6 | 07.12.2025 | CSV-Modal mit Dateiliste |
+| 2.5 | 07.12.2025 | Few-Shot Learning Prompts |
+| 2.0 | 06.12.2025 | Komplettes UX-Redesign |
+| 1.0 | 06.12.2025 | Initial Release |
 
 ---
 
-*Dokumentation erstellt von Claude AI für sgiT Education Platform*
+*Dokumentation für sgiT Education Platform*

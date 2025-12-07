@@ -2,33 +2,31 @@
 
 Eine umfassende Lernplattform für Kinder und Jugendliche (5-21 Jahre) mit Bitcoin-Wallet-Integration, Gamification und KI-gestützter Fragengenerierung.
 
-![Version](https://img.shields.io/badge/version-3.7.9-green)
+![Version](https://img.shields.io/badge/version-3.15.6-green)
 ![PHP](https://img.shields.io/badge/PHP-8.3-blue)
 ![License](https://img.shields.io/badge/license-GPL--3.0-orange)
-![Questions](https://img.shields.io/badge/Fragen-3.263-brightgreen)
+![Questions](https://img.shields.io/badge/Fragen-3.400+-brightgreen)
+![Modules](https://img.shields.io/badge/Module-21-blue)
 
 ## 🌟 Features
 
-- **16 Lernmodule**: Mathematik, Englisch, Physik, Geschichte, Biologie, Chemie, und mehr
-- **Adaptives Lernsystem**: Fragen werden altersgerecht angepasst
+- **21 Lernmodule**: Mathematik, Englisch, Physik, Geschichte, Biologie, Chemie, Zeichnen, Kochen, Logik und mehr
+- **Adaptives Lernsystem**: Fragen werden altersgerecht angepasst (5 Altersgruppen)
 - **Bitcoin-Wallet**: Belohnungssystem mit Satoshis (Test-Modus)
 - **Leaderboard & Achievements**: Gamification für mehr Motivation
-- **KI-Integration**: Ollama (tinyllama) für dynamische Fragengenerierung
+- **KI-Integration**: Ollama mit **Gemma2:2b** für dynamische Fragengenerierung
+- **CSV Generator**: AI-gestützte Fragen-Generierung mit Few-Shot Learning
 - **Foxy Chatbot**: Interaktiver Lern-Assistent
-- **Bot-System**: Automatisierte Tests (Security, Load, Function)
-
-## 📸 Screenshots
-
-*Coming soon*
+- **Bot-System**: Automatisierte Tests (Security, Load, Function, AI Generator)
 
 ## 🛠️ Technologie-Stack
 
 | Komponente | Technologie |
 |------------|-------------|
 | Backend | PHP 8.3 |
-| Datenbank | SQLite |
+| Datenbank | SQLite (WAL-Modus) |
 | Webserver | nginx + PHP-FPM (Docker) |
-| KI | Ollama mit tinyllama |
+| KI | **Ollama mit Gemma2:2b** |
 | Container | Docker & Docker Compose |
 
 ## 🚀 Installation
@@ -37,54 +35,72 @@ Eine umfassende Lernplattform für Kinder und Jugendliche (5-21 Jahre) mit Bitco
 
 - Docker & Docker Compose
 - Git
+- ~4 GB freier Speicher (für Gemma2:2b Modell)
 
 ### Quick Start
 
 ```bash
 # Repository klonen
-git clone https://github.com/DEIN-USERNAME/sgit-education.git
+git clone https://github.com/guenthersteven-byte/sgit-education.git
 cd sgit-education
 
 # Docker Container starten
 cd docker
 docker-compose up -d
 
+# AI-Modell installieren (WICHTIG!)
+docker exec sgit_ollama ollama pull gemma2:2b
+
 # Fertig! Öffne im Browser:
 # http://localhost:8080
 ```
 
-### Manuelle Installation (ohne Docker)
 
-1. XAMPP oder ähnlichen Stack installieren (PHP 8.x + SQLite)
-2. Repository nach `htdocs/Education` klonen
-3. Ollama installieren und tinyllama laden:
-   ```bash
-   ollama pull tinyllama
-   ```
-4. `config/backup_config.example.json` kopieren zu `config/backup_config.json`
-5. Im Browser öffnen: `http://localhost/Education`
+## 🤖 AI-Modell Konfiguration
+
+### Empfohlenes Modell: Gemma2:2b
+
+Nach ausführlichen Tests ist **Gemma2:2b** das beste Modell für diese Plattform:
+
+| Modell | Größe | CPU-Zeit | Qualität | Empfehlung |
+|--------|-------|----------|----------|------------|
+| **gemma2:2b** | 1.6 GB | ~60-100s | ⭐⭐⭐⭐⭐ | ✅ **EMPFOHLEN** |
+| llama3.2:1b | 1.3 GB | ~10s | ⭐⭐⭐ | ⚠️ Akzeptabel |
+| tinyllama | 637 MB | ~5s | ⭐⭐ | ❌ Zu einfach |
+| mistral:7b | 4.4 GB | 10-30 Min | ⭐⭐⭐⭐ | ❌ Nur mit GPU! |
+
+### Modell installieren
+
+```bash
+# Empfohlen
+docker exec sgit_ollama ollama pull gemma2:2b
+
+# Alternative (schneller, aber geringere Qualität)
+docker exec sgit_ollama ollama pull llama3.2:1b
+```
+
+### Wichtige Hinweise
+
+- **Ohne GPU**: Große Modelle (7B+) sind auf CPU nicht praktikabel (10-30 Min pro Anfrage)
+- **Mit GPU (CUDA)**: Mistral und größere Modelle werden deutlich schneller
+- Der CSV Generator erkennt automatisch verfügbare Modelle
 
 ## 📁 Projektstruktur
 
 ```
 sgit-education/
-├── AI/
-│   └── data/
-│       └── questions.db      # 3.263 Fragen
+├── AI/data/questions.db      # 3.400+ Fragen
 ├── adaptive_learning.php     # Haupt-Lernplattform
 ├── admin_v4.php              # Admin Dashboard
 ├── bots/                     # Test-Bot-System
-│   ├── tests/
-│   │   ├── FunctionTestBot.php
-│   │   ├── LoadTestBot.php
-│   │   └── SecurityBot.php
-│   └── bot_summary.php
 ├── clippy/                   # Foxy Chatbot
-├── config/                   # Konfiguration
 ├── docker/                   # Docker Setup
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   └── nginx/
+├── kochen/                   # Kochen-Modul (interaktiv)
+├── logik/                    # Logik & Rätsel (interaktiv)
+├── questions/                # CSV Generator + generierte Fragen
+│   ├── generate_module_csv.php
+│   └── generated/            # AI-generierte CSVs
+├── zeichnen/                 # Zeichnen-Modul (Fabric.js)
 ├── includes/                 # PHP-Includes
 ├── leaderboard.php           # Ranglisten
 ├── statistics.php            # Statistiken
@@ -97,11 +113,13 @@ sgit-education/
 |-------|-----|
 | Lernplattform | http://localhost:8080/adaptive_learning.php |
 | Admin Dashboard | http://localhost:8080/admin_v4.php |
+| **CSV Generator** | http://localhost:8080/questions/generate_module_csv.php |
 | Leaderboard | http://localhost:8080/leaderboard.php |
 | Statistiken | http://localhost:8080/statistics.php |
 | Bot Dashboard | http://localhost:8080/bots/bot_summary.php |
 
 **Admin-Passwort:** `sgit2025`
+
 
 ## 🎨 Branding
 
@@ -112,28 +130,40 @@ Die Plattform nutzt das sgiT Corporate Design:
 | Primär (Dunkelgrün) | `#1A3503` |
 | Akzent (Neon-Grün) | `#43D240` |
 
-## 📊 Lernmodule
+## 📊 Lernmodule (21)
+
+### Quiz-Module (18)
 
 | Modul | Icon | Fragen |
 |-------|------|--------|
 | Mathematik | 🔢 | 286 |
 | Englisch | 🇬🇧 | 251 |
-| Physik | ⚛️ | 220 |
-| Geschichte | 📜 | 205 |
 | Lesen | 📖 | 228 |
+| Physik | ⚛️ | 220 |
 | Erdkunde | 🌍 | 212 |
 | Wissenschaft | 🔬 | 211 |
-| Biologie | 🧬 | 197 |
-| Chemie | ⚗️ | 200 |
-| Musik | 🎵 | 191 |
-| Kunst | 🎨 | 209 |
+| Geschichte | 📜 | 205 |
 | Computer | 💻 | 206 |
-| Bitcoin | ₿ | 189 |
+| Chemie | ⚗️ | 200 |
+| Biologie | 🧬 | 197 |
+| Musik | 🎵 | 191 |
 | Programmieren | 👨‍💻 | 190 |
+| Bitcoin | ₿ | 189 |
 | Finanzen | 💰 | 185 |
+| Kunst | 🎨 | 177 |
 | Verkehr | 🚗 | 121 |
+| Sport | 🏃 | 70 |
+| Unnützes Wissen | 🤯 | 68 |
 
-**Gesamt: 3.263 Fragen**
+### Interaktive Module (3)
+
+| Modul | Icon | Beschreibung |
+|-------|------|--------------|
+| Zeichnen | ✏️ | Canvas mit Fabric.js, 20+ Tutorials |
+| Logik & Rätsel | 🧩 | Muster, Ausreißer, Zahlenreihen |
+| Kochen | 🍳 | Quiz, Zuordnen, Küchenwissen |
+
+**Gesamt: 3.400+ Fragen in 21 Modulen**
 
 ## 🤝 Contributing
 
@@ -148,18 +178,12 @@ Beiträge sind willkommen! Bitte beachte:
 ## 📝 Lizenz
 
 Dieses Projekt ist unter der **GNU General Public License v3.0** lizenziert.
-Siehe [LICENSE](LICENSE) für Details.
 
-## 👨‍💻 Autor
+## 📞 Kontakt
 
-**Steven Günther** - [sgiT Solution Engineering & IT Services](https://sgit.space)
-
-## 🙏 Danksagungen
-
-- [Ollama](https://ollama.ai/) für die lokale KI-Integration
-- [SQLite](https://www.sqlite.org/) für die leichtgewichtige Datenbank
-- Alle Open-Source-Projekte, die diese Plattform möglich machen
+**sgiT Solution Engineering & IT Services**  
+Website: [sgit.space](https://sgit.space)
 
 ---
 
-Made with ❤️ for education
+*Entwickelt mit ❤️ für Bildung und Bitcoin*
