@@ -8,10 +8,13 @@
  * 15+ Tutorials für alle Altersgruppen
  * Kategorien: Grundformen, Tiere, Natur, Fortgeschritten
  * 
- * Nutzt zentrale Versionsverwaltung via /includes/version.php
+ * BUG-049 FIX: Design an Logik/Kochen Module angepasst
+ * - Dunkles sgiT-Theme (#0d1f02 Hintergrund)
+ * - Konsistentes Card-Design
+ * - Einheitliche Navigation
  * 
- * @version Siehe SGIT_VERSION
- * @date Siehe SGIT_VERSION_DATE
+ * @version 2.0 (BUG-049 Fix)
+ * @date 08.12.2025
  * @author sgiT Solution Engineering & IT Services
  * ============================================================================
  */
@@ -48,13 +51,13 @@ function loadAllTutorials($tutorialDir) {
 // Tutorials nach Kategorie gruppieren
 function categorizeTutorials($tutorials, $userAge) {
     $categories = [
-        'grundformen' => ['title' => '📐 Grundformen', 'icon' => '📐', 'tutorials' => []],
-        'natur' => ['title' => '🌿 Natur & Pflanzen', 'icon' => '🌿', 'tutorials' => []],
-        'tiere' => ['title' => '🐾 Tiere', 'icon' => '🐾', 'tutorials' => []],
-        'fahrzeuge' => ['title' => '🚗 Fahrzeuge & Technik', 'icon' => '🚀', 'tutorials' => []],
-        'menschen' => ['title' => '👤 Menschen & Gesichter', 'icon' => '👤', 'tutorials' => []],
-        'technik' => ['title' => '🎨 Technik & Theorie', 'icon' => '🎓', 'tutorials' => []],
-        'spass' => ['title' => '😊 Spaß & Kreativ', 'icon' => '🎉', 'tutorials' => []]
+        'grundformen' => ['title' => 'Grundformen', 'icon' => '📐', 'tutorials' => []],
+        'natur' => ['title' => 'Natur & Pflanzen', 'icon' => '🌿', 'tutorials' => []],
+        'tiere' => ['title' => 'Tiere', 'icon' => '🐾', 'tutorials' => []],
+        'fahrzeuge' => ['title' => 'Fahrzeuge & Technik', 'icon' => '🚀', 'tutorials' => []],
+        'menschen' => ['title' => 'Menschen & Gesichter', 'icon' => '👤', 'tutorials' => []],
+        'technik' => ['title' => 'Technik & Theorie', 'icon' => '🎓', 'tutorials' => []],
+        'spass' => ['title' => 'Spaß & Kreativ', 'icon' => '🎉', 'tutorials' => []]
     ];
     
     $categoryMap = [
@@ -69,12 +72,11 @@ function categorizeTutorials($tutorials, $userAge) {
     ];
     
     foreach ($tutorials as $tutorial) {
-        // Altersfilter
         $ageMin = $tutorial['age_min'] ?? 5;
-        $ageMax = $tutorial['age_max'] ?? 21;
+        $ageMax = $tutorial['age_max'] ?? 99;
         
         if ($userAge < $ageMin || $userAge > $ageMax) {
-            continue; // Überspringe nicht altersgerechte Tutorials
+            continue;
         }
         
         $id = $tutorial['filename'] ?? $tutorial['id'];
@@ -82,14 +84,11 @@ function categorizeTutorials($tutorials, $userAge) {
         $categories[$cat]['tutorials'][] = $tutorial;
     }
     
-    // Leere Kategorien entfernen
     return array_filter($categories, fn($c) => !empty($c['tutorials']));
 }
 
 $allTutorials = loadAllTutorials(__DIR__ . '/tutorials');
 $categories = categorizeTutorials($allTutorials, $userAge);
-
-// Statistiken
 $totalTutorials = array_sum(array_map(fn($c) => count($c['tutorials']), $categories));
 ?>
 <!DOCTYPE html>
@@ -97,109 +96,114 @@ $totalTutorials = array_sum(array_map(fn($c) => count($c['tutorials']), $categor
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎨 Zeichnen-Studio - sgiT Education</title>
+    <title>🎨 Zeichnen - sgiT Education</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --sgit-dark: #1A3503;
-            --sgit-green: #43D240;
-            --sgit-orange: #E86F2C;
+            --primary: #1A3503;
+            --accent: #43D240;
+            --bg: #0d1f02;
+            --card-bg: #1e3a08;
+            --text: #ffffff;
+            --text-muted: #a0a0a0;
+            --orange: #F7931A;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
             min-height: 100vh;
+            color: var(--text);
             padding: 20px;
         }
-        .header {
-            background: var(--sgit-dark);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .header h1 { font-size: 1.8em; }
-        .header-stats {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        .stat-box {
-            background: rgba(255,255,255,0.1);
-            padding: 8px 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .stat-box .value { font-size: 1.3em; font-weight: bold; color: var(--sgit-green); }
-        .stat-box .label { font-size: 0.8em; opacity: 0.8; }
-        .header .back-btn {
-            background: var(--sgit-green);
-            color: var(--sgit-dark);
-            padding: 10px 20px;
-            border-radius: 8px;
+            gap: 6px;
+            color: var(--accent);
             text-decoration: none;
-            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
         }
+        .back-link:hover { text-decoration: underline; }
+        
+        /* Header */
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        header h1 span { color: var(--accent); }
+        .subtitle { color: var(--text-muted); margin-bottom: 15px; }
+        
+        .user-info {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .user-info strong { color: var(--accent); }
+        
         /* Quick Actions */
         .quick-actions {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            justify-content: center;
             flex-wrap: wrap;
+            margin: 25px 0;
         }
-        .quick-action {
-            background: white;
-            border: 3px solid var(--sgit-green);
-            border-radius: 15px;
-            padding: 20px 30px;
+        .quick-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 14px 24px;
+            color: var(--text);
             text-decoration: none;
-            color: var(--sgit-dark);
-            font-weight: bold;
-            font-size: 1.1em;
-            transition: all 0.3s;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            transition: all 0.3s;
         }
-        .quick-action:hover {
-            background: var(--sgit-green);
+        .quick-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(67, 210, 64, 0.4);
+            box-shadow: 0 8px 20px rgba(67, 210, 64, 0.3);
         }
-        .quick-action.primary {
-            background: var(--sgit-green);
+        .quick-btn.primary {
+            background: var(--accent);
+            color: var(--primary);
         }
-        .quick-action .icon { font-size: 1.5em; }
-
+        .quick-btn .icon { font-size: 1.3em; }
+        
         /* Category Section */
-        .category-section {
-            margin-bottom: 35px;
-        }
+        .category-section { margin-bottom: 30px; }
         .category-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid rgba(67, 210, 64, 0.3);
         }
         .category-header h2 {
-            color: var(--sgit-dark);
-            font-size: 1.4em;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .category-header .count {
-            background: var(--sgit-green);
-            color: var(--sgit-dark);
+            background: var(--accent);
+            color: var(--primary);
             padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
+        
         /* Tutorial Grid */
         .tutorials-grid {
             display: grid;
@@ -207,34 +211,29 @@ $totalTutorials = array_sum(array_map(fn($c) => count($c['tutorials']), $categor
             gap: 15px;
         }
         .tutorial-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--card-bg);
+            border-radius: 14px;
             padding: 18px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s;
             cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: block;
+            transition: all 0.3s ease;
             border: 2px solid transparent;
+            text-decoration: none;
+            color: var(--text);
+            display: block;
         }
         .tutorial-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(67, 210, 64, 0.25);
-            border-color: var(--sgit-green);
-        }
-        .tutorial-card.special {
-            background: linear-gradient(135deg, #FFF8E1, #FFE0B2);
-            border-color: var(--sgit-orange);
+            border-color: var(--accent);
+            box-shadow: 0 8px 25px rgba(67, 210, 64, 0.2);
         }
         .tutorial-card h3 {
-            font-size: 1.1em;
+            font-size: 1.1rem;
             margin-bottom: 6px;
-            color: var(--sgit-dark);
+            color: var(--text);
         }
         .tutorial-card p {
-            color: #666;
-            font-size: 0.85em;
+            color: var(--text-muted);
+            font-size: 0.85rem;
             margin-bottom: 12px;
             line-height: 1.4;
         }
@@ -244,133 +243,156 @@ $totalTutorials = array_sum(array_map(fn($c) => count($c['tutorials']), $categor
             align-items: center;
         }
         .tutorial-card .sats {
-            background: var(--sgit-green);
-            color: var(--sgit-dark);
+            background: var(--orange);
+            color: #fff;
             padding: 4px 10px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 0.8em;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
         }
         .tutorial-card .difficulty {
-            font-size: 0.75em;
+            font-size: 0.75rem;
             padding: 3px 8px;
-            border-radius: 10px;
-            background: #f0f0f0;
+            border-radius: 8px;
         }
-        .tutorial-card .difficulty.leicht { background: #E8F5E9; color: #2E7D32; }
-        .tutorial-card .difficulty.mittel { background: #FFF3E0; color: #E65100; }
-        .tutorial-card .difficulty.schwer { background: #FFEBEE; color: #C62828; }
+        .difficulty.leicht { background: rgba(67, 210, 64, 0.2); color: var(--accent); }
+        .difficulty.mittel { background: rgba(247, 147, 26, 0.2); color: var(--orange); }
+        .difficulty.schwer { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; }
         
-        /* Welcome Message */
-        .welcome-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
+        /* Foxy Tipp Box */
+        .foxy-tipp {
+            background: var(--card-bg);
+            border: 2px solid var(--orange);
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 30px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            gap: 15px;
         }
-        .welcome-section .foxy-avatar {
-            font-size: 4em;
+        .foxy-tipp .foxy-icon { font-size: 2.5rem; }
+        .foxy-tipp strong { color: var(--orange); }
+        .foxy-tipp p { color: var(--text-muted); margin-top: 5px; }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
         }
-        .welcome-section h2 { color: var(--sgit-dark); margin-bottom: 8px; }
-        .welcome-section p { color: #666; line-height: 1.5; }
-
+        .stat-item {
+            background: var(--card-bg);
+            padding: 10px 18px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-item .value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
         @media (max-width: 600px) {
-            .header { flex-direction: column; text-align: center; }
-            .quick-actions { justify-content: center; }
+            .quick-actions { flex-direction: column; align-items: center; }
+            .quick-btn { width: 100%; justify-content: center; }
+            .stats-bar { flex-wrap: wrap; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>🎨 Zeichnen-Studio</h1>
-        <div class="header-stats">
-            <div class="stat-box">
+    <div class="container">
+        <a href="/adaptive_learning.php" class="back-link">← Zurück zum Lernen</a>
+        
+        <header>
+            <h1>🎨 Zeichnen-<span>Studio</span></h1>
+            <p class="subtitle">Lerne zeichnen - von einfachen Formen bis zu coolen Kunstwerken!</p>
+            <div class="user-info">
+                <span style="font-size: 1.8rem;">✏️</span>
+                <div>
+                    <strong><?= htmlspecialchars($userName) ?></strong><br>
+                    <small><?= $userAge ?> Jahre</small>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-item">
                 <div class="value"><?= $totalTutorials ?></div>
                 <div class="label">Tutorials</div>
             </div>
-            <div class="stat-box">
-                <div class="value"><?= $userAge ?> J.</div>
-                <div class="label">Dein Alter</div>
+            <div class="stat-item">
+                <div class="value"><?= count($categories) ?></div>
+                <div class="label">Kategorien</div>
             </div>
         </div>
-        <a href="/adaptive_learning.php" class="back-btn">← Zurück zum Lernen</a>
-    </div>
-    
-    <!-- Welcome -->
-    <div class="welcome-section">
-        <div class="foxy-avatar">🦊</div>
-        <div>
-            <h2>Willkommen im Zeichnen-Studio, <?= htmlspecialchars($userName) ?>!</h2>
-            <p>Hier lernst du zeichnen - von einfachen Formen bis zu coolen Kunstwerken!<br>
-            Für jedes Tutorial bekommst du <strong style="color: var(--sgit-orange);">Satoshis</strong>! Je schwerer, desto mehr! 🎉</p>
-        </div>
-    </div>
-    
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-        <a href="canvas.php?mode=free" class="quick-action primary">
-            <span class="icon">🖌️</span>
-            <span>Freies Zeichnen</span>
-        </a>
-        <a href="gallery.php" class="quick-action">
-            <span class="icon">🖼️</span>
-            <span>Meine Galerie</span>
-        </a>
-        <?php if ($userAge >= 7): ?>
-        <a href="canvas.php?tutorial=fox" class="quick-action" style="border-color: var(--sgit-orange);">
-            <span class="icon">🦊</span>
-            <span>Zeichne Foxy!</span>
-        </a>
-        <?php endif; ?>
-    </div>
-    
-    <!-- Tutorial Categories -->
-    <?php foreach ($categories as $catId => $category): ?>
-    <div class="category-section">
-        <div class="category-header">
-            <h2><?= $category['title'] ?></h2>
-            <span class="count"><?= count($category['tutorials']) ?> Tutorials</span>
-        </div>
-        <div class="tutorials-grid">
-            <?php foreach ($category['tutorials'] as $tutorial): ?>
-            <a href="canvas.php?tutorial=<?= htmlspecialchars($tutorial['filename'] ?? $tutorial['id']) ?>" 
-               class="tutorial-card <?= !empty($tutorial['special']) ? 'special' : '' ?>">
-                <h3><?= htmlspecialchars($tutorial['title']) ?></h3>
-                <p><?= htmlspecialchars($tutorial['description']) ?></p>
-                <div class="tutorial-meta">
-                    <span class="difficulty <?= strtolower($tutorial['difficulty'] ?? 'leicht') ?>">
-                        <?= ucfirst($tutorial['difficulty'] ?? 'Leicht') ?>
-                    </span>
-                    <span class="sats">+<?= $tutorial['sats_reward'] ?? 5 ?> Sats</span>
-                </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="canvas.php?mode=free" class="quick-btn primary">
+                <span class="icon">🖌️</span>
+                <span>Freies Zeichnen</span>
             </a>
-            <?php endforeach; ?>
+            <a href="gallery.php" class="quick-btn">
+                <span class="icon">🖼️</span>
+                <span>Meine Galerie</span>
+            </a>
+            <?php if ($userAge >= 7): ?>
+            <a href="canvas.php?tutorial=fox" class="quick-btn" style="border-color: var(--orange);">
+                <span class="icon">🦊</span>
+                <span>Zeichne Foxy!</span>
+            </a>
+            <?php endif; ?>
         </div>
-    </div>
-    <?php endforeach; ?>
-    
-    <!-- Foxy Tipp -->
-    <div style="background: linear-gradient(135deg, #FFF8E1, #FFE0B2); padding: 20px; border-radius: 15px; margin-top: 30px; display: flex; align-items: center; gap: 15px;">
-        <span style="font-size: 3em;">🦊</span>
-        <div>
-            <strong style="color: var(--sgit-orange);">Foxy's Tipp:</strong>
-            <p style="margin: 5px 0 0; color: #666;">
-                <?php 
-                $tips = [
-                    "Übung macht den Meister! Zeichne jeden Tag ein bisschen! ✏️",
-                    "Fang mit einfachen Formen an - alles besteht aus Kreisen, Quadraten und Dreiecken! 📐",
-                    "Keine Angst vor Fehlern - der Radierer ist dein Freund! 🧽",
-                    "Je mehr Tutorials du schaffst, desto mehr Sats verdienst du! ₿",
-                    "Schau dir Dinge genau an bevor du sie zeichnest! 👀"
-                ];
-                echo $tips[array_rand($tips)];
-                ?>
-            </p>
+
+        <!-- Tutorial Categories -->
+        <?php foreach ($categories as $catId => $category): ?>
+        <div class="category-section">
+            <div class="category-header">
+                <h2><?= $category['icon'] ?> <?= $category['title'] ?></h2>
+                <span class="count"><?= count($category['tutorials']) ?> Tutorials</span>
+            </div>
+            <div class="tutorials-grid">
+                <?php foreach ($category['tutorials'] as $tutorial): ?>
+                <a href="canvas.php?tutorial=<?= htmlspecialchars($tutorial['filename'] ?? $tutorial['id']) ?>" 
+                   class="tutorial-card">
+                    <h3><?= htmlspecialchars($tutorial['title']) ?></h3>
+                    <p><?= htmlspecialchars($tutorial['description']) ?></p>
+                    <div class="tutorial-meta">
+                        <span class="difficulty <?= strtolower($tutorial['difficulty'] ?? 'leicht') ?>">
+                            <?= ucfirst($tutorial['difficulty'] ?? 'Leicht') ?>
+                        </span>
+                        <span class="sats">+<?= $tutorial['sats_reward'] ?? 5 ?> Sats</span>
+                    </div>
+                </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        
+        <!-- Foxy Tipp -->
+        <div class="foxy-tipp">
+            <span class="foxy-icon">🦊</span>
+            <div>
+                <strong>Foxy's Tipp:</strong>
+                <p>
+                    <?php 
+                    $tips = [
+                        "Übung macht den Meister! Zeichne jeden Tag ein bisschen! ✏️",
+                        "Fang mit einfachen Formen an - alles besteht aus Kreisen, Quadraten und Dreiecken! 📐",
+                        "Keine Angst vor Fehlern - der Radierer ist dein Freund! 🧽",
+                        "Je mehr Tutorials du schaffst, desto mehr Sats verdienst du! ₿",
+                        "Schau dir Dinge genau an bevor du sie zeichnest! 👀"
+                    ];
+                    echo $tips[array_rand($tips)];
+                    ?>
+                </p>
+            </div>
         </div>
     </div>
 </body>
