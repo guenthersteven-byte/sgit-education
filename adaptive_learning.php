@@ -1387,7 +1387,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             border-radius: 12px;
             margin-bottom: 15px;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
             box-shadow: 0 3px 15px rgba(0,0,0,0.15);
             max-width: 1400px;
@@ -1402,6 +1402,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             gap: 8px;
             align-items: center;
             flex-wrap: wrap;
+            justify-content: center;
+            flex: 1;
         }
         
         .nav-link {
@@ -1457,7 +1459,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             border-radius: 8px;
             font-size: 12px;
             color: white;
-            margin-left: auto;
         }
         .btc-warning {
             font-weight: 600;
