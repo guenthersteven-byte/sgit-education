@@ -1,1 +1,1 @@
-llama3.2:latest
+gemma2:2b

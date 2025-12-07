@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Würfel sind in einer Kiste?;20;7;10;5;C;1;5;8;In jeder Kiste gibt es 10 Würfel, da es 10 Würfel sind.;ai_generated
+Wie heißt das Programm, das deine Aufgaben ausführt?;Spiel;Algorithmus;Programmierung;Code;B;1;5;8;Ein Algorithmus ist wie ein Plan, der zeigt, was zu tun ist.;ai_generated
+Was passiert, wenn wir in einer Schleife wiederholt etwas ausführen?;Es wiederholt das gleiche Muster;Wir machen es immer schneller;Wir machen es nur einmal;Wir lernen nicht mehr;A;1;5;8;Schleifen helfen uns, Aufgaben wiederholen zu können.;ai_generated
+Wie heißt der Gegenstand, den wir im Code speichern?;Variable;Code;Funktion;Programm;A;1;5;8;Variables sind wie kleine Taschen für Daten in unserem Programm.;ai_generated
+Was ist das Hauptproblem, das eine Funktion löst?;Programm;Software;Aufgabe;Algorithmus;C;1;5;8;Eine Funktion erfüllt eine Aufgabe innerhalb eines Programms.;ai_generated

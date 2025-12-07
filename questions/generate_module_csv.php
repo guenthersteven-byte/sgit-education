@@ -510,8 +510,10 @@ if (isset($_GET['api'])) {
         $mod = $modules[$module];
         $existingHashes = loadExistingHashes($dbPath);
         
-        // Modell aus Parameter holen (default: gemma2:2b - EMPFOHLEN)
-        $model = $_GET['model'] ?? 'gemma2:2b';
+        // Modell aus Parameter holen, oder zentrale Config lesen
+        $centralConfigFile = dirname(__DIR__) . '/AI/config/ollama_model.txt';
+        $defaultModel = file_exists($centralConfigFile) ? trim(file_get_contents($centralConfigFile)) : 'gemma2:2b';
+        $model = $_GET['model'] ?? $defaultModel;
         
         // Generieren mit gewähltem Modell
         $result = generateQuestionsForAgeGroup($ollamaUrl, $mod['name'], $mod['themen'], $ageGroup, $model);
@@ -1152,6 +1154,12 @@ if (isset($_GET['api'])) {
     let timerInterval = null;   // Timer für verstrichene Zeit
     let startTime = null;       // Startzeit der Generierung
     
+    // Zentrale Model-Config lesen
+    const centralModel = <?php 
+        $configFile = dirname(__DIR__) . '/AI/config/ollama_model.txt';
+        echo json_encode(file_exists($configFile) ? trim(file_get_contents($configFile)) : 'gemma2:2b');
+    ?>;
+    
     const ageGroups = <?= json_encode($ageGroups) ?>;
     const modules = <?= json_encode($modules) ?>;
     
@@ -1215,7 +1223,7 @@ if (isset($_GET['api'])) {
     }
     
     function getSelectedModel() {
-        return document.getElementById('modelSelect').value || 'gemma2:2b';
+        return document.getElementById('modelSelect').value || centralModel;
     }
     
     function updateModelInfo() {
