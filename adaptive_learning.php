@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Adaptive Learning v5.9
+ * sgiT Education - Adaptive Learning v3.15
  * ============================================================================
  * 
  * NEUERUNGEN v5.9 (06.12.2025):
@@ -1448,15 +1448,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         
         /* BUG-047 FIX: Bitcoin-Info in Navigation */
-        .nav-btc-info {
+        .nav-btc-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: linear-gradient(135deg, var(--bitcoin), #E88A00);
             padding: 6px 14px;
             border-radius: 8px;
             font-size: 12px;
             color: white;
+            margin-left: auto;
         }
         .btc-warning {
             font-weight: 600;
@@ -1464,6 +1465,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .btc-price {
             font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
         }
         .btc-dashboard-link {
             background: rgba(255,255,255,0.2);
@@ -1476,17 +1480,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .btc-dashboard-link:hover {
             background: rgba(255,255,255,0.35);
-        }
-        
-        /* BTC Preis rechts in Navigation */
-        .nav-btc-price {
-            background: var(--bitcoin);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-left: auto;
         }
         
         @media (max-width: 768px) {
@@ -1570,16 +1563,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         </div>
         
         <?php if ($walletEnabled): ?>
-        <div class="nav-btc-info">
+        <div class="nav-btc-group">
             <span class="btc-warning">⚠️ TEST-SATS</span>
             <a href="wallet/child_dashboard.php" class="btc-dashboard-link">🏆 Dashboard</a>
+            <?php if ($btcPrice > 0): ?>
+            <span class="btc-price">₿ $<?php echo number_format($btcPrice); ?></span>
+            <?php endif; ?>
         </div>
-        
-        <?php if ($btcPrice > 0): ?>
-        <div class="nav-btc-price">
-            ₿ $<?php echo number_format($btcPrice); ?>
-        </div>
-        <?php endif; ?>
         <?php endif; ?>
     </nav>
     
@@ -1588,7 +1578,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         <div class="logo-section">
             <img src="assets/images/base_icon_transparent_background.png" alt="sgiT" class="logo">
             <div>
-                <div class="app-title">Adaptive Learning <span class="version">v5.5</span></div>
+                <div class="app-title">Adaptive Learning <span class="version">v3.15</span></div>
             </div>
         </div>
         <div class="user-info">
