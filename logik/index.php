@@ -19,34 +19,34 @@ session_start();
 $userAge = $_SESSION['user_age'] ?? 10;
 $userName = $_SESSION['child_name'] ?? 'Rätselfan';
 
-// Rätseltypen nach Alter
+// Rätseltypen nach Alter - BUG-045 FIX: max_age auf 99 für alle
 $puzzleTypes = [
     'muster' => [
         'name' => 'Muster fortsetzen',
         'icon' => '🎨',
         'description' => 'Erkenne das Muster und finde das nächste Element!',
-        'min_age' => 5, 'max_age' => 21,
+        'min_age' => 5, 'max_age' => 99,
         'sats' => '5-20'
     ],
     'ausreisser' => [
         'name' => 'Was gehört nicht dazu?',
         'icon' => '🔍',
         'description' => 'Finde das Element, das nicht zur Gruppe passt!',
-        'min_age' => 5, 'max_age' => 12,
+        'min_age' => 5, 'max_age' => 99,
         'sats' => '5-10'
     ],
     'zahlenreihe' => [
         'name' => 'Zahlenreihen',
         'icon' => '🔢',
         'description' => 'Erkenne das Muster und finde die nächste Zahl!',
-        'min_age' => 8, 'max_age' => 21,
+        'min_age' => 8, 'max_age' => 99,
         'sats' => '10-35'
     ],
     'sudoku' => [
         'name' => 'Sudoku',
         'icon' => '📊',
         'description' => 'Fülle das Gitter mit Zahlen!',
-        'min_age' => 8, 'max_age' => 21,
+        'min_age' => 8, 'max_age' => 99,
         'sats' => '15-75'
     ]
 ];

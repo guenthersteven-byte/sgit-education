@@ -13,25 +13,25 @@ $activities = [
         'name' => 'Ernährungs-Quiz',
         'icon' => '🥗',
         'desc' => 'Teste dein Wissen über gesunde Ernährung!',
-        'min' => 5, 'max' => 21, 'sats' => '5-8'
+        'min' => 5, 'max' => 99, 'sats' => '5-8'
     ],
     'zuordnen' => [
         'name' => 'Lebensmittel zuordnen',
         'icon' => '🍎',
         'desc' => 'Ordne die Lebensmittel den richtigen Gruppen zu!',
-        'min' => 5, 'max' => 14, 'sats' => '5-8'
+        'min' => 5, 'max' => 99, 'sats' => '5-8'
     ],
     'kuechenwissen' => [
         'name' => 'Küchenwissen',
         'icon' => '🔪',
         'desc' => 'Lerne Küchengeräte und Maßeinheiten kennen!',
-        'min' => 8, 'max' => 21, 'sats' => '6-10'
+        'min' => 8, 'max' => 99, 'sats' => '6-10'
     ],
     'rezept' => [
         'name' => 'Rezepte entdecken',
         'icon' => '📖',
         'desc' => 'Lerne einfache Rezepte Schritt für Schritt!',
-        'min' => 6, 'max' => 21, 'sats' => '10-20', 'soon' => true
+        'min' => 6, 'max' => 99, 'sats' => '10-20', 'soon' => true
     ]
 ];
 ?>
