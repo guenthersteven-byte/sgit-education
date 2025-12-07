@@ -1552,13 +1552,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <span>sgiT Education</span>
         </div>
         
-        <?php if ($walletEnabled): ?>
-        <div class="nav-btc-info">
-            <span class="btc-warning">⚠️ TEST-SATS</span>
-            <a href="wallet/child_dashboard.php" class="btc-dashboard-link">🏆 Dashboard</a>
-        </div>
-        <?php endif; ?>
-        
         <div class="nav-links">
             <a href="leaderboard.php" class="nav-link">
                 <span class="nav-link-icon">🏆</span>
@@ -1576,10 +1569,17 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <?php endif; ?>
         </div>
         
-        <?php if ($walletEnabled && $btcPrice > 0): ?>
+        <?php if ($walletEnabled): ?>
+        <div class="nav-btc-info">
+            <span class="btc-warning">⚠️ TEST-SATS</span>
+            <a href="wallet/child_dashboard.php" class="btc-dashboard-link">🏆 Dashboard</a>
+        </div>
+        
+        <?php if ($btcPrice > 0): ?>
         <div class="nav-btc-price">
             ₿ $<?php echo number_format($btcPrice); ?>
         </div>
+        <?php endif; ?>
         <?php endif; ?>
     </nav>
     
