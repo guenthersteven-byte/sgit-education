@@ -1,15 +1,9 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Adaptive Learning v6.0
+ * sgiT Education - Adaptive Learning v5.9
  * ============================================================================
  * 
- * NEUERUNGEN v6.0 (07.12.2025):
- * - BUG-044 FIX: Keine doppelten Fragen mehr in einer 10er-Runde!
- *   - Session-Array $_SESSION['round_asked_ids'][$module] speichert gestellte Frage-IDs
- *   - SQL mit NOT IN Klausel schließt bereits gestellte Fragen aus
- *   - Array wird nach 10 Fragen automatisch zurückgesetzt
- *
  * NEUERUNGEN v5.9 (06.12.2025):
  * - BUG-028/029 FIX: Performance-Optimierung!
  *   - ORDER BY RANDOM() entfernt (verursachte TEMP B-TREE bei jeder Query)
@@ -51,8 +45,8 @@
  * - Error-Feedback bei fehlgeschlagenen Rewards
  * - Wallet-ID wird bei jedem AJAX-Request erneut geprüft
  * 
- * @version 6.0
- * @date 07.12.2025
+ * @version 5.9
+ * @date 06.12.2025
  * ============================================================================
  */
 
@@ -359,10 +353,6 @@ function updateUserLevel() {
 /**
  * Frage aus DB laden - MIT ALTERSFILTERUNG
  * 
- * BUG-044 FIX: Keine doppelten Fragen in einer Runde!
- * - Neuer Parameter $excludeIds schließt bereits gestellte Fragen aus
- * - SQL mit NOT IN Klausel
- * 
  * BUG-028/029 FIX: Performance-Optimierung!
  * - ORDER BY RANDOM() entfernt (verursachte TEMP B-TREE)
  * - Stattdessen: COUNT + OFFSET für echte Zufallsauswahl
@@ -372,11 +362,10 @@ function updateUserLevel() {
  * BUG-016 FIX: Altersgerechte Fragenauswahl
  * 
  * @param string $module Das gewählte Modul
- * @param array $excludeIds IDs von bereits gestellten Fragen (BUG-044)
  * @return array|false Frage-Daten oder false
- * @version 3.0 - Mit Duplikat-Vermeidung
+ * @version 2.0 - Performance optimiert
  */
-function getQuestionFromDB($module, $excludeIds = []) {
+function getQuestionFromDB($module) {
     $db = getDBConnection();
     if (!$db) return false;
     
@@ -385,44 +374,35 @@ function getQuestionFromDB($module, $excludeIds = []) {
     
     $row = null;
     
-    // BUG-044: Exclude-Klausel für bereits gestellte Fragen
-    $excludeClause = '';
-    $excludeParams = [];
-    if (!empty($excludeIds)) {
-        $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
-        $excludeClause = " AND id NOT IN ($placeholders)";
-        $excludeParams = $excludeIds;
-    }
-    
     // ========================================================================
     // SCHRITT 1: Versuche altersgerechte Frage zu finden
     // ========================================================================
-    $countSql = "
+    // Erst COUNT holen, dann mit OFFSET zufällige Frage wählen (SCHNELL!)
+    $countStmt = $db->prepare("
         SELECT COUNT(*) FROM questions 
-        WHERE module = ?
-        AND age_min <= ?
-        AND age_max >= ?
-        $excludeClause
-    ";
-    $countStmt = $db->prepare($countSql);
-    $countStmt->execute(array_merge([$module, $userAge, $userAge], $excludeParams));
+        WHERE module = :module
+        AND age_min <= :user_age
+        AND age_max >= :user_age
+    ");
+    $countStmt->execute([':module' => $module, ':user_age' => $userAge]);
     $count = (int) $countStmt->fetchColumn();
     
     if ($count > 0) {
         // Zufälliger Offset (ohne ORDER BY RANDOM!)
         $offset = mt_rand(0, $count - 1);
         
-        $sql = "
+        $stmt = $db->prepare("
             SELECT * FROM questions 
-            WHERE module = ?
-            AND age_min <= ?
-            AND age_max >= ?
-            $excludeClause
+            WHERE module = :module
+            AND age_min <= :user_age
+            AND age_max >= :user_age
             ORDER BY times_used ASC
-            LIMIT 1 OFFSET ?
-        ";
-        $stmt = $db->prepare($sql);
-        $stmt->execute(array_merge([$module, $userAge, $userAge], $excludeParams, [$offset]));
+            LIMIT 1 OFFSET :offset
+        ");
+        $stmt->bindValue(':module', $module, PDO::PARAM_STR);
+        $stmt->bindValue(':user_age', $userAge, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
@@ -430,29 +410,28 @@ function getQuestionFromDB($module, $excludeIds = []) {
     // SCHRITT 2: Fallback für jüngere Kinder (erweiterte Altersspanne)
     // ========================================================================
     if (!$row && $userAge <= 10) {
-        $countSql2 = "
+        $countStmt = $db->prepare("
             SELECT COUNT(*) FROM questions 
-            WHERE module = ?
-            AND age_min <= ?
-            $excludeClause
-        ";
-        $countStmt = $db->prepare($countSql2);
-        $countStmt->execute(array_merge([$module, $userAge + 2], $excludeParams));
+            WHERE module = :module
+            AND age_min <= :max_age
+        ");
+        $countStmt->execute([':module' => $module, ':max_age' => $userAge + 2]);
         $count = (int) $countStmt->fetchColumn();
         
         if ($count > 0) {
             $offset = mt_rand(0, $count - 1);
             
-            $sql2 = "
+            $stmt = $db->prepare("
                 SELECT * FROM questions 
-                WHERE module = ?
-                AND age_min <= ?
-                $excludeClause
+                WHERE module = :module
+                AND age_min <= :max_age
                 ORDER BY age_min ASC, times_used ASC
-                LIMIT 1 OFFSET ?
-            ";
-            $stmt = $db->prepare($sql2);
-            $stmt->execute(array_merge([$module, $userAge + 2], $excludeParams, [$offset]));
+                LIMIT 1 OFFSET :offset
+            ");
+            $stmt->bindValue(':module', $module, PDO::PARAM_STR);
+            $stmt->bindValue(':max_age', $userAge + 2, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
         }
     }
@@ -462,9 +441,8 @@ function getQuestionFromDB($module, $excludeIds = []) {
     // BUG-018: Erwachsene bekommen die schwierigsten Fragen
     // ========================================================================
     if (!$row) {
-        $countSql3 = "SELECT COUNT(*) FROM questions WHERE module = ? $excludeClause";
-        $countStmt = $db->prepare($countSql3);
-        $countStmt->execute(array_merge([$module], $excludeParams));
+        $countStmt = $db->prepare("SELECT COUNT(*) FROM questions WHERE module = :module");
+        $countStmt->execute([':module' => $module]);
         $count = (int) $countStmt->fetchColumn();
         
         if ($count > 0) {
@@ -473,15 +451,15 @@ function getQuestionFromDB($module, $excludeIds = []) {
             // Sortierung: Erwachsene (>21) = schwierigste, Kinder = einfachste
             $sortOrder = ($userAge > 21) ? 'DESC' : 'ASC';
             
-            $sql3 = "
+            $stmt = $db->prepare("
                 SELECT * FROM questions 
-                WHERE module = ?
-                $excludeClause
+                WHERE module = :module
                 ORDER BY age_min $sortOrder, times_used ASC
-                LIMIT 1 OFFSET ?
-            ";
-            $stmt = $db->prepare($sql3);
-            $stmt->execute(array_merge([$module], $excludeParams, [$offset]));
+                LIMIT 1 OFFSET :offset
+            ");
+            $stmt->bindValue(':module', $module, PDO::PARAM_STR);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             
             // Log Info wenn Fallback genutzt wird
@@ -539,23 +517,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_question') {
         ];
     }
     
-    // BUG-044 FIX: Track bereits gestellte Fragen in dieser Runde
-    if (!isset($_SESSION['round_asked_ids'][$module])) {
-        $_SESSION['round_asked_ids'][$module] = [];
-    }
-    
-    // Frage laden, bereits gestellte ausschließen
-    $excludeIds = $_SESSION['round_asked_ids'][$module];
-    $questionData = getQuestionFromDB($module, $excludeIds);
+    $questionData = getQuestionFromDB($module);
     
     // wallet_child_id bei jedem Request prüfen
     $childId = resolveWalletChildId();
     $walletActive = ($childId !== null);
     
     if ($questionData) {
-        // BUG-044: Frage-ID zur Liste hinzufügen
-        $_SESSION['round_asked_ids'][$module][] = (int)$questionData['id'];
-        
         echo json_encode([
             'success' => true,
             'question' => $questionData['question'],
@@ -632,9 +600,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             'correct' => 0,
             'score' => 0
         ];
-        
-        // BUG-044 FIX: Gestellte Fragen-IDs zurücksetzen für neue Runde
-        $_SESSION['round_asked_ids'][$module] = [];
         
         // ================================================================
         // WALLET INTEGRATION v5.3: Robuste Sats-Vergabe
