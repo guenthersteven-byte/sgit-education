@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.16.8');
+define('SGIT_VERSION', '3.16.9');
 define('SGIT_VERSION_DATE', '08.12.2025');
 
 // Kurzversion für UI (ohne Patch)
 define('SGIT_VERSION_SHORT', '3.16');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Bot Dashboard Edition');
+define('SGIT_VERSION_NAME', 'AJAX Detection Edition');

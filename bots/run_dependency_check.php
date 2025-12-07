@@ -148,7 +148,11 @@ $graphFile = $bot->exportGraph();
             </div>
             <div class="stat-box">
                 <div class="value"><?= $results['stats']['total_dependencies'] ?></div>
-                <div class="label">Abhängigkeiten</div>
+                <div class="label">require/include</div>
+            </div>
+            <div class="stat-box">
+                <div class="value"><?= $results['stats']['ajax_references'] ?></div>
+                <div class="label">AJAX/URL Refs</div>
             </div>
             <div class="stat-box <?= $results['stats']['unused_files'] > 0 ? 'warning' : '' ?>">
                 <div class="value"><?= $results['stats']['unused_files'] ?></div>
@@ -158,9 +162,9 @@ $graphFile = $bot->exportGraph();
                 <div class="value"><?= $results['stats']['missing_files'] ?></div>
                 <div class="label">Fehlend</div>
             </div>
-            <div class="stat-box <?= $results['stats']['circular_deps'] > 0 ? 'warning' : '' ?>">
-                <div class="value"><?= $results['stats']['circular_deps'] ?></div>
-                <div class="label">Zirkulär</div>
+            <div class="stat-box <?= $results['stats']['dynamic_includes'] > 0 ? 'warning' : '' ?>">
+                <div class="value"><?= $results['stats']['dynamic_includes'] ?></div>
+                <div class="label">Dynamisch ⚠️</div>
             </div>
         </div>
         
@@ -193,6 +197,53 @@ $graphFile = $bot->exportGraph();
                     </ul>
                 </li>
                 <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($results['dynamic_includes'])): ?>
+        <div class="file-list" style="border-color: var(--warning);">
+            <h3 style="color: var(--warning);">⚠️ Dynamische Includes (MANUELL PRÜFEN!)</h3>
+            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.85rem;">
+                Diese Dateien nutzen Variablen in require/include. Der Bot kann nicht automatisch 
+                erkennen welche Dateien geladen werden. Diese Abhängigkeiten müssen manuell geprüft werden!
+            </p>
+            <ul>
+                <?php foreach ($results['dynamic_includes'] as $file => $count): ?>
+                <li style="color: var(--warning);">
+                    📄 <?= htmlspecialchars($file) ?> 
+                    <span style="opacity: 0.7;">(<?= $count ?>x dynamisch)</span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($results['ajax_references'])): ?>
+        <div class="file-list" style="border-color: var(--accent);">
+            <h3 style="color: var(--accent);">🌐 AJAX/URL Referenzen (<?= count($results['ajax_references']) ?> Dateien)</h3>
+            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.85rem;">
+                Diese Dateien werden per AJAX, fetch(), href oder Form-Action aufgerufen. 
+                Sie wurden bei der "Ungenutzt"-Analyse berücksichtigt.
+            </p>
+            <ul style="max-height: 200px;">
+                <?php 
+                $count = 0;
+                foreach ($results['ajax_references'] as $file => $refs): 
+                    if ($count >= 15) {
+                        echo '<li style="color: var(--text-muted);">... und ' . (count($results['ajax_references']) - 15) . ' weitere</li>';
+                        break;
+                    }
+                    $types = array_unique(array_column($refs, 'type'));
+                ?>
+                <li>
+                    ✓ <?= htmlspecialchars($file) ?>
+                    <span style="opacity: 0.6; font-size: 0.8rem;">(<?= implode(', ', $types) ?>)</span>
+                </li>
+                <?php 
+                    $count++;
+                endforeach; 
+                ?>
             </ul>
         </div>
         <?php endif; ?>

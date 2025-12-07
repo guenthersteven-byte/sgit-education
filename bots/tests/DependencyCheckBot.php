@@ -37,6 +37,8 @@ class DependencyCheckBot {
     private $missingFiles = [];      // Referenziert aber nicht vorhanden
     private $unusedFiles = [];       // Nirgends referenziert
     private $circularDeps = [];      // Zirkuläre Abhängigkeiten
+    private $ajaxReferences = [];    // AJAX/URL Referenzen
+    private $dynamicIncludes = [];   // Dynamische includes mit Variablen
     
     // Statistiken
     private $stats = [
@@ -45,7 +47,9 @@ class DependencyCheckBot {
         'total_dependencies' => 0,
         'unused_files' => 0,
         'missing_files' => 0,
-        'circular_deps' => 0
+        'circular_deps' => 0,
+        'ajax_references' => 0,
+        'dynamic_includes' => 0
     ];
     
     // Konfiguration
@@ -129,6 +133,21 @@ class DependencyCheckBot {
         
         if ($this->shouldStop()) {
             $this->logger->warning("⏹️ Bot wurde gestoppt (nach Phase 2)");
+            $this->logger->endRun("Abgebrochen durch User");
+            return $this->getResults();
+        }
+        
+        // Phase 2b: AJAX/URL Referenzen finden
+        $this->logger->info("");
+        $this->logger->info("🌐 Phase 2b: AJAX/URL Referenzen scannen...");
+        $this->findAjaxReferences();
+        $this->logger->success("   Gefunden: {$this->stats['ajax_references']} AJAX/URL Referenzen");
+        if ($this->stats['dynamic_includes'] > 0) {
+            $this->logger->warning("   ⚠️ {$this->stats['dynamic_includes']} dynamische includes (manuell prüfen!)");
+        }
+        
+        if ($this->shouldStop()) {
+            $this->logger->warning("⏹️ Bot wurde gestoppt (nach Phase 2b)");
             $this->logger->endRun("Abgebrochen durch User");
             return $this->getResults();
         }
@@ -233,6 +252,122 @@ class DependencyCheckBot {
                 $this->dependents[$dep][] = $file;
             }
         }
+    }
+    
+    /**
+     * Findet AJAX-Aufrufe, URL-Referenzen und dynamische Includes
+     */
+    private function findAjaxReferences() {
+        foreach ($this->allFiles as $file) {
+            $fullPath = $this->projectRoot . '/' . $file;
+            if (!file_exists($fullPath)) continue;
+            
+            $content = file_get_contents($fullPath);
+            $refs = [];
+            
+            // 1. JavaScript fetch() Aufrufe
+            if (preg_match_all('/fetch\s*\(\s*[\'"]([^\'"]+\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    $refs[] = ['type' => 'fetch', 'target' => $match];
+                }
+            }
+            
+            // 2. jQuery $.ajax, $.get, $.post
+            if (preg_match_all('/\$\.(ajax|get|post)\s*\(\s*[\'"]([^\'"]+\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[2] as $match) {
+                    $refs[] = ['type' => 'jquery_ajax', 'target' => $match];
+                }
+            }
+            
+            // 3. XMLHttpRequest
+            if (preg_match_all('/\.open\s*\(\s*[\'"][^\'\"]+[\'"]\s*,\s*[\'"]([^\'"]+\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    $refs[] = ['type' => 'xhr', 'target' => $match];
+                }
+            }
+            
+            // 4. HTML href zu PHP-Dateien
+            if (preg_match_all('/href\s*=\s*[\'"]([^\'"]*\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    if (strpos($match, 'http') !== 0) { // Nur lokale Links
+                        $refs[] = ['type' => 'href', 'target' => $match];
+                    }
+                }
+            }
+            
+            // 5. Form action
+            if (preg_match_all('/action\s*=\s*[\'"]([^\'"]*\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    $refs[] = ['type' => 'form_action', 'target' => $match];
+                }
+            }
+            
+            // 6. window.location / location.href
+            if (preg_match_all('/(window\.)?location(\.href)?\s*=\s*[\'"]([^\'"]+\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[3] as $match) {
+                    $refs[] = ['type' => 'redirect', 'target' => $match];
+                }
+            }
+            
+            // 7. header('Location: ...')
+            if (preg_match_all('/header\s*\(\s*[\'"]Location:\s*([^\'"]+\.php[^\'"]*)[\'"]/', $content, $matches)) {
+                foreach ($matches[1] as $match) {
+                    $refs[] = ['type' => 'header_redirect', 'target' => $match];
+                }
+            }
+            
+            // 8. Dynamische includes mit Variablen (WARNUNG)
+            if (preg_match_all('/(require|include)(_once)?\s*[\(\s]*\$/', $content, $matches)) {
+                $this->dynamicIncludes[$file] = count($matches[0]);
+                $this->stats['dynamic_includes'] += count($matches[0]);
+            }
+            
+            // Referenzen speichern und als "verwendet" markieren
+            if (!empty($refs)) {
+                $this->ajaxReferences[$file] = $refs;
+                $this->stats['ajax_references'] += count($refs);
+                
+                // Diese Dateien als referenziert markieren
+                foreach ($refs as $ref) {
+                    $target = $this->resolveAjaxPath($ref['target'], dirname($file));
+                    if ($target && isset($this->dependents[$target])) {
+                        $this->dependents[$target][] = $file . ' (via ' . $ref['type'] . ')';
+                    } elseif ($target) {
+                        $this->dependents[$target] = [$file . ' (via ' . $ref['type'] . ')'];
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Löst AJAX-Pfade auf (einfacher als require-Pfade)
+     */
+    private function resolveAjaxPath($path, $currentDir) {
+        // Query-String entfernen
+        $path = preg_replace('/\?.*$/', '', $path);
+        
+        // Absolute Pfade (vom Web-Root)
+        if (strpos($path, '/') === 0) {
+            $path = ltrim($path, '/');
+        }
+        // Relative Pfade
+        elseif (strpos($path, '../') !== false || strpos($path, './') !== false) {
+            $path = $this->resolveRelativePath($currentDir . '/' . $path);
+        }
+        // Einfacher Dateiname im selben Verzeichnis
+        else {
+            $path = $currentDir . '/' . $path;
+        }
+        
+        $path = $this->normalizePath($path);
+        
+        // Prüfen ob Datei existiert
+        if (in_array($path, $this->allFiles)) {
+            return $path;
+        }
+        
+        return null;
     }
     
     /**
@@ -353,13 +488,20 @@ class DependencyCheckBot {
                 continue;
             }
             
-            // Prüfen ob Datei irgendwo referenziert wird
+            // Prüfen ob Datei irgendwo referenziert wird (require/include ODER AJAX/URL)
             $isReferenced = false;
+            
+            // Check 1: require/include Referenzen
             foreach ($this->dependencies as $deps) {
                 if (in_array($file, $deps)) {
                     $isReferenced = true;
                     break;
                 }
+            }
+            
+            // Check 2: AJAX/URL Referenzen (dependents wurden in findAjaxReferences gesetzt)
+            if (!$isReferenced && isset($this->dependents[$file]) && !empty($this->dependents[$file])) {
+                $isReferenced = true;
             }
             
             if (!$isReferenced) {
@@ -532,9 +674,11 @@ class DependencyCheckBot {
         $this->logger->info("📈 Statistiken:");
         $this->logger->info("   PHP-Dateien:       {$this->stats['php_files']}");
         $this->logger->info("   Abhängigkeiten:    {$this->stats['total_dependencies']}");
+        $this->logger->info("   AJAX/URL Refs:     {$this->stats['ajax_references']}");
         $this->logger->info("   Ungenutzte Dateien: {$this->stats['unused_files']}");
         $this->logger->info("   Fehlende Dateien:  {$this->stats['missing_files']}");
         $this->logger->info("   Zirkuläre Deps:    {$this->stats['circular_deps']}");
+        $this->logger->info("   Dynamische Incl:   {$this->stats['dynamic_includes']}");
         
         // Ungenutzte Dateien auflisten
         if (!empty($this->unusedFiles)) {
@@ -576,6 +720,41 @@ class DependencyCheckBot {
             }
         }
         
+        // Dynamische Includes (manuell prüfen!)
+        if (!empty($this->dynamicIncludes)) {
+            $this->logger->info("");
+            $this->logger->info("⚠️ DYNAMISCHE INCLUDES (MANUELL PRÜFEN!):");
+            $this->logger->info("───────────────────────────────────────────────────────");
+            $this->logger->info("   Diese Dateien nutzen Variablen in require/include.");
+            $this->logger->info("   Der Bot kann nicht automatisch erkennen welche Dateien geladen werden.");
+            $this->logger->info("");
+            
+            foreach ($this->dynamicIncludes as $file => $count) {
+                $this->logger->warning("   📄 $file ({$count}x dynamisch)");
+            }
+        }
+        
+        // AJAX Referenzen Übersicht
+        if (!empty($this->ajaxReferences)) {
+            $this->logger->info("");
+            $this->logger->info("🌐 AJAX/URL REFERENZEN GEFUNDEN:");
+            $this->logger->info("───────────────────────────────────────────────────────");
+            $this->logger->info("   Diese Dateien werden per AJAX/URL aufgerufen und sind NICHT ungenutzt.");
+            $this->logger->info("");
+            
+            $count = 0;
+            foreach ($this->ajaxReferences as $file => $refs) {
+                if ($count >= 10) {
+                    $remaining = count($this->ajaxReferences) - 10;
+                    $this->logger->info("   ... und {$remaining} weitere Dateien");
+                    break;
+                }
+                $types = array_unique(array_column($refs, 'type'));
+                $this->logger->info("   ✓ $file (" . implode(', ', $types) . ")");
+                $count++;
+            }
+        }
+        
         $this->logger->info("");
         $this->logger->info("═══════════════════════════════════════════════════════");
         $this->logger->info("✅ Analyse abgeschlossen in {$totalTime}s");
@@ -591,6 +770,8 @@ class DependencyCheckBot {
             'unused_files' => $this->unusedFiles,
             'missing_files' => $this->missingFiles,
             'circular_deps' => $this->circularDeps,
+            'ajax_references' => $this->ajaxReferences,
+            'dynamic_includes' => $this->dynamicIncludes,
             'dependencies' => $this->dependencies,
             'dependents' => $this->dependents
         ];
