@@ -1478,6 +1478,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             background: rgba(255,255,255,0.35);
         }
         
+        /* BTC Preis rechts in Navigation */
+        .nav-btc-price {
+            background: var(--bitcoin);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
         @media (max-width: 768px) {
             .main-nav {
                 flex-direction: column;
@@ -1545,9 +1555,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         <?php if ($walletEnabled): ?>
         <div class="nav-btc-info">
             <span class="btc-warning">⚠️ TEST-SATS</span>
-            <?php if ($btcPrice > 0): ?>
-                <span class="btc-price">₿ $<?php echo number_format($btcPrice); ?></span>
-            <?php endif; ?>
             <a href="wallet/child_dashboard.php" class="btc-dashboard-link">🏆 Dashboard</a>
         </div>
         <?php endif; ?>
@@ -1567,11 +1574,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 <span>Wallet</span>
             </a>
             <?php endif; ?>
-            <a href="index.php" class="nav-link">
-                <span class="nav-link-icon">🏠</span>
-                <span>Start</span>
-            </a>
         </div>
+        
+        <?php if ($walletEnabled && $btcPrice > 0): ?>
+        <div class="nav-btc-price">
+            ₿ $<?php echo number_format($btcPrice); ?>
+        </div>
+        <?php endif; ?>
     </nav>
     
     <!-- Header -->
