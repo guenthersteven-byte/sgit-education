@@ -87,6 +87,13 @@ class DependencyCheckBot {
     }
     
     /**
+     * Prüft ob Bot gestoppt werden soll
+     */
+    private function shouldStop() {
+        return file_exists($this->stopFile);
+    }
+    
+    /**
      * Hauptmethode - Führt komplette Analyse durch
      */
     public function run() {
@@ -108,17 +115,35 @@ class DependencyCheckBot {
         $this->scanAllFiles();
         $this->logger->success("   Gefunden: {$this->stats['php_files']} PHP-Dateien");
         
+        if ($this->shouldStop()) {
+            $this->logger->warning("⏹️ Bot wurde gestoppt (nach Phase 1)");
+            $this->logger->endRun("Abgebrochen durch User");
+            return $this->getResults();
+        }
+        
         // Phase 2: Abhängigkeiten analysieren
         $this->logger->info("");
         $this->logger->info("🔗 Phase 2: Abhängigkeiten analysieren...");
         $this->analyzeDependencies();
         $this->logger->success("   Gefunden: {$this->stats['total_dependencies']} Abhängigkeiten");
         
+        if ($this->shouldStop()) {
+            $this->logger->warning("⏹️ Bot wurde gestoppt (nach Phase 2)");
+            $this->logger->endRun("Abgebrochen durch User");
+            return $this->getResults();
+        }
+        
         // Phase 3: Ungenutzte Dateien finden
         $this->logger->info("");
         $this->logger->info("🗑️ Phase 3: Ungenutzte Dateien suchen...");
         $this->findUnusedFiles();
         $this->logger->success("   Gefunden: {$this->stats['unused_files']} ungenutzte Dateien");
+        
+        if ($this->shouldStop()) {
+            $this->logger->warning("⏹️ Bot wurde gestoppt (nach Phase 3)");
+            $this->logger->endRun("Abgebrochen durch User");
+            return $this->getResults();
+        }
         
         // Phase 4: Fehlende Dateien finden
         $this->logger->info("");
@@ -128,6 +153,12 @@ class DependencyCheckBot {
             $this->logger->warning("   Gefunden: {$this->stats['missing_files']} fehlende Dateien");
         } else {
             $this->logger->success("   Keine fehlenden Dateien");
+        }
+        
+        if ($this->shouldStop()) {
+            $this->logger->warning("⏹️ Bot wurde gestoppt (nach Phase 4)");
+            $this->logger->endRun("Abgebrochen durch User");
+            return $this->getResults();
         }
         
         // Phase 5: Zirkuläre Abhängigkeiten

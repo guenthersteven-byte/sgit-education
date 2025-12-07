@@ -29,29 +29,25 @@ $availableBots = [
         'file' => __DIR__ . '/tests/FunctionTestBot.php',
         'class' => 'FunctionTestBot',
         'name' => 'Function Test Bot',
-        'description' => 'Testet alle Modul-Funktionen',
-        'status' => 'TODO'
+        'description' => 'Testet alle Modul-Funktionen'
     ],
     'load_test' => [
         'file' => __DIR__ . '/tests/LoadTestBot.php',
         'class' => 'LoadTestBot',
         'name' => 'Load Test Bot',
-        'description' => 'Simuliert mehrere gleichzeitige User',
-        'status' => 'TODO'
+        'description' => 'Simuliert mehrere gleichzeitige User'
     ],
     'security' => [
         'file' => __DIR__ . '/tests/SecurityBot.php',
         'class' => 'SecurityBot',
         'name' => 'Security Bot',
-        'description' => 'Prüft Sicherheitslücken',
-        'status' => 'TODO'
+        'description' => 'Prüft Sicherheitslücken'
     ],
-    'performance' => [
-        'file' => __DIR__ . '/tests/PerformanceBot.php',
-        'class' => 'PerformanceBot',
-        'name' => 'Performance Bot',
-        'description' => 'Misst Response-Zeiten',
-        'status' => 'TODO'
+    'dependency' => [
+        'file' => __DIR__ . '/tests/DependencyCheckBot.php',
+        'class' => 'DependencyCheckBot',
+        'name' => 'Dependency Check Bot',
+        'description' => 'Analysiert PHP-Abhängigkeiten und findet toten Code'
     ]
 ];
 

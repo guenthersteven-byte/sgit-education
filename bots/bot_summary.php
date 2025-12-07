@@ -200,6 +200,42 @@ if ($selectedRun) {
         .priority-medium { background: #ffc107; color: #333; }
         .priority-low { background: #6c757d; color: white; }
         
+        /* Bot Cards */
+        .bot-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .bot-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .bot-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .bot-icon { font-size: 24px; }
+        .bot-name { font-weight: bold; font-size: 16px; color: #1A3503; }
+        .bot-desc { color: #666; font-size: 13px; margin-bottom: 15px; }
+        .bot-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+        .btn-start { flex: 1; text-align: center; }
+        .btn-stop { 
+            background: #6c757d; 
+            padding: 8px 12px;
+        }
+        .btn-stop:hover { background: #5a6268; }
+        .bot-status {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            padding-top: 5px;
+            border-top: 1px solid #e9ecef;
+        }
+        
         /* Status */
         .status-completed { color: #28a745; }
         .status-running { color: #ffc107; }
@@ -579,14 +615,91 @@ if ($selectedRun) {
             <h2>🚀 Bots starten</h2>
         </div>
         <div class="section-content">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <a href="tests/AIGeneratorBot.php" class="btn">🤖 AI Generator Bot</a>
-                <a href="tests/FunctionTestBot.php" class="btn" style="background: #17a2b8;">🧪 Function Test Bot</a>
-                <a href="tests/SecurityBot.php" class="btn" style="background: #dc3545;">🔒 Security Bot</a>
-                <a href="tests/LoadTestBot.php" class="btn" style="background: #fd7e14;">⚡ Load Test Bot</a>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                
+                <!-- AI Generator Bot -->
+                <div class="bot-card">
+                    <div class="bot-header">
+                        <span class="bot-icon">🤖</span>
+                        <span class="bot-name">AI Generator Bot</span>
+                    </div>
+                    <p class="bot-desc">Generiert Fragen via Ollama AI</p>
+                    <div class="bot-actions">
+                        <a href="tests/AIGeneratorBot.php" class="btn btn-start">▶️ Start</a>
+                        <button onclick="stopBot('ai')" class="btn btn-stop">⏹️ Stop</button>
+                    </div>
+                    <div class="bot-status" id="status-ai">
+                        <?= file_exists(__DIR__ . '/logs/STOP_AI_BOT') ? '🔴 Gestoppt' : '🟢 Bereit' ?>
+                    </div>
+                </div>
+                
+                <!-- Function Test Bot -->
+                <div class="bot-card">
+                    <div class="bot-header">
+                        <span class="bot-icon">🧪</span>
+                        <span class="bot-name">Function Test Bot</span>
+                    </div>
+                    <p class="bot-desc">Testet alle Modul-Funktionen</p>
+                    <div class="bot-actions">
+                        <a href="tests/FunctionTestBot.php" class="btn btn-start" style="background: #17a2b8;">▶️ Start</a>
+                        <button onclick="stopBot('function')" class="btn btn-stop">⏹️ Stop</button>
+                    </div>
+                    <div class="bot-status" id="status-function">
+                        <?= file_exists(__DIR__ . '/logs/STOP_FUNCTION_BOT') ? '🔴 Gestoppt' : '🟢 Bereit' ?>
+                    </div>
+                </div>
+                
+                <!-- Security Bot -->
+                <div class="bot-card">
+                    <div class="bot-header">
+                        <span class="bot-icon">🔒</span>
+                        <span class="bot-name">Security Bot</span>
+                    </div>
+                    <p class="bot-desc">Prüft Sicherheitslücken</p>
+                    <div class="bot-actions">
+                        <a href="tests/SecurityBot.php" class="btn btn-start" style="background: #dc3545;">▶️ Start</a>
+                        <button onclick="stopBot('security')" class="btn btn-stop">⏹️ Stop</button>
+                    </div>
+                    <div class="bot-status" id="status-security">
+                        <?= file_exists(__DIR__ . '/logs/STOP_SECURITY_BOT') ? '🔴 Gestoppt' : '🟢 Bereit' ?>
+                    </div>
+                </div>
+                
+                <!-- Load Test Bot -->
+                <div class="bot-card">
+                    <div class="bot-header">
+                        <span class="bot-icon">⚡</span>
+                        <span class="bot-name">Load Test Bot</span>
+                    </div>
+                    <p class="bot-desc">Simuliert mehrere User</p>
+                    <div class="bot-actions">
+                        <a href="tests/LoadTestBot.php" class="btn btn-start" style="background: #fd7e14;">▶️ Start</a>
+                        <button onclick="stopBot('load')" class="btn btn-stop">⏹️ Stop</button>
+                    </div>
+                    <div class="bot-status" id="status-load">
+                        <?= file_exists(__DIR__ . '/logs/STOP_LOAD_BOT') ? '🔴 Gestoppt' : '🟢 Bereit' ?>
+                    </div>
+                </div>
+                
+                <!-- Dependency Check Bot -->
+                <div class="bot-card">
+                    <div class="bot-header">
+                        <span class="bot-icon">🔍</span>
+                        <span class="bot-name">Dependency Check Bot</span>
+                    </div>
+                    <p class="bot-desc">Findet toten Code & Abhängigkeiten</p>
+                    <div class="bot-actions">
+                        <a href="run_dependency_check.php" class="btn btn-start" style="background: #6f42c1;">▶️ Start</a>
+                        <button onclick="stopBot('dependency')" class="btn btn-stop">⏹️ Stop</button>
+                    </div>
+                    <div class="bot-status" id="status-dependency">
+                        <?= file_exists(__DIR__ . '/logs/STOP_DEPENDENCY_BOT') ? '🔴 Gestoppt' : '🟢 Bereit' ?>
+                    </div>
+                </div>
+                
             </div>
-            <p style="margin-top: 15px; color: #666; font-size: 14px;">
-                💡 <strong>Tipp:</strong> AI Generator läuft im Dauermodus. Die anderen Bots führen einmalige Test-Durchläufe durch.
+            <p style="margin-top: 20px; color: #666; font-size: 14px;">
+                💡 <strong>Tipp:</strong> AI Generator läuft im Dauermodus. Dependency Check analysiert alle PHP-Dateien auf ungenutzen Code.
             </p>
         </div>
     </div>
@@ -601,6 +714,36 @@ setInterval(() => {
         location.reload();
     }
 }, 60000);
+
+// Bot stoppen via AJAX
+function stopBot(botType) {
+    if (!confirm('Bot "' + botType + '" wirklich stoppen?')) return;
+    
+    fetch('bot_control.php?action=stop&bot=' + botType)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('status-' + botType).innerHTML = '🔴 Gestoppt';
+                alert('✅ ' + data.message);
+            } else {
+                alert('❌ Fehler: ' + data.message);
+            }
+        })
+        .catch(err => {
+            alert('❌ Fehler beim Stoppen: ' + err);
+        });
+}
+
+// Bot starten (löscht Stop-Flag)
+function clearStopFlag(botType) {
+    fetch('bot_control.php?action=clear&bot=' + botType)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('status-' + botType).innerHTML = '🟢 Bereit';
+            }
+        });
+}
 </script>
 
 </body>
