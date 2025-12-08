@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.17.0');
+define('SGIT_VERSION', '3.18.2');
 define('SGIT_VERSION_DATE', '08.12.2025');
 
 // Kurzversion für UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.17');
+define('SGIT_VERSION_SHORT', '3.18');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Cleanup Edition');
+define('SGIT_VERSION_NAME', 'Bot 21 Module Edition');

@@ -1,0 +1,36 @@
+<?php
+/**
+ * ============================================================================
+ * sgiT Education - Security Headers
+ * ============================================================================
+ * 
+ * Setzt wichtige HTTP-Security-Header für alle Seiten
+ * Include am Anfang jeder PHP-Datei VOR jeglicher Ausgabe
+ * 
+ * @version 1.0
+ * @date 08.12.2025
+ * @author sgiT Solution Engineering & IT Services
+ * ============================================================================
+ */
+
+// Nur setzen wenn noch keine Header gesendet wurden
+if (!headers_sent()) {
+    // Clickjacking-Schutz
+    header('X-Frame-Options: SAMEORIGIN');
+    
+    // MIME-Type Sniffing verhindern
+    header('X-Content-Type-Options: nosniff');
+    
+    // XSS-Filter aktivieren (Legacy-Browser)
+    header('X-XSS-Protection: 1; mode=block');
+    
+    // Content Security Policy - Basis
+    // Erlaubt: Self, Inline-Styles/Scripts (für Quiz), CDNs für Fabric.js
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'");
+    
+    // Referrer Policy
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    
+    // Permissions Policy (ehemals Feature-Policy)
+    header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+}

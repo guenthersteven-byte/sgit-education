@@ -21,6 +21,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // Zentrale Versionsverwaltung
 require_once __DIR__ . '/includes/version.php';
+require_once __DIR__ . '/includes/rate_limiter.php';
 
 define('ADMIN_PASSWORD', 'sgit2025');
 
@@ -28,12 +29,19 @@ define('ADMIN_PASSWORD', 'sgit2025');
 if (isset($_GET['logout'])) { session_destroy(); header('Location: admin_v4.php'); exit(); }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_password'])) {
-    if ($_POST['admin_password'] === ADMIN_PASSWORD) {
+    // Rate-Limiting: Max 5 Login-Versuche pro Minute
+    $rateCheck = RateLimiter::check('admin_login', 5, 60);
+    
+    if (!$rateCheck['allowed']) {
+        $login_error = "Zu viele Versuche! Bitte warte {$rateCheck['reset_in']} Sekunden.";
+    } elseif ($_POST['admin_password'] === ADMIN_PASSWORD) {
         $_SESSION['is_admin'] = true;
+        RateLimiter::reset('admin_login'); // Reset bei erfolgreichem Login
         header('Location: admin_v4.php');
         exit();
+    } else {
+        $login_error = "Falsches Passwort! (Noch {$rateCheck['remaining']} Versuche)";
     }
-    $login_error = "Falsches Passwort!";
 }
 
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {

@@ -14,8 +14,69 @@
  * ============================================================================
  */
 
+session_start();
+
 require_once dirname(__DIR__) . '/includes/version.php';
 require_once __DIR__ . '/bot_logger.php';
+
+// ============================================================================
+// AUTH-CHECK: Bot Dashboard nur für eingeloggte Admins
+// ============================================================================
+$adminPassword = 'sgit2025';
+$isLoggedIn = isset($_SESSION['bot_admin_logged_in']) && $_SESSION['bot_admin_logged_in'] === true;
+
+// Login-Versuch
+if (isset($_POST['password'])) {
+    if ($_POST['password'] === $adminPassword) {
+        $_SESSION['bot_admin_logged_in'] = true;
+        $isLoggedIn = true;
+    } else {
+        $loginError = 'Falsches Passwort!';
+    }
+}
+
+// Logout
+if (isset($_GET['logout'])) {
+    unset($_SESSION['bot_admin_logged_in']);
+    header('Location: bot_summary.php');
+    exit;
+}
+
+// Wenn nicht eingeloggt, Login-Formular zeigen
+if (!$isLoggedIn) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+        <meta charset="UTF-8">
+        <title>🔐 Bot Dashboard - Login</title>
+        <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1A3503, #2d5a06); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
+            .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; }
+            h1 { color: #1A3503; margin-bottom: 30px; }
+            input[type="password"] { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
+            button { background: #43D240; color: white; border: none; padding: 15px 40px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+            button:hover { background: #3ab837; }
+            .error { color: #dc3545; margin-bottom: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="login-box">
+            <h1>🤖 Bot Dashboard</h1>
+            <?php if (isset($loginError)): ?>
+                <div class="error"><?= htmlspecialchars($loginError) ?></div>
+            <?php endif; ?>
+            <form method="post">
+                <input type="password" name="password" placeholder="Admin-Passwort" autofocus>
+                <button type="submit">🔓 Login</button>
+            </form>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+// ============================================================================
 
 // Daten laden (mit Fehlerbehandlung)
 try {

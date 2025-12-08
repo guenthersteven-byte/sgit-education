@@ -68,6 +68,7 @@
 
 require_once 'config.php';
 require_once __DIR__ . '/includes/version.php';
+require_once __DIR__ . '/includes/rate_limiter.php';
 initSession();
 
 // ============================================================================
@@ -608,6 +609,9 @@ function getQuestionFromDB($module) {
  * AJAX: Frage abrufen
  */
 if (isset($_GET['action']) && $_GET['action'] == 'get_question') {
+    // Rate-Limiting: Max 60 Fragen pro Minute
+    RateLimiter::enforce('quiz_api', 60, 60);
+    
     header('Content-Type: application/json');
     
     $module = $_GET['module'] ?? 'mathematik';
@@ -657,6 +661,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_question') {
  * AJAX: Antwort prüfen
  */
 if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
+    // Rate-Limiting: Max 60 Antworten pro Minute
+    RateLimiter::enforce('quiz_api', 60, 60);
+    
     header('Content-Type: application/json');
     
     $module = $_POST['module'] ?? '';

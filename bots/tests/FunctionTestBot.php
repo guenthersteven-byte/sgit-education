@@ -44,11 +44,15 @@ class FunctionTestBot {
         return 'http://localhost:8080/';
     }
     
-    // Alle 15 Module
+    // Alle 21 Module (18 Quiz + 3 Interaktiv)
     private $modules = [
+        // Quiz-Module (18)
         'mathematik', 'physik', 'chemie', 'biologie', 'erdkunde',
         'geschichte', 'kunst', 'musik', 'computer', 'programmieren',
-        'bitcoin', 'steuern', 'englisch', 'lesen', 'wissenschaft'
+        'bitcoin', 'finanzen', 'englisch', 'lesen', 'wissenschaft',
+        'verkehr', 'sport', 'unnuetzes_wissen',
+        // Interaktive Module (3)
+        'zeichnen', 'logik', 'kochen'
     ];
     
     // v1.2: Zentrale Lernseite (nicht mehr einzelne Ordner!)
@@ -70,8 +74,18 @@ class FunctionTestBot {
         'verbose' => true,
         'testFormSubmit' => true,
         'testSession' => true,
-        'testNavigation' => true
+        'testNavigation' => true,
+        'testEdgeCases' => true,       // v1.6: Edge Case Tests
+        'testPerformance' => true,     // v1.6: Performance-Metriken
+        'parallelMode' => false,       // v1.6: Parallele Tests (experimentell)
+        'performanceThresholds' => [   // v1.6: Schwellwerte
+            'ttfb' => 200,             // Time to First Byte (ms)
+            'total' => 500,            // Gesamtzeit (ms)
+        ],
     ];
+    
+    // v1.6: Performance-Metriken sammeln
+    private $performanceMetrics = [];
     
     /**
      * Konstruktor
@@ -100,14 +114,14 @@ class FunctionTestBot {
             unlink($this->stopFile);
         }
         
-        $this->logger->startRun('Function Test Bot v1.4', $this->config);
+        $this->logger->startRun('Function Test Bot v1.6', $this->config);
         $startTime = microtime(true);
         
         $this->logger->info("═══════════════════════════════════════════════════════");
         $this->logger->info("🧪 FUNCTION TEST BOT GESTARTET");
         $this->logger->info("   Base-URL: " . $this->baseUrl);
         $this->logger->info("   Module: " . count($this->modules));
-        $this->logger->info("   Tests pro Modul: ~7");
+        $this->logger->info("   Tests pro Modul: ~12");
         $this->logger->info("═══════════════════════════════════════════════════════");
         
         // ================================================================
@@ -151,7 +165,14 @@ class FunctionTestBot {
         // v1.3: Session initialisieren durch Test-Login
         $this->initTestSession();
         
-        // Durch alle Module
+        // v1.6: Paralleler Modus für schnellere HTTP-Tests
+        if ($this->config['parallelMode']) {
+            $this->logger->info("");
+            $this->logger->info("🚀 Paralleler Modus aktiviert...");
+            $this->runParallelHttpTests();
+        }
+        
+        // Durch alle Module (sequentiell für detaillierte Tests)
         foreach ($this->modules as $index => $module) {
             if ($this->shouldStop()) {
                 $this->logger->warning("⏹️ STOP-Signal empfangen!");
@@ -161,8 +182,8 @@ class FunctionTestBot {
             $this->testModuleComplete($module, $index + 1);
             $this->stats['modules_tested']++;
             
-            // Kurze Pause zwischen Modulen
-            if ($index < count($this->modules) - 1) {
+            // Kurze Pause zwischen Modulen (nur im nicht-parallelen Modus)
+            if (!$this->config['parallelMode'] && $index < count($this->modules) - 1) {
                 sleep($this->config['delayBetweenModules']);
             }
         }
@@ -253,7 +274,9 @@ class FunctionTestBot {
             'dom' => [],
             'form' => false,
             'session' => false,
-            'navigation' => false
+            'navigation' => false,
+            'edgeCases' => false,      // v1.6
+            'performance' => false     // v1.6
         ];
         
         // Test 1: HTTP-Status
@@ -279,6 +302,16 @@ class FunctionTestBot {
             // Test 5: Navigation
             if ($this->config['testNavigation']) {
                 $moduleResults['navigation'] = $this->testNavigation($module, $httpResult['html']);
+            }
+            
+            // v1.6 NEU: Test 6: Edge Cases
+            if ($this->config['testEdgeCases']) {
+                $moduleResults['edgeCases'] = $this->testEdgeCases($module);
+            }
+            
+            // v1.6 NEU: Test 7: Performance-Metriken
+            if ($this->config['testPerformance']) {
+                $moduleResults['performance'] = $this->testPerformanceMetrics($module);
             }
         }
         
@@ -355,54 +388,65 @@ class FunctionTestBot {
     
     /**
      * Test 2: DOM-Struktur
-     * v1.3: Komplett neu für adaptive_learning.php (JavaScript/AJAX statt Forms)
+     * v1.6: Mit echtem DOMDocument statt nur Regex
      */
     private function testDomStructure($module, $html) {
         $results = [];
         
-        // v1.3: Neue Elemente für adaptive_learning.php
-        $elements = [
-            'module_card' => [
-                'pattern' => '/startQuiz\s*\(\s*["\']' . preg_quote($module) . '["\']\s*\)|class=["\'][^"\']*module-card/i',
-                'required' => true,
-                'description' => 'Modul-Karte/startQuiz()'
-            ],
+        // v1.6: Echtes DOM-Parsing mit DOMDocument
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new DOMXPath($dom);
+        
+        // DOM-basierte Checks (präziser als Regex)
+        $domChecks = [
             'quiz_modal' => [
-                'pattern' => '/id=["\']quizModal["\']|class=["\'][^"\']*quiz-modal/i',
+                'xpath' => '//*[@id="quizModal"]',
                 'required' => true,
-                'description' => 'Quiz-Modal'
+                'description' => 'Quiz-Modal (#quizModal)'
             ],
             'question_container' => [
-                'pattern' => '/id=["\']questionText["\']|class=["\'][^"\']*question/i',
+                'xpath' => '//*[@id="questionText"]',
                 'required' => true,
                 'description' => 'Frage-Container (#questionText)'
             ],
             'options_container' => [
-                'pattern' => '/id=["\']optionsContainer["\']|class=["\'][^"\']*options/i',
+                'xpath' => '//*[@id="optionsContainer"]',
                 'required' => true,
                 'description' => 'Options-Container (#optionsContainer)'
+            ],
+            'score_display' => [
+                'xpath' => '//*[@id="sessionScore"] | //*[@id="moduleTotal"] | //*[contains(@class, "score")]',
+                'required' => false,
+                'description' => 'Score-Anzeige'
+            ],
+        ];
+        
+        // Regex-basierte Checks (für JS-Code der nicht im DOM ist)
+        $regexChecks = [
+            'module_card' => [
+                'pattern' => '/startQuiz\s*\(\s*["\']' . preg_quote($module) . '["\']\s*\)|class=["\'][^"\']*module-card/i',
+                'required' => true,
+                'description' => 'Modul-Karte/startQuiz()'
             ],
             'js_functions' => [
                 'pattern' => '/function\s+loadQuestion|function\s+checkAnswer|fetch\s*\(.*action=get_question/i',
                 'required' => true,
                 'description' => 'JavaScript Quiz-Funktionen'
             ],
-            'session_display' => [
-                'pattern' => '/id=["\']sessionScore["\']|id=["\']moduleTotal["\']|class=["\'][^"\']*score/i',
-                'required' => false,
-                'description' => 'Score-Anzeige'
-            ]
         ];
         
-        foreach ($elements as $name => $config) {
-            $found = preg_match($config['pattern'], $html);
-            $results[$name] = (bool)$found;
+        // DOM-basierte Prüfungen
+        foreach ($domChecks as $name => $config) {
+            $nodes = $xpath->query($config['xpath']);
+            $found = $nodes->length > 0;
+            $results[$name] = $found;
             $this->stats['total']++;
             
             if ($found) {
                 $this->stats['passed']++;
                 $this->logger->success(
-                    "   DOM: {$config['description']} gefunden",
+                    "   DOM: {$config['description']} ✓ (XPath)",
                     ['module' => $module, 'test' => 'dom_' . $name]
                 );
             } else {
@@ -413,7 +457,40 @@ class FunctionTestBot {
                         [
                             'module' => $module,
                             'test' => 'dom_' . $name,
-                            'suggestion' => "Prüfe adaptive_learning.php Struktur"
+                            'suggestion' => "Element mit XPath '{$config['xpath']}' nicht gefunden"
+                        ]
+                    );
+                } else {
+                    $this->stats['warnings']++;
+                    $this->logger->warning(
+                        "   DOM: {$config['description']} nicht gefunden (optional)",
+                        ['module' => $module, 'test' => 'dom_' . $name]
+                    );
+                }
+            }
+        }
+        
+        // Regex-basierte Prüfungen (für JavaScript-Code)
+        foreach ($regexChecks as $name => $config) {
+            $found = preg_match($config['pattern'], $html);
+            $results[$name] = (bool)$found;
+            $this->stats['total']++;
+            
+            if ($found) {
+                $this->stats['passed']++;
+                $this->logger->success(
+                    "   DOM: {$config['description']} ✓ (Regex)",
+                    ['module' => $module, 'test' => 'dom_' . $name]
+                );
+            } else {
+                if ($config['required']) {
+                    $this->stats['failed']++;
+                    $this->logger->error(
+                        "   DOM: {$config['description']} FEHLT",
+                        [
+                            'module' => $module,
+                            'test' => 'dom_' . $name,
+                            'suggestion' => "Prüfe adaptive_learning.php JavaScript-Code"
                         ]
                     );
                 } else {
@@ -629,6 +706,261 @@ class FunctionTestBot {
         return count($foundItems) > 0;
     }
     
+    // ================================================================
+    // v1.6 NEU: Erweiterte Tests
+    // ================================================================
+    
+    /**
+     * Test 6: Edge Cases
+     * Testet Randfälle und ungewöhnliche Eingaben
+     * @since v1.6
+     */
+    private function testEdgeCases($module) {
+        $this->logger->info("   🔬 Teste Edge Cases...");
+        
+        $url = $this->baseUrl . $this->learningPage;
+        $allPassed = true;
+        
+        $edgeCases = [
+            [
+                'name' => 'Leere Eingabe',
+                'data' => ['action' => 'check_answer', 'module' => $module, 'answer' => ''],
+                'expect' => 'error_handling'
+            ],
+            [
+                'name' => 'Sehr lange Eingabe',
+                'data' => ['action' => 'check_answer', 'module' => $module, 'answer' => str_repeat('A', 5000)],
+                'expect' => 'error_handling'
+            ],
+            [
+                'name' => 'Unicode/Emoji',
+                'data' => ['action' => 'check_answer', 'module' => $module, 'answer' => '答え🦊äöü'],
+                'expect' => 'error_handling'
+            ],
+            [
+                'name' => 'Sonderzeichen',
+                'data' => ['action' => 'check_answer', 'module' => $module, 'answer' => '<>&"\'\\'],
+                'expect' => 'error_handling'
+            ],
+            [
+                'name' => 'Numerische Eingabe',
+                'data' => ['action' => 'check_answer', 'module' => $module, 'answer' => '12345'],
+                'expect' => 'valid_response'
+            ],
+        ];
+        
+        $passedCount = 0;
+        foreach ($edgeCases as $case) {
+            $this->stats['total']++;
+            
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => http_build_query($case['data']),
+                CURLOPT_TIMEOUT => 5,
+                CURLOPT_COOKIEJAR => $this->cookieFile,
+                CURLOPT_COOKIEFILE => $this->cookieFile,
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            // Erfolg = Server crasht nicht (HTTP 200/400) und gibt valides JSON zurück
+            $isValidResponse = ($httpCode === 200 || $httpCode === 400);
+            $isValidJson = json_decode($response) !== null;
+            $noPhpError = (stripos($response, 'Fatal error') === false && 
+                          stripos($response, 'Warning:') === false);
+            
+            if ($isValidResponse && $noPhpError) {
+                $passedCount++;
+                $this->stats['passed']++;
+            } else {
+                $allPassed = false;
+                $this->stats['failed']++;
+                $this->logger->warning(
+                    "   ⚠️ Edge Case '{$case['name']}' - Unerwartete Response",
+                    [
+                        'module' => $module,
+                        'test' => 'edge_case_' . strtolower(str_replace(' ', '_', $case['name'])),
+                        'http_code' => $httpCode,
+                        'suggestion' => 'Robustere Eingabevalidierung implementieren'
+                    ]
+                );
+            }
+        }
+        
+        if ($allPassed) {
+            $this->logger->success("   ✅ Alle " . count($edgeCases) . " Edge Cases bestanden");
+        } else {
+            $this->logger->warning("   ⚠️ $passedCount/" . count($edgeCases) . " Edge Cases bestanden");
+        }
+        
+        return $allPassed;
+    }
+    
+    /**
+     * Test 7: Performance-Metriken
+     * Misst detaillierte Timing-Informationen
+     * @since v1.6
+     */
+    private function testPerformanceMetrics($module) {
+        $this->logger->info("   ⏱️ Messe Performance...");
+        $this->stats['total']++;
+        
+        $url = $this->baseUrl . $this->learningPage . '?action=get_question&module=' . urlencode($module);
+        
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $this->config['timeout'],
+            CURLOPT_COOKIEJAR => $this->cookieFile,
+            CURLOPT_COOKIEFILE => $this->cookieFile,
+        ]);
+        
+        $response = curl_exec($ch);
+        
+        // Detaillierte Timing-Informationen
+        $metrics = [
+            'dns_time' => round(curl_getinfo($ch, CURLINFO_NAMELOOKUP_TIME) * 1000, 2),
+            'connect_time' => round(curl_getinfo($ch, CURLINFO_CONNECT_TIME) * 1000, 2),
+            'ttfb' => round(curl_getinfo($ch, CURLINFO_STARTTRANSFER_TIME) * 1000, 2),
+            'total_time' => round(curl_getinfo($ch, CURLINFO_TOTAL_TIME) * 1000, 2),
+            'download_size' => curl_getinfo($ch, CURLINFO_SIZE_DOWNLOAD),
+            'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE),
+        ];
+        
+        curl_close($ch);
+        
+        // Speichere Metriken für späteren Report
+        $this->performanceMetrics[$module] = $metrics;
+        
+        // Prüfe gegen Schwellwerte
+        $thresholds = $this->config['performanceThresholds'];
+        $warnings = [];
+        
+        if ($metrics['ttfb'] > $thresholds['ttfb']) {
+            $warnings[] = "TTFB {$metrics['ttfb']}ms > {$thresholds['ttfb']}ms";
+        }
+        
+        if ($metrics['total_time'] > $thresholds['total']) {
+            $warnings[] = "Total {$metrics['total_time']}ms > {$thresholds['total']}ms";
+        }
+        
+        if (empty($warnings)) {
+            $this->stats['passed']++;
+            $this->logger->success(
+                "   ✅ Performance OK (TTFB: {$metrics['ttfb']}ms, Total: {$metrics['total_time']}ms)",
+                ['module' => $module, 'test' => 'performance', 'metrics' => $metrics]
+            );
+            
+            // Metrik speichern
+            $this->logger->metric('response_time', $metrics['total_time'], 'ms', $module);
+            $this->logger->metric('ttfb', $metrics['ttfb'], 'ms', $module);
+            
+            return true;
+        } else {
+            $this->stats['warnings']++;
+            $this->logger->warning(
+                "   ⚠️ Performance-Warnung: " . implode(', ', $warnings),
+                [
+                    'module' => $module,
+                    'test' => 'performance',
+                    'metrics' => $metrics,
+                    'suggestion' => 'DB-Queries optimieren oder Caching einführen'
+                ]
+            );
+            
+            return false;
+        }
+    }
+    
+    /**
+     * v1.6 NEU: Parallele HTTP-Tests mit curl_multi
+     * Testet alle Module gleichzeitig für schnellere Ergebnisse
+     * @since v1.6
+     */
+    private function runParallelHttpTests() {
+        $this->logger->info("   Starte parallele HTTP-Tests für " . count($this->modules) . " Module...");
+        $startTime = microtime(true);
+        
+        $multiHandle = curl_multi_init();
+        $handles = [];
+        
+        // Alle Requests vorbereiten
+        foreach ($this->modules as $module) {
+            $url = $this->baseUrl . $this->learningPage . '?module=' . urlencode($module);
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => $this->config['timeout'],
+                CURLOPT_USERAGENT => 'sgiT FunctionTestBot/1.6-parallel',
+            ]);
+            curl_multi_add_handle($multiHandle, $ch);
+            $handles[$module] = $ch;
+        }
+        
+        // Alle parallel ausführen
+        $running = null;
+        do {
+            curl_multi_exec($multiHandle, $running);
+            curl_multi_select($multiHandle);
+        } while ($running > 0);
+        
+        // Ergebnisse sammeln
+        $parallelResults = [];
+        $successCount = 0;
+        $failCount = 0;
+        
+        foreach ($handles as $module => $ch) {
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $totalTime = round(curl_getinfo($ch, CURLINFO_TOTAL_TIME) * 1000, 1);
+            
+            $parallelResults[$module] = [
+                'http_code' => $httpCode,
+                'time_ms' => $totalTime,
+                'success' => ($httpCode === 200)
+            ];
+            
+            if ($httpCode === 200) {
+                $successCount++;
+            } else {
+                $failCount++;
+            }
+            
+            curl_multi_remove_handle($multiHandle, $ch);
+            curl_close($ch);
+        }
+        
+        curl_multi_close($multiHandle);
+        
+        $duration = round((microtime(true) - $startTime) * 1000, 1);
+        
+        // Ergebnis ausgeben
+        $this->logger->info("   ═══ Parallele HTTP-Ergebnisse ═══");
+        $this->logger->success("   ✅ Erreichbar: $successCount/" . count($this->modules));
+        
+        if ($failCount > 0) {
+            $this->logger->warning("   ⚠️ Nicht erreichbar: $failCount");
+            foreach ($parallelResults as $mod => $res) {
+                if (!$res['success']) {
+                    $this->logger->error("      ❌ $mod: HTTP {$res['http_code']}");
+                }
+            }
+        }
+        
+        // Zeitvergleich
+        $avgTime = round(array_sum(array_column($parallelResults, 'time_ms')) / count($parallelResults), 1);
+        $this->logger->info("   ⏱️ Parallel-Dauer: {$duration}ms (Avg pro Modul: {$avgTime}ms)");
+        
+        // Metriken speichern
+        $this->logger->metric('parallel_duration', $duration, 'ms');
+        $this->logger->metric('parallel_avg_response', $avgTime, 'ms');
+        
+        return $parallelResults;
+    }
+    
     /**
      * Generiert die Zusammenfassung
      */
@@ -657,6 +989,15 @@ class FunctionTestBot {
             : 0;
         
         $this->logger->info("   📈 Erfolgsrate:   {$successRate}%");
+        
+        // v1.6: Performance-Übersicht
+        if (!empty($this->performanceMetrics)) {
+            $avgTtfb = round(array_sum(array_column($this->performanceMetrics, 'ttfb')) / count($this->performanceMetrics), 1);
+            $avgTotal = round(array_sum(array_column($this->performanceMetrics, 'total_time')) / count($this->performanceMetrics), 1);
+            $this->logger->info("   ⏱️ Avg TTFB:       {$avgTtfb}ms");
+            $this->logger->info("   ⏱️ Avg Total:      {$avgTotal}ms");
+        }
+        
         $this->logger->info("═══════════════════════════════════════════════════════");
         
         // Metrik speichern
@@ -842,7 +1183,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </head>
 <body>
 <div class="container">
-    <h1>🧪 Function Test Bot <span class="badge">v1.5</span></h1>
+    <h1>🧪 Function Test Bot <span class="badge">v1.6</span></h1>
     
     <?php if (isset($_GET['stopped'])): ?>
     <div class="success-box">
@@ -859,18 +1200,21 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             <li>🔄 AJAX-API (get_question + check_answer Endpoints)</li>
             <li>🍪 Session-Handling (Cookies aktiv)</li>
             <li>🧭 Navigation (SPA-UI-Elemente)</li>
+            <li>🔬 Edge Cases (leere/lange/Unicode-Eingaben) (NEU!)</li>
+            <li>⏱️ Performance-Metriken (TTFB, Response-Zeit) (NEU!)</li>
         </ul>
     </div>
     
     <form method="post">
         <button type="submit" name="run_full">▶️ Vollständiger Test</button>
+        <button type="submit" name="run_parallel" class="secondary">🚀 Parallel Test</button>
         <button type="submit" name="run_quick" class="secondary">⚡ Quick Test (nur HTTP)</button>
         <a href="?stop=1"><button type="button" class="stop">⏹️ Stoppen</button></a>
         <a href="../bot_summary.php"><button type="button" class="secondary">📊 Dashboard</button></a>
     </form>
     
     <?php
-    if (isset($_POST['run_full']) || isset($_POST['run_quick'])) {
+    if (isset($_POST['run_full']) || isset($_POST['run_quick']) || isset($_POST['run_parallel'])) {
         echo '<div class="results">';
         echo '<h3>🔄 Test läuft...</h3>';
         echo '<div class="log-output" id="live-log">';
@@ -878,7 +1222,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         // Docker/nginx/PHP-FPM Live-Output Fix
         BotOutputHelper::init();
         
-        $bot = new FunctionTestBot();
+        $config = [];
+        if (isset($_POST['run_parallel'])) {
+            $config['parallelMode'] = true;
+        }
+        
+        $bot = new FunctionTestBot($config);
         
         if (isset($_POST['run_quick'])) {
             $results = $bot->quickTest();

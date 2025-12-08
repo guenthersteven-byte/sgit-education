@@ -21,12 +21,6 @@
 
 // Zentrale Versionsverwaltung
 require_once dirname(dirname(__DIR__)) . '/includes/version.php';
- * 
- * v1.1 Änderungen:
- * - XSS Detection verbessert: Prüft nur noch ob der eigene Payload in der Response erscheint
- * - Behebt False Positives durch legitimes alert() im JavaScript-Code
- * - Regex-Patterns für Event-Handler und href/src Injection korrigiert
- */
 
 require_once dirname(__DIR__) . '/bot_logger.php';
 require_once dirname(__DIR__) . '/bot_output_helper.php';
@@ -54,11 +48,15 @@ class SecurityBot {
     // v1.2: Zentrale Lernseite
     private $learningPage = 'adaptive_learning.php';
     
-    // Alle 15 Module
+    // Alle 21 Module (18 Quiz + 3 Interaktiv)
     private $modules = [
+        // Quiz-Module (18)
         'mathematik', 'physik', 'chemie', 'biologie', 'erdkunde',
         'geschichte', 'kunst', 'musik', 'computer', 'programmieren',
-        'bitcoin', 'steuern', 'englisch', 'lesen', 'wissenschaft'
+        'bitcoin', 'finanzen', 'englisch', 'lesen', 'wissenschaft',
+        'verkehr', 'sport', 'unnuetzes_wissen',
+        // Interaktive Module (3)
+        'zeichnen', 'logik', 'kochen'
     ];
     
     // Gefundene Schwachstellen
@@ -81,8 +79,14 @@ class SecurityBot {
         'testXss' => true,
         'testPathTraversal' => true,
         'testSession' => true,
+        'testCsrf' => true,           // v1.5: CSRF-Token Tests
+        'testRateLimiting' => true,   // v1.5: Rate-Limiting Tests
+        'testHeaderSecurity' => true, // v1.5: Header Security Tests
+        'testCookieSecurity' => true, // v1.5: Erweiterte Cookie Tests
+        'testAuthBypass' => true,     // v1.5: Auth Bypass Tests
         'verbose' => true,
-        'maxPayloadsPerTest' => 5
+        'maxPayloadsPerTest' => 5,
+        'rateLimitThreshold' => 30,   // v1.5: Max Requests bevor Rate-Limit erwartet
     ];
     
     // ==========================================
@@ -147,13 +151,13 @@ class SecurityBot {
             unlink($this->stopFile);
         }
         
-        $this->logger->startRun('Security Bot v1.2', $this->config);
+        $this->logger->startRun('Security Bot v1.5', $this->config);
         $startTime = microtime(true);
         
         $this->logger->info("═══════════════════════════════════════════════════════");
         $this->logger->info("🔒 SECURITY BOT GESTARTET");
         $this->logger->info("   Module: " . count($this->modules));
-        $this->logger->info("   Tests: SQL Injection, XSS, Path Traversal, Session");
+        $this->logger->info("   Tests: SQL Injection, XSS, Path Traversal, Session, CSRF, Rate-Limit, Headers");
         $this->logger->info("═══════════════════════════════════════════════════════");
         
         // ================================================================
@@ -210,6 +214,45 @@ class SecurityBot {
         $this->logger->info("");
         $this->logger->info("═══ PHASE 5: Information Disclosure Tests ═══");
         $this->testInformationDisclosure();
+        
+        // ================================================================
+        // v1.5 NEU: Erweiterte Sicherheitstests
+        // ================================================================
+        
+        // Phase 6: CSRF-Token Tests
+        if ($this->config['testCsrf']) {
+            $this->logger->info("");
+            $this->logger->info("═══ PHASE 6: CSRF-Token Tests ═══");
+            $this->testCsrfProtection();
+        }
+        
+        // Phase 7: Rate-Limiting Tests
+        if ($this->config['testRateLimiting']) {
+            $this->logger->info("");
+            $this->logger->info("═══ PHASE 7: Rate-Limiting Tests ═══");
+            $this->testRateLimiting();
+        }
+        
+        // Phase 8: Header Security Tests
+        if ($this->config['testHeaderSecurity']) {
+            $this->logger->info("");
+            $this->logger->info("═══ PHASE 8: HTTP Security Headers ═══");
+            $this->testSecurityHeaders();
+        }
+        
+        // Phase 9: Cookie Security Tests
+        if ($this->config['testCookieSecurity']) {
+            $this->logger->info("");
+            $this->logger->info("═══ PHASE 9: Cookie Security Tests ═══");
+            $this->testCookieSecurity();
+        }
+        
+        // Phase 10: Authentication Bypass Tests
+        if ($this->config['testAuthBypass']) {
+            $this->logger->info("");
+            $this->logger->info("═══ PHASE 10: Authentication Bypass Tests ═══");
+            $this->testAuthBypass();
+        }
         
         // Zusammenfassung
         $totalTime = round((microtime(true) - $startTime), 2);
@@ -579,6 +622,407 @@ class SecurityBot {
         $this->logger->success("   ✅ Information Disclosure Tests abgeschlossen");
     }
     
+    // ================================================================
+    // v1.5 NEU: Erweiterte Sicherheitstests
+    // ================================================================
+    
+    /**
+     * Phase 6: CSRF-Token Tests
+     * Prüft ob Formulare vor Cross-Site Request Forgery geschützt sind
+     * @since v1.5
+     */
+    private function testCsrfProtection() {
+        $this->logger->info("🛡️ Teste CSRF-Schutz...");
+        
+        // Endpunkte die CSRF-Schutz haben sollten
+        $endpoints = [
+            ['url' => 'admin_v4.php', 'method' => 'POST', 'params' => ['action' => 'login', 'password' => 'test']],
+            ['url' => 'adaptive_learning.php', 'method' => 'POST', 'params' => ['action' => 'check_answer', 'answer' => 'test']],
+        ];
+        
+        foreach ($endpoints as $endpoint) {
+            $this->stats['tests_total']++;
+            $url = $this->baseUrl . $endpoint['url'];
+            
+            // Test 1: Request ohne CSRF-Token
+            $response = $this->sendRequest($url, $endpoint['params']);
+            $httpCode = $this->getLastHttpCode();
+            
+            // Prüfe ob Token-Fehler zurückkommt oder Request trotzdem erfolgreich ist
+            $hasTokenError = (
+                stripos($response, 'csrf') !== false ||
+                stripos($response, 'token') !== false ||
+                stripos($response, 'invalid') !== false ||
+                $httpCode === 403
+            );
+            
+            // Wenn kein Token-Fehler und Request erfolgreich verarbeitet wurde
+            if (!$hasTokenError && $this->isSuccessfulAction($response)) {
+                $this->logVulnerability('CSRF_MISSING', 'HIGH', $endpoint['url'], [
+                    'method' => 'Request ohne Token akzeptiert',
+                    'suggestion' => 'CSRF-Token für alle state-changing Requests implementieren: $_SESSION["csrf_token"] = bin2hex(random_bytes(32))'
+                ]);
+            } else {
+                $this->stats['tests_passed']++;
+                $this->logger->success("   ✅ {$endpoint['url']}: CSRF-Schutz aktiv oder Login erforderlich");
+            }
+            
+            // Test 2: Request mit ungültigem Token
+            $this->stats['tests_total']++;
+            $paramsWithBadToken = array_merge($endpoint['params'], ['csrf_token' => 'invalid_token_12345']);
+            $response = $this->sendRequest($url, $paramsWithBadToken);
+            
+            if ($this->isSuccessfulAction($response)) {
+                $this->logVulnerability('CSRF_BYPASS', 'CRITICAL', $endpoint['url'], [
+                    'method' => 'Ungültiger Token wird akzeptiert',
+                    'suggestion' => 'Token-Validierung implementieren: hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"])'
+                ]);
+            } else {
+                $this->stats['tests_passed']++;
+            }
+        }
+        
+        $this->logger->success("   ✅ CSRF-Tests abgeschlossen");
+    }
+    
+    /**
+     * Phase 7: Rate-Limiting Tests
+     * Prüft ob die Anwendung vor Brute-Force-Angriffen geschützt ist
+     * @since v1.5
+     */
+    private function testRateLimiting() {
+        $this->logger->info("⏱️ Teste Rate-Limiting...");
+        
+        $endpoints = [
+            ['url' => 'admin_v4.php', 'params' => ['action' => 'login', 'password' => 'wrongpassword'], 'name' => 'Admin Login'],
+            ['url' => 'adaptive_learning.php', 'params' => ['action' => 'get_question', 'module' => 'mathematik'], 'name' => 'Quiz API'],
+        ];
+        
+        foreach ($endpoints as $endpoint) {
+            $this->stats['tests_total']++;
+            $url = $this->baseUrl . $endpoint['url'];
+            $threshold = $this->config['rateLimitThreshold'];
+            
+            $this->logger->info("   📍 Teste {$endpoint['name']} ({$threshold} Requests)...");
+            
+            $successCount = 0;
+            $rateLimited = false;
+            $startTime = microtime(true);
+            
+            // Sende schnelle Requests
+            for ($i = 0; $i < $threshold; $i++) {
+                $ch = curl_init($url);
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => http_build_query($endpoint['params']),
+                    CURLOPT_TIMEOUT => 5,
+                ]);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                
+                if ($httpCode === 429) {
+                    $rateLimited = true;
+                    $this->logger->success("   ✅ Rate-Limiting aktiv nach $i Requests (HTTP 429)");
+                    $this->stats['tests_passed']++;
+                    break;
+                } elseif ($httpCode === 200 || $httpCode === 401 || $httpCode === 403) {
+                    $successCount++;
+                }
+                
+                // Kleine Pause um Server nicht zu überlasten
+                usleep(50000); // 50ms
+            }
+            
+            $duration = round(microtime(true) - $startTime, 2);
+            
+            if (!$rateLimited) {
+                $this->logVulnerability('NO_RATE_LIMIT', 'HIGH', $endpoint['url'], [
+                    'requests_sent' => $threshold,
+                    'successful' => $successCount,
+                    'duration_sec' => $duration,
+                    'suggestion' => "Rate-Limiting implementieren (z.B. max 10 Login-Versuche/Minute). Beispiel: if (\$_SESSION['login_attempts'] > 10) { sleep(60); }"
+                ]);
+            }
+        }
+        
+        $this->logger->success("   ✅ Rate-Limiting Tests abgeschlossen");
+    }
+    
+    /**
+     * Phase 8: HTTP Security Headers Tests
+     * Prüft ob wichtige Sicherheits-Header gesetzt sind
+     * @since v1.5
+     */
+    private function testSecurityHeaders() {
+        $this->logger->info("📋 Teste HTTP Security Headers...");
+        
+        $ch = curl_init($this->baseUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_NOBODY => true,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+        $headers = curl_exec($ch);
+        curl_close($ch);
+        
+        $requiredHeaders = [
+            'X-Frame-Options' => [
+                'severity' => 'MEDIUM',
+                'pattern' => '/X-Frame-Options:\s*(DENY|SAMEORIGIN)/i',
+                'suggestion' => 'nginx: add_header X-Frame-Options "SAMEORIGIN"; oder PHP: header("X-Frame-Options: SAMEORIGIN");'
+            ],
+            'X-Content-Type-Options' => [
+                'severity' => 'LOW',
+                'pattern' => '/X-Content-Type-Options:\s*nosniff/i',
+                'suggestion' => 'nginx: add_header X-Content-Type-Options "nosniff"; oder PHP: header("X-Content-Type-Options: nosniff");'
+            ],
+            'X-XSS-Protection' => [
+                'severity' => 'LOW',
+                'pattern' => '/X-XSS-Protection:\s*1/i',
+                'suggestion' => 'PHP: header("X-XSS-Protection: 1; mode=block");'
+            ],
+            'Content-Security-Policy' => [
+                'severity' => 'MEDIUM',
+                'pattern' => '/Content-Security-Policy:/i',
+                'suggestion' => "PHP: header(\"Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net;\");"
+            ],
+            'Referrer-Policy' => [
+                'severity' => 'LOW',
+                'pattern' => '/Referrer-Policy:/i',
+                'suggestion' => 'PHP: header("Referrer-Policy: strict-origin-when-cross-origin");'
+            ],
+        ];
+        
+        foreach ($requiredHeaders as $headerName => $config) {
+            $this->stats['tests_total']++;
+            
+            if (preg_match($config['pattern'], $headers)) {
+                $this->stats['tests_passed']++;
+                $this->logger->success("   ✅ $headerName vorhanden");
+            } else {
+                $this->logVulnerability('MISSING_SECURITY_HEADER', $config['severity'], 'system', [
+                    'header' => $headerName,
+                    'suggestion' => $config['suggestion']
+                ]);
+            }
+        }
+        
+        $this->logger->success("   ✅ Security Header Tests abgeschlossen");
+    }
+    
+    /**
+     * Phase 9: Cookie Security Tests
+     * Prüft alle Cookie-Sicherheitsflags
+     * @since v1.5
+     */
+    private function testCookieSecurity() {
+        $this->logger->info("🍪 Teste Cookie Security...");
+        
+        $ch = curl_init($this->baseUrl . $this->learningPage);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        // Alle Set-Cookie Header extrahieren
+        preg_match_all('/Set-Cookie:\s*([^\r\n]+)/i', $response, $cookies);
+        
+        if (empty($cookies[1])) {
+            $this->logger->info("   ℹ️ Keine Cookies in Response gefunden");
+            return;
+        }
+        
+        foreach ($cookies[1] as $cookie) {
+            $cookieName = explode('=', $cookie)[0];
+            
+            // HttpOnly Check
+            $this->stats['tests_total']++;
+            if (stripos($cookie, 'HttpOnly') === false) {
+                $this->logVulnerability('COOKIE_NO_HTTPONLY', 'HIGH', $cookieName, [
+                    'cookie' => substr($cookie, 0, 100),
+                    'suggestion' => 'php.ini: session.cookie_httponly = 1'
+                ]);
+            } else {
+                $this->stats['tests_passed']++;
+                $this->logger->success("   ✅ $cookieName: HttpOnly ✓");
+            }
+            
+            // SameSite Check
+            $this->stats['tests_total']++;
+            if (stripos($cookie, 'SameSite') === false) {
+                $this->logVulnerability('COOKIE_NO_SAMESITE', 'MEDIUM', $cookieName, [
+                    'suggestion' => 'php.ini: session.cookie_samesite = "Strict" oder "Lax"'
+                ]);
+            } else {
+                $this->stats['tests_passed']++;
+                $this->logger->success("   ✅ $cookieName: SameSite ✓");
+            }
+            
+            // Secure Flag (Info für localhost)
+            if (stripos($cookie, 'Secure') === false) {
+                $this->logger->info("   ℹ️ $cookieName: Kein Secure-Flag (OK für localhost/HTTP)");
+            }
+        }
+        
+        $this->logger->success("   ✅ Cookie Security Tests abgeschlossen");
+    }
+    
+    /**
+     * Phase 10: Authentication Bypass Tests
+     * Prüft ob geschützte Seiten ohne Authentifizierung zugänglich sind
+     * @since v1.5
+     */
+    private function testAuthBypass() {
+        $this->logger->info("🔓 Teste Authentication Bypass...");
+        
+        $protectedPages = [
+            ['url' => 'admin_v4.php', 'name' => 'Admin Dashboard', 'requires_auth' => true],
+            ['url' => 'bots/bot_summary.php', 'name' => 'Bot Summary', 'requires_auth' => true],
+            ['url' => 'debug_users.php', 'name' => 'Debug Center', 'requires_auth' => true],
+            ['url' => 'windows_ai_generator.php', 'name' => 'AI Generator', 'requires_auth' => true],
+        ];
+        
+        foreach ($protectedPages as $page) {
+            $this->stats['tests_total']++;
+            $url = $this->baseUrl . $page['url'];
+            
+            // Test 1: Direktzugriff ohne Session
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => false,
+                CURLOPT_TIMEOUT => 10,
+            ]);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            // Erwartung: Redirect (302/303) zu Login oder 401/403 oder Login-Formular
+            $isProtected = (
+                $httpCode === 302 || 
+                $httpCode === 303 || 
+                $httpCode === 401 || 
+                $httpCode === 403 ||
+                $this->containsLoginForm($response)
+            );
+            
+            if ($isProtected) {
+                $this->stats['tests_passed']++;
+                $this->logger->success("   ✅ {$page['name']}: Authentifizierung erforderlich");
+            } else {
+                // Prüfe ob wirklich Admin-Content sichtbar ist
+                if ($this->containsAdminContent($response)) {
+                    $this->logVulnerability('AUTH_BYPASS', 'CRITICAL', $page['url'], [
+                        'method' => 'Direktzugriff ohne Session',
+                        'http_code' => $httpCode,
+                        'suggestion' => 'Session-Check am Anfang: if (!isset($_SESSION["admin_logged_in"])) { header("Location: login.php"); exit; }'
+                    ]);
+                } else {
+                    $this->stats['tests_passed']++;
+                    $this->logger->success("   ✅ {$page['name']}: Geschützt (Login-Form angezeigt)");
+                }
+            }
+            
+            // Test 2: Cookie Manipulation
+            $this->stats['tests_total']++;
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_COOKIE => 'is_admin=1; role=admin; user_id=1; admin_logged_in=true',
+                CURLOPT_TIMEOUT => 10,
+            ]);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            if ($this->containsAdminContent($response) && !$this->containsLoginForm($response)) {
+                $this->logVulnerability('AUTH_BYPASS_COOKIE', 'CRITICAL', $page['url'], [
+                    'method' => 'Cookie Manipulation',
+                    'suggestion' => 'Niemals Cookies für Authentifizierung verwenden! Nur serverseitige Sessions nutzen.'
+                ]);
+            } else {
+                $this->stats['tests_passed']++;
+            }
+        }
+        
+        $this->logger->success("   ✅ Authentication Bypass Tests abgeschlossen");
+    }
+    
+    // ================================================================
+    // Hilfsmethoden für neue Tests
+    // ================================================================
+    
+    /**
+     * Prüft ob Response ein Login-Formular enthält
+     */
+    private function containsLoginForm($response) {
+        return (
+            stripos($response, 'type="password"') !== false ||
+            stripos($response, 'name="password"') !== false ||
+            stripos($response, 'login') !== false && stripos($response, '<form') !== false
+        );
+    }
+    
+    /**
+     * Prüft ob Response Admin-spezifischen Content enthält
+     */
+    private function containsAdminContent($response) {
+        $adminIndicators = [
+            'Dashboard',
+            'Statistik',
+            'Bot-System',
+            'Benutzer verwalten',
+            'System-Status',
+            'admin_v4',
+            'Backup',
+        ];
+        
+        foreach ($adminIndicators as $indicator) {
+            if (stripos($response, $indicator) !== false) {
+                // Aber nicht wenn es nur ein Link ist
+                if (stripos($response, 'type="password"') === false) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Prüft ob eine Aktion erfolgreich war (nicht nur HTTP 200)
+     */
+    private function isSuccessfulAction($response) {
+        $successIndicators = [
+            '"success":true',
+            '"success": true',
+            'erfolgreich',
+            'gespeichert',
+            'aktualisiert',
+        ];
+        
+        foreach ($successIndicators as $indicator) {
+            if (stripos($response, $indicator) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Gibt den HTTP-Code des letzten Requests zurück
+     */
+    private $lastHttpCode = 0;
+    
+    private function getLastHttpCode() {
+        return $this->lastHttpCode;
+    }
+
     /**
      * Loggt eine Sicherheitslücke
      */
@@ -687,6 +1131,7 @@ class SecurityBot {
     
     /**
      * HTTP-Request senden
+     * v1.5: Speichert HTTP-Code für spätere Abfrage
      */
     private function sendRequest($url, $postData = [], $getHeaders = false) {
         $ch = curl_init($url);
@@ -695,7 +1140,7 @@ class SecurityBot {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => $this->config['timeout'],
             CURLOPT_HEADER => $getHeaders,
-            CURLOPT_USERAGENT => 'sgiT SecurityBot/1.0'
+            CURLOPT_USERAGENT => 'sgiT SecurityBot/1.5'
         ]);
         
         if (!empty($postData)) {
@@ -704,6 +1149,7 @@ class SecurityBot {
         }
         
         $response = curl_exec($ch);
+        $this->lastHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
         return $response ?: '';
@@ -847,7 +1293,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </head>
 <body>
 <div class="container">
-    <h1>🔒 Security Bot <span class="badge">v1.4</span></h1>
+    <h1>🔒 Security Bot <span class="badge">v1.5</span></h1>
     
     <div class="warning-box">
         <strong>⚠️ Hinweis:</strong> Dieser Bot testet auf Sicherheitslücken. 
@@ -862,6 +1308,11 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             <li>📁 <strong>Path Traversal</strong> - Dateizugriff</li>
             <li>🔑 <strong>Session Security</strong> - Token-Sicherheit</li>
             <li>📢 <strong>Information Disclosure</strong> - Datenlecks</li>
+            <li>🛡️ <strong>CSRF-Schutz</strong> - Token-Validierung (NEU!)</li>
+            <li>⏱️ <strong>Rate-Limiting</strong> - Brute-Force-Schutz (NEU!)</li>
+            <li>📋 <strong>Security Headers</strong> - HTTP-Header (NEU!)</li>
+            <li>🍪 <strong>Cookie Security</strong> - Flags prüfen (NEU!)</li>
+            <li>🔓 <strong>Auth Bypass</strong> - Zugriffsschutz (NEU!)</li>
         </ul>
     </div>
     

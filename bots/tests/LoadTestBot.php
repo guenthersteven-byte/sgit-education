@@ -45,11 +45,15 @@ class LoadTestBot {
     // v1.1: Zentrale Lernseite
     private $learningPage = 'adaptive_learning.php';
     
-    // Alle 15 Module
+    // Alle 21 Module (18 Quiz + 3 Interaktiv)
     private $modules = [
+        // Quiz-Module (18)
         'mathematik', 'physik', 'chemie', 'biologie', 'erdkunde',
         'geschichte', 'kunst', 'musik', 'computer', 'programmieren',
-        'bitcoin', 'steuern', 'englisch', 'lesen', 'wissenschaft'
+        'bitcoin', 'finanzen', 'englisch', 'lesen', 'wissenschaft',
+        'verkehr', 'sport', 'unnuetzes_wissen',
+        // Interaktive Module (3)
+        'zeichnen', 'logik', 'kochen'
     ];
     
     // Test-Szenarien
