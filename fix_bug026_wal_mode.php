@@ -1,25 +1,26 @@
 <?php
 /**
- * BUG-026 FIX: SQLite WAL-Mode aktivieren (v1.1)
+ * SQLite WAL-Mode Check & Fix (v1.2)
  * 
  * Problem: 7.31% Fehlerrate bei 20 gleichzeitigen Usern (DB-Lock)
  * Lösung: Write-Ahead Logging (WAL) Mode aktivieren
  * 
+ * v1.2: Pfade korrigiert (wallet.db, database/foxy_chat.db, bot_results.db)
  * v1.1: Fix für "cannot change into wal mode from within a transaction"
  *       - Explizites COMMIT vor PRAGMA
  *       - Autocommit-Modus erzwingen
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 1.1
- * @date 06.12.2025
+ * @version 1.2
+ * @date 08.12.2025
  */
 
-// Alle relevanten SQLite-Datenbanken
+// Alle relevanten SQLite-Datenbanken (v1.2: Pfade korrigiert)
 $databases = [
     'questions.db' => __DIR__ . '/AI/data/questions.db',
-    'users.db' => __DIR__ . '/users.db',
-    'foxy_chat.db' => __DIR__ . '/clippy/foxy_chat.db',
-    'child_wallets.db' => __DIR__ . '/child_wallets.db'
+    'wallet.db' => __DIR__ . '/wallet/wallet.db',
+    'foxy_chat.db' => __DIR__ . '/database/foxy_chat.db',
+    'bot_results.db' => __DIR__ . '/bots/logs/bot_results.db'
 ];
 
 $results = [];
@@ -28,7 +29,7 @@ echo "<!DOCTYPE html>
 <html lang='de'>
 <head>
     <meta charset='UTF-8'>
-    <title>BUG-026 Fix: SQLite WAL-Mode</title>
+    <title>SQLite WAL-Mode Check</title>
     <style>
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -78,7 +79,7 @@ echo "<!DOCTYPE html>
 </head>
 <body>
 <div class='container'>
-    <h1>🔧 BUG-026 Fix: SQLite WAL-Mode <span style='font-size: 14px; background: #43D240; color: white; padding: 3px 10px; border-radius: 10px;'>v1.1</span></h1>
+    <h1>🔧 SQLite WAL-Mode Check <span style='font-size: 14px; background: #43D240; color: white; padding: 3px 10px; border-radius: 10px;'>v1.2</span></h1>
     
     <div class='info'>
         <strong>Problem:</strong> 7.31% Fehlerrate bei 20 gleichzeitigen Usern durch SQLite DB-Locks<br>
