@@ -263,12 +263,12 @@ $moduleIcons = [
             <div class="stat-card orange">
                 <div class="icon">🤖</div>
                 <div class="value"><?= number_format($stats['questions']['ai']) ?></div>
-                <div class="label">AI-generiert</div>
+                <div class="label">AI → direkt in DB</div>
             </div>
             <div class="stat-card blue">
                 <div class="icon">📝</div>
                 <div class="value"><?= number_format($stats['questions']['csv']) ?></div>
-                <div class="label">CSV-Import</div>
+                <div class="label">AI → via CSV</div>
             </div>
             <div class="stat-card">
                 <div class="icon">💡</div>
