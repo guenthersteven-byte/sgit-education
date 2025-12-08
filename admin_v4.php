@@ -272,7 +272,7 @@ function showLoginPage($error = null) {
             
             <div class="action-card">
                 <h3>🤖 AI Generator Bot</h3>
-                <p>KI-gesteuerte Fragengenerierung mit Ollama (tinyllama/llama3.2).</p>
+                <p>KI-gesteuerte Fragengenerierung mit Ollama (Gemma2:2b).</p>
                 <a href="bots/tests/AIGeneratorBot.php">Generator →</a>
             </div>
             
@@ -300,10 +300,16 @@ function showLoginPage($error = null) {
                 <a href="bots/bot_summary.php">Dashboard →</a>
             </div>
             
+            <div class="action-card" style="border-left: 4px solid #3498db;">
+                <h3>🔧 SQLite WAL Mode Check</h3>
+                <p>SQLite Performance unter Last prüfen und WAL-Modus aktivieren.</p>
+                <a href="fix_bug026_wal_mode.php">Prüfen →</a>
+            </div>
+            
             <div class="action-card" style="border-left: 4px solid #e74c3c;">
-                <h3>🔧 BUG-026 Fix (WAL)</h3>
-                <p>SQLite Performance unter Last verbessern (7.31% → 0% Fehler).</p>
-                <a href="fix_bug026_wal_mode.php">Fix anwenden →</a>
+                <h3>🚩 Cleanup: Gemeldete Fragen</h3>
+                <p>Überprüfe und verwalte von Lernenden gemeldete fehlerhafte Fragen.</p>
+                <a href="admin_cleanup_flags.php">Öffnen →</a>
             </div>
         </div>
         

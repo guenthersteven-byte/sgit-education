@@ -1,31 +1,50 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Foxy Chat Manager v1.2
+ * sgiT Education - Foxy Chat Manager v2.0
  * ============================================================================
  * 
- * FIXES v1.2:
- * - Username statt "Kind" verwenden
- * - Bessere Modul-Erkennung
- * - Chat-Historie in DB speichern
+ * NEU v2.0 (08.12.2025):
+ * - Gemma2:2b Integration für intelligente Antworten
+ * - Erklärungs-Modus (warum ist Antwort richtig/falsch)
+ * - Hint-Joker (Hinweis ohne Lösung)
+ * - Wissensfragen (kindgerechte Erklärungen)
+ * - Model-Switch (tinyllama ↔ gemma2:2b)
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 1.2
- * @date 04.12.2025
+ * @version 2.0
+ * @date 08.12.2025
  * ============================================================================
  */
 
 class ClippyChat {
     
     private $ollamaUrl = 'http://localhost:11434/api/generate';
-    private $model = 'tinyllama:latest';
+    private $modelFast = 'tinyllama:latest';      // Schnell für einfache Antworten
+    private $modelSmart = 'gemma2:2b';            // Intelligent für Erklärungen
+    private $useSmartModel = false;               // Default: Schnellmodus
     private $timeout = 30;
+    private $timeoutSmart = 60;                   // Längerer Timeout für Gemma
     private $maxHistoryLength = 4;
     private $db = null;
     
-    public function __construct() {
-        $this->model = 'tinyllama:latest';
+    public function __construct($useGemma = false) {
+        $this->useSmartModel = $useGemma;
         $this->initDatabase();
+    }
+    
+    /**
+     * Setzt das AI-Model (für API-Calls)
+     */
+    public function setModel($useSmart = false) {
+        $this->useSmartModel = $useSmart;
+    }
+    
+    /**
+     * Gibt aktuelles Model zurück
+     */
+    public function getCurrentModel() {
+        return $this->useSmartModel ? $this->modelSmart : $this->modelFast;
     }
     
     /**
@@ -196,6 +215,182 @@ class ClippyChat {
         }
     }
     
+    // ========================================================================
+    // NEUE GEMMA-FEATURES v2.0
+    // ========================================================================
+    
+    /**
+     * 🎓 Erklärt warum eine Antwort richtig/falsch ist
+     * Nutzt Gemma für intelligente Erklärungen
+     */
+    public function explainAnswer(string $question, string $correctAnswer, string $userAnswer, int $age, ?string $userName = null): array {
+        $isCorrect = ($userAnswer === $correctAnswer);
+        $namePrefix = $userName ? "{$userName}, " : '';
+        
+        $prompt = $this->buildExplainPrompt($question, $correctAnswer, $userAnswer, $isCorrect, $age, $userName);
+        
+        $response = $this->callOllama($prompt, true); // true = use smart model
+        
+        if ($response['success']) {
+            $explanation = $this->cleanResponse($response['text'], $userName);
+            return [
+                'success' => true,
+                'message' => $explanation,
+                'correct' => $isCorrect,
+                'source' => 'gemma'
+            ];
+        }
+        
+        // Fallback
+        $fallback = $isCorrect 
+            ? "{$namePrefix}Super! Die richtige Antwort ist '{$correctAnswer}'. Gut gemacht! 🦊🌟"
+            : "{$namePrefix}Die richtige Antwort war '{$correctAnswer}'. Beim nächsten Mal klappt's! 🦊💪";
+        
+        return [
+            'success' => true,
+            'message' => $fallback,
+            'correct' => $isCorrect,
+            'source' => 'fallback'
+        ];
+    }
+    
+    /**
+     * 💡 Gibt einen Hinweis ohne die Lösung zu verraten
+     */
+    public function getHint(string $question, string $correctAnswer, array $options, int $age, ?string $userName = null): array {
+        $namePrefix = $userName ? "{$userName}, " : '';
+        
+        $prompt = $this->buildHintPrompt($question, $correctAnswer, $options, $age, $userName);
+        
+        $response = $this->callOllama($prompt, true);
+        
+        if ($response['success']) {
+            $hint = $this->cleanResponse($response['text'], $userName);
+            return [
+                'success' => true,
+                'message' => $hint,
+                'source' => 'gemma'
+            ];
+        }
+        
+        // Fallback: Generischer Hinweis
+        $hints = [
+            "{$namePrefix}Hmm, denk nochmal nach! Die Antwort versteckt sich in der Frage... 🦊💡",
+            "{$namePrefix}Lies die Frage nochmal genau durch! 📖🦊",
+            "{$namePrefix}Tipp: Schließe erst die Antworten aus, die sicher falsch sind! 🦊🎯"
+        ];
+        
+        return [
+            'success' => true,
+            'message' => $hints[array_rand($hints)],
+            'source' => 'fallback'
+        ];
+    }
+    
+    /**
+     * ❓ Beantwortet Wissensfragen kindgerecht
+     */
+    public function askKnowledge(string $question, int $age, ?string $userName = null, ?string $module = null): array {
+        $prompt = $this->buildKnowledgePrompt($question, $age, $userName, $module);
+        
+        $response = $this->callOllama($prompt, true);
+        
+        if ($response['success']) {
+            $answer = $this->cleanResponse($response['text'], $userName);
+            $this->saveChatHistory($question, $answer, $userName, $module);
+            
+            return [
+                'success' => true,
+                'message' => $answer,
+                'source' => 'gemma'
+            ];
+        }
+        
+        return [
+            'success' => true,
+            'message' => "Das ist eine tolle Frage! 🦊 Leider weiß ich das gerade nicht. Frag doch mal deine Eltern! 👨‍👩‍👧",
+            'source' => 'fallback'
+        ];
+    }
+    
+    /**
+     * Baut Prompt für Erklärungen
+     */
+    private function buildExplainPrompt(string $question, string $correct, string $userAnswer, bool $isCorrect, int $age, ?string $userName): string {
+        $style = $age <= 8 ? 'sehr einfach, wie für ein Kindergartenkind' : ($age <= 12 ? 'einfach und klar' : 'verständlich aber nicht kindisch');
+        $name = $userName ?: 'das Kind';
+        $result = $isCorrect ? 'RICHTIG geantwortet' : 'leider falsch geantwortet';
+        
+        return <<<PROMPT
+Du bist Foxy, ein freundlicher Lern-Fuchs. {$name} ({$age} Jahre) hat {$result}.
+
+FRAGE: {$question}
+RICHTIGE ANTWORT: {$correct}
+ANTWORT VON {$name}: {$userAnswer}
+
+AUFGABE: Erkläre {$style} WARUM die richtige Antwort stimmt. 
+- Maximal 2-3 Sätze
+- Nutze Emojis
+- Sei ermutigend
+- Auf Deutsch antworten!
+
+Foxy:
+PROMPT;
+    }
+    
+    /**
+     * Baut Prompt für Hinweise
+     */
+    private function buildHintPrompt(string $question, string $correct, array $options, int $age, ?string $userName): string {
+        $style = $age <= 10 ? 'sehr einfache Sprache' : 'lockere Sprache';
+        $name = $userName ?: 'das Kind';
+        $optionsList = implode(', ', $options);
+        
+        return <<<PROMPT
+Du bist Foxy, ein schlauer Lern-Fuchs. {$name} ({$age} Jahre) braucht einen Hinweis.
+
+FRAGE: {$question}
+ANTWORTMÖGLICHKEITEN: {$optionsList}
+(Die richtige Antwort ist: {$correct} - aber VERRATE SIE NICHT!)
+
+AUFGABE: Gib einen hilfreichen Hinweis der in die richtige Richtung weist, OHNE die Lösung zu verraten!
+- {$style}
+- Maximal 2 Sätze
+- Nutze Emojis 🦊💡
+- Auf Deutsch!
+
+Foxy:
+PROMPT;
+    }
+    
+    /**
+     * Baut Prompt für Wissensfragen
+     */
+    private function buildKnowledgePrompt(string $question, int $age, ?string $userName, ?string $module): string {
+        $style = $age <= 8 ? 'wie für ein Kindergartenkind erklären' : ($age <= 12 ? 'einfach aber interessant' : 'jugendgerecht');
+        $name = $userName ?: 'Ein Kind';
+        $context = $module ? "Das Kind lernt gerade {$module}." : '';
+        
+        return <<<PROMPT
+Du bist Foxy, ein schlauer Lern-Fuchs auf einer Bildungsplattform.
+
+{$name} ({$age} Jahre) fragt: "{$question}"
+{$context}
+
+AUFGABE: Beantworte die Frage {$style}.
+- Maximal 3-4 Sätze
+- Interessant und lehrreich
+- Nutze Emojis 🦊
+- Auf Deutsch!
+
+Foxy:
+PROMPT;
+    }
+    
+    // ========================================================================
+    // ENDE GEMMA-FEATURES
+    // ========================================================================
+    
     /**
      * System-Prompt mit Username
      */
@@ -272,7 +467,7 @@ PROMPT;
                     'success' => true,
                     'message' => $cleanResponse,
                     'source' => 'ai',
-                    'model' => $this->model
+                    'model' => $this->modelFast
                 ];
             } else {
                 // Fallback
@@ -298,15 +493,20 @@ PROMPT;
     
     /**
      * Ruft Ollama API auf
+     * @param bool $useSmart - true für Gemma, false für TinyLlama
      */
-    private function callOllama(string $prompt): array {
+    private function callOllama(string $prompt, bool $useSmart = false): array {
+        $model = $useSmart ? $this->modelSmart : $this->modelFast;
+        $timeout = $useSmart ? $this->timeoutSmart : $this->timeout;
+        $numPredict = $useSmart ? 200 : 100; // Gemma darf längere Antworten geben
+        
         $payload = json_encode([
-            'model' => $this->model,
+            'model' => $model,
             'prompt' => $prompt,
             'stream' => false,
             'options' => [
                 'temperature' => 0.8,
-                'num_predict' => 100,
+                'num_predict' => $numPredict,
                 'top_p' => 0.9
             ]
         ]);
@@ -317,7 +517,7 @@ PROMPT;
             CURLOPT_POSTFIELDS => $payload,
             CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $this->timeout,
+            CURLOPT_TIMEOUT => $timeout,
             CURLOPT_CONNECTTIMEOUT => 5
         ]);
         

@@ -53,7 +53,7 @@ try {
             $message = substr(trim($input['message']), 0, 500);
             $age = intval($input['age'] ?? 10);
             $module = $input['module'] ?? null;
-            $userName = $input['user_name'] ?? null; // NEU: Username
+            $userName = $input['user_name'] ?? null;
             $currentQuestion = $input['current_question'] ?? null;
             $history = $input['history'] ?? [];
             
@@ -64,6 +64,79 @@ try {
             
             echo json_encode($result);
             break;
+        
+        // ================================================================
+        // NEUE GEMMA-FEATURES v2.0
+        // ================================================================
+        
+        case 'explain':
+            // 🎓 Erklärt warum eine Antwort richtig/falsch ist
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('POST required');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            if (empty($input['question']) || empty($input['correct_answer'])) {
+                throw new Exception('question and correct_answer required');
+            }
+            
+            $question = substr(trim($input['question']), 0, 500);
+            $correctAnswer = trim($input['correct_answer']);
+            $userAnswer = trim($input['user_answer'] ?? $correctAnswer);
+            $age = max(5, min(21, intval($input['age'] ?? 10)));
+            $userName = $input['user_name'] ?? null;
+            
+            $result = $clippy->explainAnswer($question, $correctAnswer, $userAnswer, $age, $userName);
+            echo json_encode($result);
+            break;
+            
+        case 'hint':
+            // 💡 Gibt einen Hinweis ohne Lösung
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('POST required');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            if (empty($input['question']) || empty($input['correct_answer']) || empty($input['options'])) {
+                throw new Exception('question, correct_answer and options required');
+            }
+            
+            $question = substr(trim($input['question']), 0, 500);
+            $correctAnswer = trim($input['correct_answer']);
+            $options = $input['options'];
+            $age = max(5, min(21, intval($input['age'] ?? 10)));
+            $userName = $input['user_name'] ?? null;
+            
+            $result = $clippy->getHint($question, $correctAnswer, $options, $age, $userName);
+            echo json_encode($result);
+            break;
+            
+        case 'ask':
+            // ❓ Beantwortet Wissensfragen
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('POST required');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            if (empty($input['question'])) {
+                throw new Exception('question required');
+            }
+            
+            $question = substr(trim($input['question']), 0, 500);
+            $age = max(5, min(21, intval($input['age'] ?? 10)));
+            $userName = $input['user_name'] ?? null;
+            $module = $input['module'] ?? null;
+            
+            $result = $clippy->askKnowledge($question, $age, $userName, $module);
+            echo json_encode($result);
+            break;
+        
+        // ================================================================
+        // ENDE GEMMA-FEATURES
+        // ================================================================
             
         case 'greeting':
             $age = intval($_GET['age'] ?? 10);

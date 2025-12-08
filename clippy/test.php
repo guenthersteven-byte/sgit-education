@@ -1,7 +1,17 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Foxy Test & Konfiguration v1.4
+ * sgiT Education - Foxy Test & Konfiguration v2.0
+ * ============================================================================
+ * 
+ * NEU v2.0 (08.12.2025):
+ * - Model-Switch UI (tinyllama ↔ gemma2:2b)
+ * - Gemma-Status Anzeige
+ * - Test-Buttons für Explain, Hint, Ask
+ * 
+ * @author sgiT Solution Engineering & IT Services
+ * @version 2.0
+ * @date 08.12.2025
  * ============================================================================
  */
 
@@ -14,7 +24,7 @@ $_SESSION['user_name'] = 'TestKind';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🦊 Foxy Konfiguration - sgiT Education</title>
+    <title>🦊 Foxy Konfiguration v2.0 - sgiT Education</title>
     
     <style>
         :root {
@@ -34,19 +44,31 @@ $_SESSION['user_name'] = 'TestKind';
             padding: 30px 20px;
         }
         
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         
         header { text-align: center; margin-bottom: 25px; }
         h1 { color: var(--fox-blue); font-size: 2rem; margin-bottom: 8px; }
         h1 span { color: var(--fox-orange); }
         .subtitle { color: #666; }
+        .version-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
         
         .grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
         }
         
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: 1fr 1fr; }
+        }
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
         }
@@ -65,6 +87,10 @@ $_SESSION['user_name'] = 'TestKind';
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        
+        .card.highlight {
+            border: 2px solid var(--secondary);
         }
         
         /* Foxy Preview */
@@ -130,19 +156,12 @@ $_SESSION['user_name'] = 'TestKind';
             height: 26px;
         }
         
-        .toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .toggle input { opacity: 0; width: 0; height: 0; }
         
         .toggle-slider {
             position: absolute;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-color: #ccc;
             transition: 0.3s;
             border-radius: 26px;
@@ -160,20 +179,11 @@ $_SESSION['user_name'] = 'TestKind';
             border-radius: 50%;
         }
         
-        .toggle input:checked + .toggle-slider {
-            background-color: var(--secondary);
-        }
-        
-        .toggle input:checked + .toggle-slider:before {
-            transform: translateX(24px);
-        }
+        .toggle input:checked + .toggle-slider { background-color: var(--secondary); }
+        .toggle input:checked + .toggle-slider:before { transform: translateX(24px); }
         
         /* Range Slider */
-        .range-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .range-container { display: flex; align-items: center; gap: 10px; }
         
         .range-slider {
             flex: 1;
@@ -181,21 +191,14 @@ $_SESSION['user_name'] = 'TestKind';
             -webkit-appearance: none;
             background: #ddd;
             border-radius: 3px;
-            outline: none;
         }
         
         .range-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 18px; height: 18px;
             background: var(--fox-orange);
             border-radius: 50%;
             cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .range-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
         }
         
         .range-value {
@@ -206,11 +209,7 @@ $_SESSION['user_name'] = 'TestKind';
         }
         
         /* Buttons */
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
         
         .btn {
             flex: 1;
@@ -227,17 +226,13 @@ $_SESSION['user_name'] = 'TestKind';
             color: white;
         }
         
-        .btn-secondary {
-            background: #f0f0f0;
-            color: var(--fox-blue);
-        }
+        .btn-secondary { background: #f0f0f0; color: var(--fox-blue); }
+        .btn-gemma { background: linear-gradient(135deg, #9370DB, #8A2BE2); color: white; }
+        .btn-hint { background: linear-gradient(135deg, #FFD700, #FFA500); color: #333; }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         
-        /* Status */
+        /* Status Grid */
         .status-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -255,39 +250,24 @@ $_SESSION['user_name'] = 'TestKind';
         .status-item .label { font-size: 0.75rem; color: #666; margin-top: 4px; }
         .status-item .value { font-size: 0.85rem; font-weight: 600; color: var(--fox-blue); }
         
-        /* Animation Legend */
-        .anim-legend {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+        .status-item.online .value { color: #2e7d32; }
+        .status-item.offline .value { color: #c62828; }
+        
+        /* Test Results */
+        .test-result {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 12px;
             margin-top: 10px;
-        }
-        
-        .anim-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
             font-size: 0.85rem;
-            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
         }
         
-        .anim-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
+        .test-result.success { background: #e8f5e9; border-left: 4px solid #4caf50; }
+        .test-result.error { background: #ffebee; border-left: 4px solid #f44336; }
         
-        .anim-dot.ears { background: #E86F2C; }
-        .anim-dot.eyes { background: #1E3A5F; }
-        .anim-dot.nose { background: #333; }
-        .anim-dot.idle { background: var(--secondary); }
-        
-        footer {
-            text-align: center;
-            margin-top: 25px;
-            color: #666;
-        }
-        
+        footer { text-align: center; margin-top: 25px; color: #666; }
         footer a { color: var(--secondary); text-decoration: none; }
     </style>
     
@@ -296,38 +276,29 @@ $_SESSION['user_name'] = 'TestKind';
 <body>
     <div class="container">
         <header>
-            <h1>🦊 <span>Foxy</span> Konfiguration</h1>
-            <p class="subtitle">Animationen anpassen und testen</p>
+            <h1>🦊 <span>Foxy</span> Konfiguration <span class="version-badge">v2.0</span></h1>
+            <p class="subtitle">Animationen anpassen & Gemma AI testen</p>
         </header>
         
         <div class="grid">
-            <!-- Linke Spalte: Preview -->
+            <!-- Spalte 1: Preview & Status -->
             <div class="card">
                 <h2>👀 Vorschau</h2>
                 
                 <div class="foxy-preview">
-                    <div class="foxy-preview-button" id="foxy-demo">
-                        <!-- SVG wird per JS eingefügt -->
-                    </div>
+                    <div class="foxy-preview-button" id="foxy-demo" onclick="testFoxy()"></div>
                 </div>
                 
-                <div class="anim-legend">
-                    <div class="anim-item"><span class="anim-dot ears"></span> Ohren zucken</div>
-                    <div class="anim-item"><span class="anim-dot eyes"></span> Augen blinzeln</div>
-                    <div class="anim-item"><span class="anim-dot nose"></span> Nase wackelt</div>
-                    <div class="anim-item"><span class="anim-dot idle"></span> Idle schweben</div>
-                </div>
-                
-                <div class="status-grid" style="margin-top: 15px;">
-                    <div class="status-item">
+                <div class="status-grid">
+                    <div class="status-item" id="status-ollama">
                         <div class="icon">🤖</div>
                         <div class="label">Ollama</div>
                         <div class="value" id="ollama-status">...</div>
                     </div>
-                    <div class="status-item">
-                        <div class="icon">💬</div>
-                        <div class="label">Antworten</div>
-                        <div class="value" id="response-count">...</div>
+                    <div class="status-item" id="status-gemma">
+                        <div class="icon">🧠</div>
+                        <div class="label">Gemma</div>
+                        <div class="value" id="gemma-status">...</div>
                     </div>
                     <div class="status-item">
                         <div class="icon">👤</div>
@@ -337,16 +308,15 @@ $_SESSION['user_name'] = 'TestKind';
                     <div class="status-item">
                         <div class="icon">🎨</div>
                         <div class="label">Version</div>
-                        <div class="value">v1.4</div>
+                        <div class="value">v2.0</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Rechte Spalte: Konfiguration -->
+            <!-- Spalte 2: Animation Einstellungen -->
             <div class="card">
-                <h2>⚙️ Animation Einstellungen</h2>
+                <h2>⚙️ Animationen</h2>
                 
-                <!-- Animationen Ein/Aus -->
                 <div class="config-group">
                     <div class="config-row">
                         <span class="config-label">👂 Ohren Animation</span>
@@ -381,10 +351,9 @@ $_SESSION['user_name'] = 'TestKind';
                     </div>
                 </div>
                 
-                <!-- Geschwindigkeiten -->
                 <div class="config-group">
                     <div class="config-row">
-                        <span class="config-label">👂 Ohren Geschw.</span>
+                        <span class="config-label">🕐 Ohren Speed</span>
                         <div class="range-container">
                             <input type="range" class="range-slider" id="cfg-ear-speed" min="1" max="8" value="4" 
                                    oninput="updateConfig('earSpeed', this.value); document.getElementById('ear-speed-val').textContent = this.value + 's'">
@@ -393,49 +362,77 @@ $_SESSION['user_name'] = 'TestKind';
                     </div>
                     
                     <div class="config-row">
-                        <span class="config-label">👀 Augen Geschw.</span>
+                        <span class="config-label">🕐 Augen Speed</span>
                         <div class="range-container">
                             <input type="range" class="range-slider" id="cfg-eye-speed" min="1" max="8" value="4"
                                    oninput="updateConfig('eyeSpeed', this.value); document.getElementById('eye-speed-val').textContent = this.value + 's'">
                             <span class="range-value" id="eye-speed-val">4s</span>
                         </div>
                     </div>
-                    
-                    <div class="config-row">
-                        <span class="config-label">👃 Nase Geschw.</span>
-                        <div class="range-container">
-                            <input type="range" class="range-slider" id="cfg-nose-speed" min="1" max="8" value="3"
-                                   oninput="updateConfig('noseSpeed', this.value); document.getElementById('nose-speed-val').textContent = this.value + 's'">
-                            <span class="range-value" id="nose-speed-val">3s</span>
-                        </div>
-                    </div>
-                    
-                    <div class="config-row">
-                        <span class="config-label">🌊 Idle Geschw.</span>
-                        <div class="range-container">
-                            <input type="range" class="range-slider" id="cfg-idle-speed" min="1" max="8" value="3"
-                                   oninput="updateConfig('idleSpeed', this.value); document.getElementById('idle-speed-val').textContent = this.value + 's'">
-                            <span class="range-value" id="idle-speed-val">3s</span>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="btn-row">
-                    <button class="btn btn-primary" onclick="resetConfig()">🔄 Zurücksetzen</button>
-                    <button class="btn btn-secondary" onclick="testFoxy()">🧪 Chat testen</button>
+                    <button class="btn btn-secondary" onclick="resetConfig()">🔄 Reset</button>
+                    <button class="btn btn-primary" onclick="testFoxy()">💬 Chat</button>
                 </div>
+            </div>
+            
+            <!-- Spalte 3: Gemma AI Test -->
+            <div class="card highlight">
+                <h2>🧠 Gemma AI Test</h2>
+                
+                <div class="config-group">
+                    <div class="config-row">
+                        <span class="config-label">🧠 Gemma AI aktivieren</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="cfg-gemma" checked onchange="updateConfig('useGemma', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="config-row">
+                        <span class="config-label">💡 Gemma für Hints</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="cfg-gemma-hints" checked onchange="updateConfig('gemmaForHints', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="config-row">
+                        <span class="config-label">❓ Gemma für Erklärungen</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="cfg-gemma-explain" checked onchange="updateConfig('gemmaForExplain', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <p style="color: #666; font-size: 0.8rem; margin-bottom: 15px;">
+                    ⚠️ Gemma braucht ~15-30 Sek. pro Antwort (CPU)
+                </p>
+                
+                <div class="btn-row">
+                    <button class="btn btn-hint" onclick="testHint()">💡 Hint testen</button>
+                    <button class="btn btn-gemma" onclick="testExplain()">❓ Explain testen</button>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="testAsk()">🧠 Wissensfrage</button>
+                </div>
+                
+                <div class="test-result" id="test-result" style="display: none;"></div>
             </div>
         </div>
         
         <footer>
-            <p>sgiT Education Platform v3.0.0</p>
-            <p><a href="../adaptive_learning.php">← Zur Lernplattform</a> | <a href="seed_responses.php">DB Seeden</a></p>
+            <p>sgiT Education Platform v3.18.2</p>
+            <p><a href="../adaptive_learning.php">← Zur Lernplattform</a> | <a href="../admin_v4.php">Admin Dashboard</a></p>
         </footer>
     </div>
     
     <script>
         window.userAge = 10;
-        window.currentModule = null;
+        window.currentModule = 'mathematik';
         window.userName = 'TestKind';
     </script>
     <script src="clippy.js"></script>
@@ -446,11 +443,17 @@ $_SESSION['user_name'] = 'TestKind';
             if (window.Foxy) {
                 document.getElementById('foxy-demo').innerHTML = window.Foxy.getFoxySVG('large');
                 loadConfigUI();
+                
+                // Test-Kontext setzen
+                window.Foxy.setQuizContext(
+                    'Was ist 5 + 3?',
+                    '8',
+                    ['6', '7', '8', '9']
+                );
             }
             checkStatus();
         });
         
-        // Konfig in UI laden
         function loadConfigUI() {
             if (!window.Foxy) return;
             const cfg = window.Foxy.getConfig();
@@ -459,37 +462,28 @@ $_SESSION['user_name'] = 'TestKind';
             document.getElementById('cfg-eye').checked = cfg.eyeAnimation;
             document.getElementById('cfg-nose').checked = cfg.noseAnimation;
             document.getElementById('cfg-idle').checked = cfg.idleAnimation;
+            document.getElementById('cfg-gemma').checked = cfg.useGemma;
+            document.getElementById('cfg-gemma-hints').checked = cfg.gemmaForHints;
+            document.getElementById('cfg-gemma-explain').checked = cfg.gemmaForExplain;
             
             document.getElementById('cfg-ear-speed').value = cfg.earSpeed;
             document.getElementById('cfg-eye-speed').value = cfg.eyeSpeed;
-            document.getElementById('cfg-nose-speed').value = cfg.noseSpeed;
-            document.getElementById('cfg-idle-speed').value = cfg.idleSpeed;
-            
             document.getElementById('ear-speed-val').textContent = cfg.earSpeed + 's';
             document.getElementById('eye-speed-val').textContent = cfg.eyeSpeed + 's';
-            document.getElementById('nose-speed-val').textContent = cfg.noseSpeed + 's';
-            document.getElementById('idle-speed-val').textContent = cfg.idleSpeed + 's';
         }
         
-        // Konfig aktualisieren
         function updateConfig(key, value) {
             if (window.Foxy) {
                 window.Foxy.setConfig(key, key.includes('Speed') ? parseInt(value) : value);
             }
         }
         
-        // Reset
         function resetConfig() {
             if (window.Foxy) {
                 window.Foxy.config = {
-                    earAnimation: true,
-                    eyeAnimation: true,
-                    noseAnimation: true,
-                    idleAnimation: true,
-                    earSpeed: 4,
-                    eyeSpeed: 4,
-                    noseSpeed: 3,
-                    idleSpeed: 3
+                    earAnimation: true, eyeAnimation: true, noseAnimation: true, idleAnimation: true,
+                    earSpeed: 4, eyeSpeed: 4, noseSpeed: 3, idleSpeed: 3,
+                    useGemma: true, gemmaForHints: true, gemmaForExplain: true
                 };
                 window.Foxy.saveConfig();
                 window.Foxy.updateAnimations();
@@ -497,25 +491,78 @@ $_SESSION['user_name'] = 'TestKind';
             }
         }
         
-        // Chat öffnen
-        function testFoxy() {
-            if (window.Foxy) {
-                window.Foxy.open();
-            }
-        }
+        function testFoxy() { if (window.Foxy) window.Foxy.open(); }
         
-        // Status prüfen
         async function checkStatus() {
             try {
                 const response = await fetch('api.php?action=status');
                 const data = await response.json();
-                document.getElementById('ollama-status').textContent = data.online ? '✅ Online' : '⚡ Lokal';
                 
-                const statsRes = await fetch('api.php?action=stats');
-                const stats = await statsRes.json();
-                document.getElementById('response-count').textContent = stats.stats?.total_responses || '~25';
+                document.getElementById('ollama-status').textContent = data.online ? '✅ Online' : '❌ Offline';
+                document.getElementById('status-ollama').className = 'status-item ' + (data.online ? 'online' : 'offline');
+                
+                // Prüfe Gemma
+                const hasGemma = data.available_models?.some(m => m.includes('gemma'));
+                document.getElementById('gemma-status').textContent = hasGemma ? '✅ Ready' : '⚠️ Nicht geladen';
+                document.getElementById('status-gemma').className = 'status-item ' + (hasGemma ? 'online' : 'offline');
+                
             } catch (e) {
-                document.getElementById('ollama-status').textContent = '❌';
+                document.getElementById('ollama-status').textContent = '❌ Error';
+                document.getElementById('gemma-status').textContent = '❌ Error';
+            }
+        }
+        
+        function showResult(message, isSuccess = true) {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result ' + (isSuccess ? 'success' : 'error');
+            resultDiv.innerHTML = message;
+        }
+        
+        async function testHint() {
+            showResult('⏳ Lade Hinweis... (kann bis zu 30 Sek. dauern)');
+            
+            if (window.Foxy) {
+                const result = await window.Foxy.getHint(
+                    'Was ist 5 + 3?',
+                    '8',
+                    ['6', '7', '8', '9']
+                );
+                
+                showResult(`
+                    <strong>💡 Hint (${result.source}):</strong><br>
+                    ${result.message}
+                `, result.success);
+            }
+        }
+        
+        async function testExplain() {
+            showResult('⏳ Lade Erklärung... (kann bis zu 30 Sek. dauern)');
+            
+            if (window.Foxy) {
+                const result = await window.Foxy.getExplanation(
+                    'Was ist 5 + 3?',
+                    '8',
+                    '7' // falsche Antwort zum Testen
+                );
+                
+                showResult(`
+                    <strong>❓ Erklärung (${result.source}):</strong><br>
+                    ${result.message}
+                `, result.success);
+            }
+        }
+        
+        async function testAsk() {
+            showResult('⏳ Frage Foxy... (kann bis zu 30 Sek. dauern)');
+            
+            if (window.Foxy) {
+                const result = await window.Foxy.askQuestion('Warum ist der Himmel blau?');
+                
+                showResult(`
+                    <strong>🧠 Antwort (${result.source}):</strong><br>
+                    ${result.message}
+                `, result.success);
             }
         }
     </script>

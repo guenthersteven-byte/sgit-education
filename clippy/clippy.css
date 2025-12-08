@@ -512,3 +512,136 @@
         width: auto;
     }
 }
+
+
+/* ============================================================================
+   NEU v2.0: GEMMA AI FEATURES
+   ============================================================================ */
+
+/* AI Mode Badge im Header */
+.clippy-ai-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.clippy-ai-badge.ai-active {
+    background: linear-gradient(135deg, #43D240, #2ea82e);
+    color: white;
+    box-shadow: 0 2px 8px rgba(67, 210, 64, 0.4);
+}
+
+.clippy-ai-badge.ai-inactive {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.clippy-ai-badge:hover {
+    transform: scale(1.05);
+}
+
+.ai-badge-icon {
+    font-size: 1rem;
+}
+
+/* Gemma Quick-Action Buttons */
+.clippy-quick-btn.gemma-btn {
+    background: linear-gradient(135deg, #43D240, #2ea82e);
+    color: white;
+    border: none;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.clippy-quick-btn.gemma-btn:hover {
+    background: linear-gradient(135deg, #2ea82e, #1e8e1e);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 210, 64, 0.4);
+}
+
+.clippy-quick-btn.hint {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #333;
+}
+
+.clippy-quick-btn.hint:hover {
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+}
+
+.clippy-quick-btn.explain {
+    background: linear-gradient(135deg, #9370DB, #8A2BE2);
+    color: white;
+}
+
+.clippy-quick-btn.explain:hover {
+    background: linear-gradient(135deg, #8A2BE2, #7B68EE);
+}
+
+/* Typing Indicator mit Custom Text */
+.clippy-typing-text {
+    margin-left: 8px;
+    font-size: 0.75rem;
+    color: var(--clippy-primary);
+    font-style: italic;
+}
+
+/* System Messages */
+.clippy-message.system {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    color: #2e7d32;
+    font-size: 0.8rem;
+    text-align: center;
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 4px auto;
+    max-width: 80%;
+}
+
+/* Pulse Animation für Gemma-Buttons */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(67, 210, 64, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(67, 210, 64, 0);
+    }
+}
+
+/* AI Loading Animation */
+.clippy-ai-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    border-radius: 12px;
+    margin: 8px 0;
+}
+
+.clippy-ai-loading .brain-icon {
+    animation: brain-pulse 1s ease-in-out infinite;
+}
+
+@keyframes brain-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Responsive für neue Features */
+@media (max-width: 480px) {
+    .clippy-ai-badge {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .clippy-quick-btn.gemma-btn {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+    }
+}

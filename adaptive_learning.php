@@ -436,12 +436,14 @@ function getQuestionFromDB($module) {
     // ========================================================================
     // SCHRITT 1: Versuche altersgerechte Frage zu finden (ohne Duplikate)
     // BUG-053: KEINE times_used Sortierung mehr - echte Zufallsauswahl!
+    // TODO-006: Nur aktive Fragen (is_active = 1)
     // ========================================================================
     $countSql = "
         SELECT COUNT(*) FROM questions 
         WHERE module = :module
         AND age_min <= :user_age
         AND age_max >= :user_age
+        AND is_active = 1
         $excludeClause
     ";
     $countStmt = $db->prepare($countSql);
@@ -453,11 +455,13 @@ function getQuestionFromDB($module) {
         $offset = mt_rand(0, $count - 1);
         
         // BUG-053: Keine ORDER BY times_used mehr - nur nach ID für Konsistenz
+        // TODO-006: Nur aktive Fragen
         $querySql = "
             SELECT * FROM questions 
             WHERE module = :module
             AND age_min <= :user_age
             AND age_max >= :user_age
+            AND is_active = 1
             $excludeClause
             ORDER BY id
             LIMIT 1 OFFSET :offset
@@ -478,6 +482,7 @@ function getQuestionFromDB($module) {
             SELECT COUNT(*) FROM questions 
             WHERE module = :module
             AND age_min <= :max_age
+            AND is_active = 1
             $excludeClause
         ";
         $countStmt = $db->prepare($countSql);
@@ -488,10 +493,12 @@ function getQuestionFromDB($module) {
             $offset = mt_rand(0, $count - 1);
             
             // BUG-053: Nur nach age_min sortieren für Kinder, nicht times_used
+            // TODO-006: Nur aktive Fragen
             $querySql = "
                 SELECT * FROM questions 
                 WHERE module = :module
                 AND age_min <= :max_age
+                AND is_active = 1
                 $excludeClause
                 ORDER BY age_min ASC, id
                 LIMIT 1 OFFSET :offset
@@ -508,9 +515,10 @@ function getQuestionFromDB($module) {
     // ========================================================================
     // SCHRITT 3: Letzter Fallback - irgendeine Frage aus dem Modul
     // BUG-018: Erwachsene bekommen die schwierigsten Fragen
+    // TODO-006: Nur aktive Fragen
     // ========================================================================
     if (!$row) {
-        $countSql = "SELECT COUNT(*) FROM questions WHERE module = :module $excludeClause";
+        $countSql = "SELECT COUNT(*) FROM questions WHERE module = :module AND is_active = 1 $excludeClause";
         $countStmt = $db->prepare($countSql);
         $countStmt->execute([':module' => $module]);
         $count = (int) $countStmt->fetchColumn();
@@ -525,6 +533,7 @@ function getQuestionFromDB($module) {
             $querySql = "
                 SELECT * FROM questions 
                 WHERE module = :module
+                AND is_active = 1
                 $excludeClause
                 ORDER BY age_min $sortOrder, id
                 LIMIT 1 OFFSET :offset
@@ -544,6 +553,7 @@ function getQuestionFromDB($module) {
     
     // ========================================================================
     // SCHRITT 4: Pool erschöpft - Rolling Window leeren und erneut versuchen
+    // TODO-006: Nur aktive Fragen
     // ========================================================================
     if (!$row && !empty($excludeIds)) {
         error_log("[BUG-053] Fragen-Pool erschöpft für Modul $module (". count($excludeIds) ." im History). Setze Rolling Window zurück.");
@@ -552,7 +562,7 @@ function getQuestionFromDB($module) {
         $_SESSION['asked_question_ids'][$module] = [];
         
         // Erneut versuchen ohne Exclude-Klausel
-        $countStmt = $db->prepare("SELECT COUNT(*) FROM questions WHERE module = :module");
+        $countStmt = $db->prepare("SELECT COUNT(*) FROM questions WHERE module = :module AND is_active = 1");
         $countStmt->execute([':module' => $module]);
         $count = (int) $countStmt->fetchColumn();
         
@@ -563,6 +573,7 @@ function getQuestionFromDB($module) {
             $stmt = $db->prepare("
                 SELECT * FROM questions 
                 WHERE module = :module
+                AND is_active = 1
                 ORDER BY age_min $sortOrder, id
                 LIMIT 1 OFFSET :offset
             ");
@@ -641,6 +652,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_question') {
             'answer' => $questionData['correct'],
             'options' => $questionData['options'],
             'explanation' => $questionData['explanation'] ?? '',
+            'question_id' => $questionData['id'],  // TODO-006: Für Flagging
             'module_total' => $_SESSION['module_scores'][$module]['total_score'],
             'session_score' => $_SESSION['module_scores'][$module]['current_session']['score'],
             'questions_done' => $_SESSION['module_scores'][$module]['current_session']['questions'],
@@ -1268,8 +1280,18 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             border: none;
         }
         .close-btn:hover { color: #dc3545; }
-        .next-btn {
+        
+        /* TODO-006: Quiz Actions Container */
+        .quiz-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
             margin-top: 20px;
+        }
+        .quiz-actions.show { display: flex; }
+        
+        .next-btn {
             padding: 15px 40px;
             background: var(--accent);
             color: white;
@@ -1277,11 +1299,114 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             border-radius: 10px;
             font-size: 18px;
             cursor: pointer;
-            display: none;
             font-weight: bold;
         }
         .next-btn:hover { background: var(--primary); }
-        .next-btn.show { display: inline-block; }
+        
+        /* TODO-006: Flag Button */
+        .flag-btn {
+            padding: 15px 18px;
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .flag-btn:hover {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        /* TODO-006: Flag Modal */
+        .flag-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 30000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .flag-modal-content {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .flag-modal-content h3 {
+            margin: 0 0 15px;
+            color: #ffc107;
+        }
+        .flag-question-preview {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        .flag-reasons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .flag-reasons label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .flag-reasons label:hover {
+            background: rgba(255, 193, 7, 0.1);
+        }
+        .flag-reasons input[type="radio"] {
+            accent-color: #ffc107;
+        }
+        .flag-modal-content textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        .flag-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .flag-cancel {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #666;
+            color: #aaa;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .flag-cancel:hover { border-color: #999; color: #fff; }
+        .flag-submit {
+            padding: 10px 20px;
+            background: #ffc107;
+            border: none;
+            color: #000;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .flag-submit:hover { background: #ffca2c; }
         
         /* Toast Notifications */
         .toast-container {
@@ -1535,6 +1660,162 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 12px;
+        }
+        
+        /* ========================================
+         * 🚩 TODO-006: Flag-System Styles
+         * ======================================== */
+        .quiz-actions {
+            display: none;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .quiz-actions.show {
+            display: flex;
+        }
+        
+        .flag-btn {
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            color: #666;
+            font-size: 18px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .flag-btn:hover {
+            background: #FFEBEE;
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        
+        /* Flag Modal */
+        .flag-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .flag-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 25px 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: flagModalIn 0.2s ease-out;
+        }
+        
+        @keyframes flagModalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .flag-modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .flag-question-preview {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+            max-height: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .flag-reasons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .flag-reasons label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .flag-reasons label:hover {
+            background: #e8f5e9;
+        }
+        
+        .flag-reasons input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        #flagComment {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        #flagComment:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .flag-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .flag-cancel {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .flag-cancel:hover {
+            background: #e0e0e0;
+        }
+        
+        .flag-submit {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .flag-submit:hover {
+            background: #c0392b;
         }
         
         .option-btn.joker-hidden {
@@ -1926,7 +2207,35 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             
             <div class="feedback" id="feedback"></div>
             <div class="explanation" id="explanation" style="display: none;"></div>
-            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Nächste Frage →</button>
+            
+            <!-- TODO-006: Button Container für Weiter + Flag -->
+            <div class="quiz-actions" id="quizActions" style="display: none;">
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Nächste Frage →</button>
+                <button class="flag-btn" id="flagBtn" onclick="showFlagModal()" title="Frage melden">🚩</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TODO-006: Flag Modal -->
+    <div id="flagModal" class="flag-modal" style="display: none;">
+        <div class="flag-modal-content">
+            <h3>🚩 Frage melden</h3>
+            <p class="flag-question-preview" id="flagQuestionPreview"></p>
+            
+            <div class="flag-reasons">
+                <label><input type="radio" name="flagReason" value="wrong_answer" checked> ❌ Falsche Antwort</label>
+                <label><input type="radio" name="flagReason" value="unclear"> ❓ Frage unklar</label>
+                <label><input type="radio" name="flagReason" value="duplicate"> 🔄 Doppelte Frage</label>
+                <label><input type="radio" name="flagReason" value="inappropriate"> ⚠️ Unangemessen</label>
+                <label><input type="radio" name="flagReason" value="other"> 📝 Sonstiges</label>
+            </div>
+            
+            <textarea id="flagComment" placeholder="Optional: Weitere Details..." rows="2"></textarea>
+            
+            <div class="flag-buttons">
+                <button class="flag-cancel" onclick="closeFlagModal()">Abbrechen</button>
+                <button class="flag-submit" onclick="submitFlag()">Melden</button>
+            </div>
         </div>
     </div>
     
@@ -2028,6 +2337,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         let currentModule = '';
         let currentAnswer = '';
         let currentExplanation = '';
+        let currentQuestionId = 0;  // TODO-006: Für Flagging
         let lastSessionData = null;
         
         // 🦊 Foxy 50/50 Joker
@@ -2077,6 +2387,59 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             showToast('info', '🦊', 'Foxy hilft!', '2 falsche Antworten entfernt!');
         }
         
+        // ================================================================
+        // TODO-006: Fragen-Flagging System
+        // ================================================================
+        function showFlagModal() {
+            const questionText = document.getElementById('questionText').textContent;
+            document.getElementById('flagQuestionPreview').textContent = questionText;
+            document.getElementById('flagComment').value = '';
+            document.querySelector('input[name="flagReason"][value="wrong_answer"]').checked = true;
+            document.getElementById('flagModal').style.display = 'flex';
+        }
+        
+        function closeFlagModal() {
+            document.getElementById('flagModal').style.display = 'none';
+        }
+        
+        function submitFlag() {
+            const reason = document.querySelector('input[name="flagReason"]:checked').value;
+            const comment = document.getElementById('flagComment').value.trim();
+            
+            if (!currentQuestionId) {
+                showToast('error', '❌', 'Fehler', 'Keine Frage ausgewählt');
+                closeFlagModal();
+                return;
+            }
+            
+            fetch('/api/flag_question.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question_id: currentQuestionId,
+                    reason: reason,
+                    comment: comment || null
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                closeFlagModal();
+                if (data.success) {
+                    showToast('success', '✅', 'Gemeldet!', 'Danke für dein Feedback!');
+                } else if (data.code === 'DUPLICATE') {
+                    showToast('info', 'ℹ️', 'Bereits gemeldet', 'Du hast diese Frage heute schon gemeldet.');
+                } else {
+                    showToast('error', '❌', 'Fehler', data.error || 'Meldung fehlgeschlagen');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                closeFlagModal();
+                showToast('error', '❌', 'Fehler', 'Netzwerkfehler');
+            });
+        }
+        // ================================================================
+        
         function startQuiz(module) {
             currentModule = module;
             document.getElementById('quizModal').classList.add('active');
@@ -2112,7 +2475,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             document.getElementById('feedback').innerHTML = '';
             document.getElementById('explanation').style.display = 'none';
             document.getElementById('explanation').innerHTML = '';
-            document.getElementById('nextBtn').classList.remove('show');
+            document.getElementById('quizActions').classList.remove('show');
+            document.getElementById('quizActions').style.display = 'none';
             document.getElementById('questionText').innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
@@ -2130,6 +2494,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                     if (data.success) {
                         currentAnswer = data.answer;
                         currentExplanation = data.explanation || '';
+                        currentQuestionId = data.question_id || 0;  // TODO-006: Für Flagging
                         document.getElementById('questionText').textContent = data.question;
                         document.getElementById('sessionScore').textContent = data.session_score + ' Punkte';
                         document.getElementById('moduleTotal').textContent = 'Gesamt: ' + data.module_total + ' Punkte';
@@ -2213,7 +2578,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                             showSessionComplete(data);
                         }, 1000);
                     } else {
-                        document.getElementById('nextBtn').classList.add('show');
+                        document.getElementById('quizActions').classList.add('show');
+                        document.getElementById('quizActions').style.display = 'flex';
                     }
                 }
             })
