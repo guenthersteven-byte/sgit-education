@@ -397,33 +397,85 @@ class ClippyWidget {
         const name = this.userName;
         const namePrefix = name ? `${name}, ` : '';
         
-        if (msg.includes('witz')) {
+        if (msg.includes('witz') || msg.includes('lach') || msg.includes('lustig')) {
             const jokes = [
                 "Warum können Füchse so gut in der Schule? Weil sie schlau sind! 🦊😄",
                 "Was macht ein Fuchs am Computer? Surft im Fuchsbook! 💻🦊",
-                "Was ist orange und kann rechnen? Ein Mathe-Fuchs! 🧮🦊"
+                "Was ist orange und kann rechnen? Ein Mathe-Fuchs! 🧮🦊",
+                "Warum ging der Fuchs zur Schule? Um schlauer als die anderen zu werden! 📚🦊",
+                "Was sagt ein Fuchs wenn er fertig ist? FUCHSTASTISCH! 🎉🦊",
+                "Warum sind Füchse so gute Detektive? Sie haben einen Riecher! 🔍🦊",
+                "Was ist das Lieblingsfach vom Fuchs? Fuchs-ik! ⚛️🦊",
+                "Warum tanzt der Fuchs so gern? Er hat den Fox-Trott erfunden! 💃🦊",
+                "Was macht ein Fuchs im Matheunterricht? Er multipliFUCHSt! 🔢🦊",
+                "Warum ist der Fuchs nie müde? Er schläft wie ein Fuchs! 😴🦊"
             ];
             return jokes[Math.floor(Math.random() * jokes.length)];
         }
         
-        if (msg.includes('aufmunter') || msg.includes('traurig') || msg.includes('schwer')) {
+        if (msg.includes('aufmunter') || msg.includes('traurig') || msg.includes('schwer') || msg.includes('hilf') || msg.includes('schaff')) {
             const cheers = [
                 `${namePrefix}Kopf hoch! 💪 Du schaffst das! 🦊🌟`,
                 `${namePrefix}Du bist toll! 🌈 Ich glaube an dich! 🦊❤️`,
-                `${namePrefix}Füchse geben nie auf! 🦊💪 Weiter so!`
+                `${namePrefix}Füchse geben nie auf! 🦊💪 Weiter so!`,
+                `${namePrefix}Jeder macht mal Fehler - so lernt man! 📚🦊`,
+                `${namePrefix}Du bist schlauer als du denkst! 🧠✨`,
+                `${namePrefix}Ein Schritt nach dem anderen! Du rockst das! 🎸🦊`,
+                `${namePrefix}Füchse fallen 7 mal hin und stehen 8 mal auf! 💪🦊`,
+                `${namePrefix}Ich bin stolz auf dich! Mach weiter! 🌟🦊`,
+                `${namePrefix}Übung macht den Meister-Fuchs! 🏆🦊`,
+                `${namePrefix}Du hast das Zeug zum Champion! 🥇🦊`
             ];
             return cheers[Math.floor(Math.random() * cheers.length)];
         }
         
-        if (msg.includes('tipp') || msg.includes('hilfe')) {
-            return "💡 Du bekommst Sats für richtige Antworten! 🦊₿";
+        if (msg.includes('tipp') || msg.includes('rat')) {
+            const tips = [
+                "💡 Du bekommst Sats für richtige Antworten! 🦊₿",
+                "💡 Lies die Frage immer zweimal! 📖🦊",
+                "💡 Nutze den 50/50 Joker wenn du unsicher bist! 🦊",
+                "💡 Jeden Tag 10 Fragen = Super Fortschritt! 📈🦊",
+                "💡 Mach Pausen - dein Gehirn braucht sie! 🧠🦊",
+                "💡 Falsche Antworten zeigen dir was du noch lernen kannst! 📚🦊"
+            ];
+            return tips[Math.floor(Math.random() * tips.length)];
         }
         
-        if (msg.includes('hallo') || msg.includes('hi') || msg.includes('hey')) {
+        if (msg.includes('danke') || msg.includes('super') || msg.includes('cool')) {
+            const thanks = [
+                "Gern geschehen! Du bist super! 🌟🦊",
+                "Immer für dich da! 🦊❤️",
+                "Das freut mich! Weiter so! 💪🦊",
+                "Füchse helfen gern! 🦊✨"
+            ];
+            return thanks[Math.floor(Math.random() * thanks.length)];
+        }
+        
+        if (msg.includes('bitcoin') || msg.includes('sats') || msg.includes('geld')) {
+            return "₿ Bitcoin ist digitales Geld! Lerne mehr im Bitcoin-Modul! 🦊💰";
+        }
+        
+        if (msg.includes('hallo') || msg.includes('hi') || msg.includes('hey') || msg.includes('moin')) {
             return this.generateGreeting();
         }
         
-        return `Frag mich nach einem Witz oder Tipp${name ? ', ' + name : ''}! 🦊`;
+        if (msg.includes('langweilig') || msg.includes('keine lust')) {
+            const motivation = [
+                "Komm, nur noch eine Frage! Du schaffst das! 💪🦊",
+                "Was hältst du von einem Witz zur Auflockerung? 😄🦊",
+                "Mach 5 Minuten Pause und dann gehts weiter! ☕🦊"
+            ];
+            return motivation[Math.floor(Math.random() * motivation.length)];
+        }
+        
+        // Fallback mit mehr Varianz
+        const fallbacks = [
+            `Frag mich nach einem Witz! 🎭🦊`,
+            `Brauchst du einen Tipp? 💡🦊`,
+            `Ich kann dich aufmuntern! 🌈🦊`,
+            `Sag 'Witz' für was Lustiges! 😄🦊`
+        ];
+        return fallbacks[Math.floor(Math.random() * fallbacks.length)];
     }
     
     addMessage(text, role) {

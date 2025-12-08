@@ -1486,6 +1486,64 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             transform: translateY(-2px);
         }
         
+        /* ========================================
+         * 🦊 Foxy 50/50 Joker Styles
+         * ======================================== */
+        .joker-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .joker-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #E86F2C, #FF8C42);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(232, 111, 44, 0.3);
+        }
+        
+        .joker-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(232, 111, 44, 0.4);
+        }
+        
+        .joker-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .joker-btn.used {
+            background: #999;
+        }
+        
+        .joker-icon {
+            font-size: 20px;
+        }
+        
+        .joker-count {
+            background: rgba(255,255,255,0.3);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .option-btn.joker-hidden {
+            opacity: 0.3;
+            pointer-events: none;
+            text-decoration: line-through;
+            transform: scale(0.95);
+        }
+        
         @media (max-width: 600px) {
             .header {
                 flex-direction: column;
@@ -1856,6 +1914,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             </div>
             
             <div class="options-grid" id="optionsContainer"></div>
+            
+            <!-- 🦊 Foxy 50/50 Joker -->
+            <div class="joker-container" id="jokerContainer">
+                <button class="joker-btn" id="jokerBtn" onclick="useFiftyFifty()">
+                    <span class="joker-icon">🦊</span>
+                    <span class="joker-text">50/50 Joker</span>
+                    <span class="joker-count" id="jokerCount">3</span>
+                </button>
+            </div>
+            
             <div class="feedback" id="feedback"></div>
             <div class="explanation" id="explanation" style="display: none;"></div>
             <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Nächste Frage →</button>
@@ -1962,10 +2030,60 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         let currentExplanation = '';
         let lastSessionData = null;
         
+        // 🦊 Foxy 50/50 Joker
+        let jokerCount = parseInt(localStorage.getItem('foxyJokerCount') ?? 3);
+        let jokerUsedThisQuestion = false;
+        
+        // Joker täglich auffüllen
+        (function checkJokerRefill() {
+            const lastRefill = localStorage.getItem('foxyJokerLastRefill');
+            const today = new Date().toDateString();
+            if (lastRefill !== today) {
+                jokerCount = 3;
+                localStorage.setItem('foxyJokerCount', 3);
+                localStorage.setItem('foxyJokerLastRefill', today);
+            }
+        })();
+        
+        function updateJokerDisplay() {
+            const btn = document.getElementById('jokerBtn');
+            const countEl = document.getElementById('jokerCount');
+            countEl.textContent = jokerCount;
+            btn.disabled = jokerCount <= 0 || jokerUsedThisQuestion;
+            if (jokerUsedThisQuestion) btn.classList.add('used');
+            else btn.classList.remove('used');
+        }
+        
+        function useFiftyFifty() {
+            if (jokerCount <= 0 || jokerUsedThisQuestion) return;
+            
+            const options = document.querySelectorAll('.option-btn:not(.joker-hidden)');
+            const wrongOptions = Array.from(options).filter(btn => btn.textContent !== currentAnswer);
+            
+            // Zufällig 2 falsche Antworten ausblenden
+            const shuffled = wrongOptions.sort(() => Math.random() - 0.5);
+            const toHide = shuffled.slice(0, 2);
+            
+            toHide.forEach(btn => {
+                btn.classList.add('joker-hidden');
+            });
+            
+            jokerCount--;
+            jokerUsedThisQuestion = true;
+            localStorage.setItem('foxyJokerCount', jokerCount);
+            updateJokerDisplay();
+            
+            // Foxy-Toast
+            showToast('info', '🦊', 'Foxy hilft!', '2 falsche Antworten entfernt!');
+        }
+        
         function startQuiz(module) {
             currentModule = module;
             document.getElementById('quizModal').classList.add('active');
             document.getElementById('moduleTitle').textContent = module.charAt(0).toUpperCase() + module.slice(1);
+            
+            // 🦊 Joker-Display initialisieren
+            updateJokerDisplay();
             
             // Foxy über Modulwechsel informieren
             if (typeof updateFoxyModule === 'function') {
@@ -1986,6 +2104,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         
         function loadQuestion() {
+            // 🦊 Joker für diese Frage zurücksetzen
+            jokerUsedThisQuestion = false;
+            updateJokerDisplay();
+            
             document.getElementById('optionsContainer').innerHTML = '';
             document.getElementById('feedback').innerHTML = '';
             document.getElementById('explanation').style.display = 'none';
