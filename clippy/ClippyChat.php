@@ -77,39 +77,55 @@ class ClippyChat {
         if ($count > 0) return;
         
         $defaults = [
-            // Witze
+            // Witze (10 Stück)
             ['joke', 'witz,lustig,lachen', 'Warum können Füchse so gut in der Schule? Weil sie immer schlau sind! 🦊😄'],
             ['joke', 'witz,lustig,lachen', 'Was macht ein Fuchs am Computer? Er surft im Fuchsbook! 💻🦊'],
             ['joke', 'witz,lustig,lachen', 'Warum tragen Füchse keine Brillen? Weil sie schon Fuchs-Augen haben! 👀😂'],
             ['joke', 'witz,lustig,lachen', 'Was ist orange und kann rechnen? Ein Mathe-Fuchs! 🧮🦊'],
             ['joke', 'witz,lustig,lachen', 'Wie nennt man einen Fuchs, der Klavier spielt? Wolfgang Amadeus Fuchs! 🎹🦊'],
-            ['joke', 'witz,lustig,lachen', 'Was sagt der Fuchs zum Hasen? Keine Angst, ich will nur quatschen! 🐰🦊'],
-            ['joke', 'witz,lustig,lachen', 'Warum sind Füchse die besten Lehrer? Weil sie total ausge-fuchst sind! 📚😄'],
-            ['joke', 'witz,lustig,lachen', 'Was macht ein Fuchs im Fitnessstudio? Fuchsliegestütze! 💪🦊'],
-            ['joke', 'witz,lustig,lachen', 'Wie begrüßen sich Füchse? Mit einem Fuchsfünfer! ✋🦊'],
-            ['joke', 'witz,lustig,lachen', 'Was ist der Lieblingssport von Füchsen? Fuchsball! ⚽🦊'],
+            ['joke', 'witz,lustig,lachen', 'Warum ging der Fuchs zur Schule? Um schlauer als die anderen zu werden! 📚🦊'],
+            ['joke', 'witz,lustig,lachen', 'Was sagt ein Fuchs wenn er fertig ist? FUCHSTASTISCH! 🎉🦊'],
+            ['joke', 'witz,lustig,lachen', 'Warum sind Füchse so gute Detektive? Sie haben einen Riecher! 🔍🦊'],
+            ['joke', 'witz,lustig,lachen', 'Was ist das Lieblingsfach vom Fuchs? Fuchs-ik! ⚛️🦊'],
+            ['joke', 'witz,lustig,lachen', 'Warum tanzt der Fuchs so gern? Er hat den Fox-Trott erfunden! 💃🦊'],
             
-            // Aufmunterung
+            // Aufmunterung (10 Stück)
             ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Kopf hoch! 💪 Jeder macht mal Fehler - so lernt man! Du schaffst das! 🦊🌟'],
             ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Du bist toll! 🌈 Auch wenn es schwer ist - ich glaube an dich! 🦊❤️'],
             ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Füchse geben nie auf! 🦊💪 Und du auch nicht! Weiter so!'],
             ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Das wird schon! 🌟 Kleine Schritte führen auch zum Ziel! 🦊'],
             ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Ich bin stolz auf dich! 🦊 Dass du es versuchst, ist schon super! 💪'],
-            ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Hey, nicht aufgeben! 🌈 Morgen sieht alles besser aus! 🦊'],
+            ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Ein Schritt nach dem anderen! Du rockst das! 🎸🦊'],
+            ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Füchse fallen 7 mal hin und stehen 8 mal auf! 💪🦊'],
+            ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Übung macht den Meister-Fuchs! 🏆🦊'],
+            ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Du hast das Zeug zum Champion! 🥇🦊'],
+            ['cheer', 'aufmunter,traurig,schaff,schwer,schwierig,kann nicht,hilf', '{name}Du bist schlauer als du denkst! 🧠✨'],
             
-            // Plattform-Tipps
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Du bekommst Sats für richtige Antworten! Je mehr du lernst, desto mehr verdienst du! 🦊'],
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Probier verschiedene Fächer aus! Abwechslung macht schlau! 📚🦊'],
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Nach 10 Fragen bekommst du eine Zusammenfassung mit Belohnungen! 🎉'],
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Im Wallet siehst du deine verdienten Sats! 💰🦊'],
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Oben kannst du zwischen den Fächern wechseln! 📖'],
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Je schwieriger die Fragen, desto mehr Punkte! Level up! 🚀'],
-            ['tip', 'tipp,plattform,wie geht,hilfe,erkläre', '💡 Deine Eltern können deinen Fortschritt im Eltern-Dashboard sehen! 👨‍👩‍👧'],
+            // Tipps (8 Stück)
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Du bekommst Sats für richtige Antworten! Je mehr du lernst, desto mehr verdienst du! 🦊₿'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Probier verschiedene Fächer aus! Abwechslung macht schlau! 📚🦊'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Nach 10 Fragen bekommst du eine Zusammenfassung mit Belohnungen! 🎉'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Lies die Frage immer zweimal! 📖🦊'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Nutze den 50/50 Joker wenn du unsicher bist! 🦊'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Jeden Tag 10 Fragen = Super Fortschritt! 📈🦊'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Mach Pausen - dein Gehirn braucht sie! 🧠🦊'],
+            ['tip', 'tipp,rat,hilfe,erkläre,wie geht', '💡 Falsche Antworten zeigen dir was du noch lernen kannst! 📚🦊'],
             
-            // Motivation zum Lernen (wenn kein Modul aktiv)
-            ['motivate', 'langeweile,was soll,keine lust', '{name}Bereit zum Lernen? 🦊 Wähl oben ein Fach aus und leg los! Du schaffst das! 💪'],
-            ['motivate', 'langeweile,was soll,keine lust', '{name}Schön, dass du da bist! 🌟 Such dir ein Fach aus und sammle Punkte! 🎯'],
-            ['motivate', 'langeweile,was soll,keine lust', '{name}Lust auf ein Quiz? 🦊 Klick oben auf ein Fach und zeig was du kannst! 🚀'],
+            // Danke
+            ['thanks', 'danke,super,cool,toll,klasse', 'Gern geschehen! Du bist super! 🌟🦊'],
+            ['thanks', 'danke,super,cool,toll,klasse', 'Immer für dich da! 🦊❤️'],
+            ['thanks', 'danke,super,cool,toll,klasse', 'Das freut mich! Weiter so! 💪🦊'],
+            ['thanks', 'danke,super,cool,toll,klasse', 'Füchse helfen gern! 🦊✨'],
+            
+            // Bitcoin
+            ['bitcoin', 'bitcoin,sats,geld,wallet', '₿ Bitcoin ist digitales Geld! Lerne mehr im Bitcoin-Modul! 🦊💰'],
+            ['bitcoin', 'bitcoin,sats,geld,wallet', '₿ Mit Sats kannst du später echtes Bitcoin bekommen! 🦊💰'],
+            
+            // Langweile / Motivation
+            ['motivate', 'langeweile,langweilig,keine lust,was soll', '{name}Komm, nur noch eine Frage! Du schaffst das! 💪🦊'],
+            ['motivate', 'langeweile,langweilig,keine lust,was soll', '{name}Was hältst du von einem Witz zur Auflockerung? 😄🦊'],
+            ['motivate', 'langeweile,langweilig,keine lust,was soll', '{name}Mach 5 Minuten Pause und dann gehts weiter! ☕🦊'],
+            ['motivate', 'langeweile,langweilig,keine lust,was soll', '{name}Bereit zum Lernen? Wähl oben ein Fach aus! 🦊💪'],
         ];
         
         $stmt = $this->db->prepare("INSERT INTO foxy_responses (category, trigger_words, response) VALUES (?, ?, ?)");
