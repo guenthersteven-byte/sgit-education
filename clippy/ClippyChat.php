@@ -19,7 +19,7 @@
 
 class ClippyChat {
     
-    private $ollamaUrl = 'http://localhost:11434/api/generate';
+    private $ollamaUrl = 'http://ollama:11434/api/generate';
     private $modelFast = 'tinyllama:latest';      // Schnell für einfache Antworten
     private $modelSmart = 'gemma2:2b';            // Intelligent für Erklärungen
     private $useSmartModel = false;               // Default: Schnellmodus
@@ -575,7 +575,7 @@ PROMPT;
      * Prüft Ollama Status
      */
     public function checkOllamaStatus(): array {
-        $ch = curl_init('http://localhost:11434/api/tags');
+        $ch = curl_init('http://ollama:11434/api/tags');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 3,

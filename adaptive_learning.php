@@ -2458,6 +2458,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         
         function closeQuiz() {
             document.getElementById('quizModal').classList.remove('active');
+            
+            // 🦊 Foxy Quiz-Kontext löschen
+            if (typeof clearFoxyQuizContext === 'function') {
+                clearFoxyQuizContext();
+            }
         }
         
         function updateProgress(done, total = 10) {
@@ -2508,6 +2513,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                             btn.onclick = () => checkAnswer(opt, btn);
                             container.appendChild(btn);
                         });
+                        
+                        // 🦊 Foxy über neue Frage informieren (für Hint-Feature)
+                        if (typeof setFoxyQuizContext === 'function') {
+                            setFoxyQuizContext(data.question, currentAnswer, data.options);
+                        }
                     } else {
                         document.getElementById('questionText').textContent = 'Fehler: ' + data.error;
                     }
@@ -2558,6 +2568,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                         explanationDiv.innerHTML = `<span class="explanation-icon">${icon}</span>${currentExplanation}`;
                         explanationDiv.className = data.correct ? 'explanation' : 'explanation wrong';
                         explanationDiv.style.display = 'block';
+                    }
+                    
+                    // 🦊 Foxy über Antwort informieren (für Explain-Feature)
+                    if (typeof setFoxyUserAnswer === 'function') {
+                        setFoxyUserAnswer(answer, data.correct);
                     }
                     
                     document.getElementById('sessionScore').textContent = data.session_score + ' Punkte';
