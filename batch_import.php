@@ -1,51 +1,35 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Batch CSV Import v2.0
+ * sgiT Education - CSV Import v4.0 (TODO-005)
  * ============================================================================
  * 
- * Importiert CSV-Dateien mit Fragen in die questions.db.
+ * DRAG & DROP MULTI-FILE IMPORT mit Auto-Modul-Erkennung
  * 
- * v2.0 ÄNDERUNGEN (03.12.2025) - BUG-008 FIX:
- * - NEU: CSV-Upload Funktion
- * - NEU: Template-Download
- * - NEU: Vorschau vor Import
- * - NEU: Einzeldatei-Import mit Modul-Auswahl
- * - VERBESSERT: Tabs für verschiedene Import-Modi
- * 
- * Features:
- * - Upload eigener CSV-Dateien
- * - Automatisches Mapping CSV → Modul
- * - Dry-Run Option (nur validieren)
- * - Detaillierte Fortschrittsanzeige
- * - Template-Download mit Beispieldaten
+ * v4.0: TODO-005 - Multi-File, Drag & Drop, Auto-Modul, AJAX Progress
+ * v3.0: Neues CI mit gemeinsamer Navigation (TODO-008)
+ * v2.0: CSV-Upload, Template, Vorschau, Einzeldatei-Import
  * 
  * @author sgiT Solution Engineering & IT Services
- * @version 2.0
- * @date 03.12.2025
+ * @version 4.0
+ * @date 09.12.2025
  * ============================================================================
  */
 
 session_start();
 
-// Admin-Check
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    header('Location: admin_v4.php');
-    exit;
-}
-
+// Zentrale Versionsverwaltung
+require_once __DIR__ . '/includes/version.php';
 require_once __DIR__ . '/includes/CSVQuestionImporter.php';
 
 // ============================================================================
 // KONFIGURATION
 // ============================================================================
 $uploadDir = __DIR__ . '/uploads/csv/';
-$docsPath = __DIR__ . '/docs/';
+$generatedPath = __DIR__ . '/questions/generated/';
 
 // Upload-Verzeichnis erstellen falls nicht vorhanden
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
+if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
 // Module mit Icons
 $modules = [
@@ -62,994 +46,810 @@ $modules = [
     'bitcoin' => ['icon' => '₿', 'name' => 'Bitcoin'],
     'geschichte' => ['icon' => '📚', 'name' => 'Geschichte'],
     'biologie' => ['icon' => '🧬', 'name' => 'Biologie'],
-    'steuern' => ['icon' => '💰', 'name' => 'Finanzen/Steuern'],
+    'finanzen' => ['icon' => '💰', 'name' => 'Finanzen'],
     'programmieren' => ['icon' => '👨‍💻', 'name' => 'Programmieren'],
     'verkehr' => ['icon' => '🚗', 'name' => 'Verkehr'],
     'unnuetzes_wissen' => ['icon' => '🤯', 'name' => 'Unnützes Wissen'],
     'sport' => ['icon' => '🏃', 'name' => 'Sport']
 ];
 
-// CSV-Mapping für Batch-Import aus docs/
-$csvMapping = [
-    'mathe_addition_subtraktion.csv' => 'mathematik',
-    'lesen_grundlagen.csv' => 'lesen',
-    'englisch_grundlagen.csv' => 'englisch',
-    'wissenschaft_grundlagen.csv' => 'wissenschaft',
-    'erdkunde_grundlagen.csv' => 'erdkunde',
-    'chemie_grundlagen.csv' => 'chemie',
-    'physik_grundlagen.csv' => 'physik',
-    'kunst_grundlagen.csv' => 'kunst',
-    'musik_grundlagen.csv' => 'musik',
-    'computer_grundlagen.csv' => 'computer',
-    'bitcoin_grundlagen.csv' => 'bitcoin',
-    'geschichte_grundlagen.csv' => 'geschichte',
-    'biologie_grundlagen.csv' => 'biologie',
-    'finanzen_grundlagen.csv' => 'steuern',
-    'programmieren_grundlagen.csv' => 'programmieren'
-];
+
+// ============================================================================
+// HILFSFUNKTIONEN
+// ============================================================================
+
+/**
+ * Erkennt das Modul automatisch aus dem Dateinamen
+ * z.B. "mathematik_age5-8_20251209.csv" → "mathematik"
+ */
+function detectModuleFromFilename($filename, $availableModules) {
+    $filename = strtolower(basename($filename));
+    
+    // Sortiere Module nach Länge (längste zuerst) für besseres Matching
+    $moduleKeys = array_keys($availableModules);
+    usort($moduleKeys, fn($a, $b) => strlen($b) - strlen($a));
+    
+    foreach ($moduleKeys as $module) {
+        // Prüfe ob Dateiname mit Modulnamen beginnt
+        if (strpos($filename, $module) === 0) {
+            return $module;
+        }
+        // Prüfe auch mit Unterstrich nach Modulname
+        if (strpos($filename, $module . '_') !== false) {
+            return $module;
+        }
+    }
+    
+    return null; // Nicht erkannt
+}
+
+/**
+ * Zählt Zeilen in einer CSV-Datei (ohne Header)
+ */
+function countCsvRows($filepath) {
+    $count = 0;
+    if (($handle = fopen($filepath, 'r')) !== false) {
+        fgetcsv($handle, 0, ';'); // Skip header
+        while (fgetcsv($handle, 0, ';') !== false) {
+            $count++;
+        }
+        fclose($handle);
+    }
+    return $count;
+}
+
+// ============================================================================
+// API ENDPOINT FÜR AJAX-IMPORT
+// ============================================================================
+
+if (isset($_GET['api'])) {
+    header('Content-Type: application/json');
+    $action = $_GET['api'];
+    
+    // IMPORT SINGLE FILE
+    if ($action === 'import_single' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            // Datei aus Upload oder Pfad
+            $filepath = '';
+            $module = $_POST['module'] ?? '';
+            $dryRun = isset($_POST['dry_run']) && $_POST['dry_run'] === '1';
+            
+            // Option 1: Neue Datei hochgeladen
+            if (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['csv_file'];
+                $filename = 'upload_' . date('Ymd_His') . '_' . basename($file['name']);
+                $filepath = $uploadDir . $filename;
+                
+                if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+                    throw new Exception('Fehler beim Speichern der Datei');
+                }
+                
+                // Auto-Erkennung wenn kein Modul angegeben
+                if (empty($module)) {
+                    $module = detectModuleFromFilename($file['name'], $modules);
+                }
+            }
+            // Option 2: Bestehende Datei (Pfad übergeben)
+            elseif (!empty($_POST['filepath'])) {
+                $filepath = $_POST['filepath'];
+                if (!file_exists($filepath)) {
+                    throw new Exception('Datei nicht gefunden');
+                }
+                
+                // Auto-Erkennung wenn kein Modul angegeben
+                if (empty($module)) {
+                    $module = detectModuleFromFilename($filepath, $modules);
+                }
+            }
+            else {
+                throw new Exception('Keine Datei angegeben');
+            }
+            
+            // Modul validieren
+            if (empty($module) || !isset($modules[$module])) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Modul nicht erkannt. Bitte manuell auswählen.',
+                    'detected_module' => null,
+                    'filename' => basename($filepath)
+                ]);
+                exit;
+            }
+            
+            // Import durchführen
+            $importer = new CSVQuestionImporter();
+            $result = $importer->importFromCSV($filepath, $module, $dryRun);
+            
+            echo json_encode([
+                'success' => true,
+                'filename' => basename($filepath),
+                'module' => $module,
+                'module_name' => $modules[$module]['name'],
+                'module_icon' => $modules[$module]['icon'],
+                'imported' => $result['imported'],
+                'duplicates' => $result['duplicates'],
+                'errors' => $result['errors'],
+                'total' => $result['total'],
+                'dry_run' => $dryRun,
+                'error_messages' => $result['error_messages'] ?? []
+            ]);
+            exit;
+            
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+    
+    // DETECT MODULE
+    if ($action === 'detect_module') {
+        $filename = $_GET['filename'] ?? '';
+        $detected = detectModuleFromFilename($filename, $modules);
+        
+        echo json_encode([
+            'detected' => $detected !== null,
+            'module' => $detected,
+            'module_name' => $detected ? $modules[$detected]['name'] : null,
+            'module_icon' => $detected ? $modules[$detected]['icon'] : null
+        ]);
+        exit;
+    }
+    
+    // LIST GENERATED FILES
+    if ($action === 'list_generated') {
+        $files = [];
+        if (is_dir($generatedPath)) {
+            $csvFiles = glob($generatedPath . '*.csv');
+            foreach ($csvFiles as $file) {
+                $filename = basename($file);
+                $detectedModule = detectModuleFromFilename($filename, $modules);
+                
+                if ($detectedModule) {
+                    $files[] = [
+                        'path' => $file,
+                        'filename' => $filename,
+                        'module' => $detectedModule,
+                        'module_name' => $modules[$detectedModule]['name'],
+                        'module_icon' => $modules[$detectedModule]['icon'],
+                        'size' => filesize($file),
+                        'rows' => countCsvRows($file),
+                        'date' => filemtime($file)
+                    ];
+                }
+            }
+            usort($files, fn($a, $b) => $b['date'] - $a['date']);
+        }
+        
+        echo json_encode(['success' => true, 'files' => $files, 'count' => count($files)]);
+        exit;
+    }
+    
+    echo json_encode(['error' => 'Unbekannte API-Aktion']);
+    exit;
+}
+
 
 // ============================================================================
 // TEMPLATE DOWNLOAD
 // ============================================================================
 if (isset($_GET['download_template'])) {
     $template = "frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
-Was ist 2 + 2?;3;4;5;6;B;1;5;8;2 + 2 ergibt 4, weil man zwei Einheiten zu zwei anderen hinzufügt.;basic
-Wie viele Tage hat eine Woche?;5;6;7;8;C;1;5;10;Eine Woche hat immer 7 Tage.;basic
-Was ist die Hauptstadt von Deutschland?;München;Hamburg;Berlin;Frankfurt;C;2;8;15;Berlin ist seit der Wiedervereinigung 1990 die Hauptstadt Deutschlands.;geography
+Was ist 2 + 2?;3;4;5;6;B;1;5;8;2 + 2 ergibt 4;basic
+Wie viele Tage hat eine Woche?;5;6;7;8;C;1;5;10;Eine Woche hat 7 Tage;basic
 ";
-    
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="sgit_fragen_template.csv"');
-    echo "\xEF\xBB\xBF"; // UTF-8 BOM für Excel
+    header('Content-Disposition: attachment; filename="fragen_template.csv"');
+    echo "\xEF\xBB\xBF"; // UTF-8 BOM
     echo $template;
     exit;
 }
 
 // ============================================================================
-// VERARBEITUNG
+// HTML OUTPUT
 // ============================================================================
-$results = [];
-$message = null;
-$messageType = 'info';
-$previewData = null;
-$totalImported = 0;
-$totalDuplicates = 0;
-$totalErrors = 0;
-$totalQuestions = 0;
 
-$action = $_POST['action'] ?? $_GET['action'] ?? '';
-$activeTab = $_POST['tab'] ?? $_GET['tab'] ?? 'upload';
-
-// --- UPLOAD & PREVIEW ---
-if ($action === 'upload_preview' && isset($_FILES['csv_file'])) {
-    $file = $_FILES['csv_file'];
-    $module = $_POST['module'] ?? '';
-    
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        $message = '❌ Upload-Fehler: ' . $file['error'];
-        $messageType = 'error';
-    } elseif (!in_array($module, array_keys($modules))) {
-        $message = '❌ Bitte wähle ein gültiges Modul!';
-        $messageType = 'error';
-    } else {
-        // Datei speichern
-        $filename = 'upload_' . date('Ymd_His') . '_' . preg_replace('/[^a-zA-Z0-9_.-]/', '', $file['name']);
-        $filepath = $uploadDir . $filename;
-        
-        if (move_uploaded_file($file['tmp_name'], $filepath)) {
-            // Preview generieren
-            $previewData = [
-                'filepath' => $filepath,
-                'filename' => $filename,
-                'module' => $module,
-                'rows' => []
-            ];
-            
-            // CSV lesen
-            $content = file_get_contents($filepath);
-            $content = preg_replace('/^\xEF\xBB\xBF/', '', $content); // BOM entfernen
-            $lines = explode("\n", $content);
-            $header = null;
-            
-            foreach ($lines as $lineNum => $line) {
-                $line = trim($line);
-                if (empty($line)) continue;
-                
-                if ($header === null) {
-                    $header = str_getcsv($line, ';');
-                    $header = array_map('trim', $header);
-                    $previewData['header'] = $header;
-                    continue;
-                }
-                
-                $values = str_getcsv($line, ';');
-                if (count($values) === count($header)) {
-                    $previewData['rows'][] = array_combine($header, $values);
-                }
-                
-                // Max 10 Zeilen für Preview
-                if (count($previewData['rows']) >= 10) break;
-            }
-            
-            $previewData['total_rows'] = count($lines) - 1; // -1 für Header
-            $activeTab = 'preview';
-        } else {
-            $message = '❌ Fehler beim Speichern der Datei!';
-            $messageType = 'error';
-        }
-    }
-}
-
-// --- IMPORT NACH PREVIEW ---
-if ($action === 'import_uploaded') {
-    $filepath = $_POST['filepath'] ?? '';
-    $module = $_POST['module'] ?? '';
-    $dryRun = isset($_POST['dry_run']);
-    
-    if (file_exists($filepath) && in_array($module, array_keys($modules))) {
-        try {
-            $importer = new CSVQuestionImporter();
-            $result = $importer->importFromCSV($filepath, $module, $dryRun);
-            
-            $results[] = [
-                'file' => basename($filepath),
-                'module' => $module,
-                'status' => 'success',
-                'imported' => $result['imported'],
-                'duplicates' => $result['duplicates'],
-                'errors' => $result['errors'],
-                'total' => $result['total'],
-                'error_messages' => $result['error_messages'] ?? [],
-                'batch_id' => $result['batch_id'] ?? ''
-            ];
-            
-            $totalImported = $result['imported'];
-            $totalDuplicates = $result['duplicates'];
-            $totalErrors = $result['errors'];
-            $totalQuestions = $result['total'];
-            
-            // Datei nach Import löschen
-            if (!$dryRun) {
-                unlink($filepath);
-            }
-            
-            $activeTab = 'results';
-        } catch (Exception $e) {
-            $message = '❌ Import-Fehler: ' . $e->getMessage();
-            $messageType = 'error';
-        }
-    } else {
-        $message = '❌ Datei oder Modul ungültig!';
-        $messageType = 'error';
-    }
-}
-
-// --- BATCH IMPORT (alle docs/ CSVs) ---
-if ($action === 'batch_import') {
-    $dryRun = isset($_POST['dry_run']);
-    $importer = new CSVQuestionImporter();
-    
-    foreach ($csvMapping as $csvFile => $module) {
-        $csvPath = $docsPath . $csvFile;
-        
-        $result = [
-            'file' => $csvFile,
-            'module' => $module,
-            'status' => 'pending',
-            'imported' => 0,
-            'duplicates' => 0,
-            'errors' => 0,
-            'total' => 0,
-            'error_messages' => []
-        ];
-        
-        if (!file_exists($csvPath)) {
-            $result['status'] = 'missing';
-            $result['error_messages'][] = "Datei nicht gefunden";
-            $results[] = $result;
-            continue;
-        }
-        
-        try {
-            $importResult = $importer->importFromCSV($csvPath, $module, $dryRun);
-            
-            $result['status'] = 'success';
-            $result['imported'] = $importResult['imported'];
-            $result['duplicates'] = $importResult['duplicates'];
-            $result['errors'] = $importResult['errors'];
-            $result['total'] = $importResult['total'];
-            $result['error_messages'] = $importResult['error_messages'] ?? [];
-            $result['batch_id'] = $importResult['batch_id'] ?? '';
-            
-            $totalImported += $importResult['imported'];
-            $totalDuplicates += $importResult['duplicates'];
-            $totalErrors += $importResult['errors'];
-            $totalQuestions += $importResult['total'];
-            
-        } catch (Exception $e) {
-            $result['status'] = 'error';
-            $result['error_messages'][] = $e->getMessage();
-            $totalErrors++;
-        }
-        
-        $results[] = $result;
-    }
-    
-    $activeTab = 'results';
-}
+// Header einbinden
+$currentPage = 'csv_import';
+$pageTitle = 'CSV Import';
+require_once __DIR__ . '/includes/generator_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Import - sgiT Education Admin</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --bitcoin: #F7931A;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-        }
-        
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header h1 { font-size: 24px; }
-        
-        .header-links {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .header a {
-            color: white;
-            text-decoration: none;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        
-        .header a:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-        
-        .tab {
-            padding: 12px 25px;
-            background: white;
-            border: none;
-            border-radius: 10px 10px 0 0;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s;
-        }
-        
-        .tab:hover {
-            background: #e9ecef;
-        }
-        
-        .tab.active {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .card h2 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent);
-        }
-        
-        .card h3 {
-            color: var(--primary);
-            margin: 20px 0 10px;
-        }
-        
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .form-group select,
-        .form-group input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group select:focus,
-        .form-group input:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-right: 10px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary);
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: #333;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .btn-info {
-            background: var(--info);
-            color: white;
-        }
-        
-        .btn-large {
-            padding: 18px 35px;
-            font-size: 18px;
-        }
-        
-        /* Upload Zone */
-        .upload-zone {
-            border: 3px dashed #ccc;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            background: #fafafa;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .upload-zone:hover,
-        .upload-zone.dragover {
-            border-color: var(--accent);
-            background: #f0fff0;
-        }
-        
-        .upload-zone .icon {
-            font-size: 60px;
-            margin-bottom: 15px;
-        }
-        
-        .upload-zone p {
-            color: #666;
-            margin: 10px 0;
-        }
-        
-        .upload-zone input[type="file"] {
-            display: none;
-        }
-        
-        /* Info Boxes */
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #b6d4fe;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .success-box {
-            background: #d4edda;
-            border: 1px solid #28a745;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .error-box {
-            background: #f8d7da;
-            border: 1px solid #dc3545;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        /* Preview Table */
-        .preview-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            margin-top: 15px;
-        }
-        
-        .preview-table th,
-        .preview-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        
-        .preview-table th {
-            background: var(--primary);
-            color: white;
-            font-size: 12px;
-        }
-        
-        .preview-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        .preview-table tr:hover {
-            background: #e9ecef;
-        }
-        
-        /* Results Table */
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .results-table th,
-        .results-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .results-table th {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .results-table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        /* Status Badges */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-success { background: #d4edda; color: #155724; }
-        .status-error { background: #f8d7da; color: #721c24; }
-        .status-missing { background: #fff3cd; color: #856404; }
-        .status-pending { background: #e2e3e5; color: #383d41; }
-        
-        /* Summary */
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .summary-box {
-            background: linear-gradient(135deg, var(--primary), #2d5a08);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        
-        .summary-box.success { background: linear-gradient(135deg, var(--success), #1e7e34); }
-        .summary-box.warning { background: linear-gradient(135deg, var(--warning), #d39e00); color: #333; }
-        .summary-box.danger { background: linear-gradient(135deg, var(--danger), #bd2130); }
-        
-        .summary-value {
-            font-size: 42px;
-            font-weight: bold;
-        }
-        
-        .summary-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        /* File List */
-        .file-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        
-        .file-item {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            border-left: 4px solid var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .file-item.missing {
-            border-left-color: var(--danger);
-            background: #fff0f0;
-        }
-        
-        .file-item .icon {
-            font-size: 24px;
-        }
-        
-        .file-item .details {
-            flex: 1;
-        }
-        
-        .file-item .module {
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .file-item .filename {
-            font-size: 11px;
-            color: #666;
-            font-family: monospace;
-        }
-        
-        /* Checkbox */
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-        }
-        
-        /* Template Info */
-        .template-info {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        .template-info h4 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .template-info code {
-            display: block;
-            background: #1A3503;
-            color: #43D240;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        
-        .template-info ul {
-            margin: 10px 0 10px 20px;
-        }
-        
-        .template-info li {
-            margin: 5px 0;
-            color: #555;
-        }
-        
-        /* Error List */
-        .error-list {
-            background: #fff0f0;
-            border-radius: 5px;
-            padding: 10px;
-            font-size: 12px;
-            max-height: 100px;
-            overflow-y: auto;
-            list-style: none;
-        }
-        
-        .error-list li {
-            color: var(--danger);
-            margin: 3px 0;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .summary {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tabs {
-                flex-wrap: wrap;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>📦 CSV Fragen-Import</h1>
-        <div class="header-links">
-            <a href="?download_template">📥 Template</a>
-            <a href="admin_v4.php">← Dashboard</a>
+
+<!-- TODO-005: Enhanced Drag & Drop Multi-File Import -->
+<style>
+    /* Drop Zone */
+    .drop-zone {
+        border: 3px dashed var(--border);
+        border-radius: 16px;
+        padding: 50px 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+        position: relative;
+    }
+    
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: var(--accent);
+        background: linear-gradient(135deg, rgba(67,210,64,0.08) 0%, rgba(67,210,64,0.02) 100%);
+        transform: scale(1.01);
+    }
+    
+    .drop-zone.dragover::after {
+        content: '📥 Dateien hier ablegen!';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(67,210,64,0.15);
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        border-radius: 14px;
+    }
+    
+    .drop-zone-icon { font-size: 4rem; margin-bottom: 15px; }
+    .drop-zone-title { font-size: 1.3rem; font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+    .drop-zone-hint { color: var(--text-muted); font-size: 0.9rem; }
+    .drop-zone input[type="file"] { display: none; }
+    
+    /* File Queue */
+    .file-queue { margin-top: 25px; }
+    .file-queue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .file-queue-title { font-weight: 600; color: var(--primary); }
+    
+    .file-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+    }
+    
+    .file-item:hover { border-color: var(--accent); }
+    .file-item.importing { background: rgba(67,210,64,0.08); border-color: var(--accent); }
+    .file-item.success { background: #d4edda; border-color: #28a745; }
+    .file-item.error { background: #f8d7da; border-color: #dc3545; }
+    
+    .file-icon { font-size: 2rem; }
+    .file-details { flex: 1; }
+    .file-name { font-weight: 600; font-size: 0.95rem; }
+    .file-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+    .file-module {
+        padding: 4px 12px;
+        background: var(--accent);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .file-module.unknown { background: #ffc107; color: #333; }
+    
+    .file-progress {
+        width: 100%;
+        height: 4px;
+        background: var(--bg);
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+    .file-progress-bar {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.3s;
+    }
+    
+    .file-result { text-align: right; min-width: 120px; }
+    .file-result-stat { font-size: 0.8rem; }
+    .file-result-stat.imported { color: #28a745; }
+    .file-result-stat.duplicates { color: #ffc107; }
+    .file-result-stat.errors { color: #dc3545; }
+    
+    .file-actions { display: flex; gap: 8px; }
+    .file-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+    }
+    .file-btn-remove { background: #f8d7da; color: #dc3545; }
+    .file-btn-remove:hover { background: #dc3545; color: white; }
+    
+    /* Import Controls */
+    .import-controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+    }
+    
+    /* Summary */
+    .import-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .summary-card {
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        color: white;
+    }
+    .summary-card.total { background: linear-gradient(135deg, var(--primary), #2d5a08); }
+    .summary-card.success { background: linear-gradient(135deg, #28a745, #1e7e34); }
+    .summary-card.warning { background: linear-gradient(135deg, #ffc107, #d39e00); color: #333; }
+    .summary-card.danger { background: linear-gradient(135deg, #dc3545, #bd2130); }
+    .summary-value { font-size: 2rem; font-weight: bold; }
+    .summary-label { font-size: 0.85rem; opacity: 0.9; }
+    
+    /* Tabs */
+    .import-tabs { display: flex; gap: 5px; margin-bottom: 20px; }
+    .import-tab {
+        padding: 12px 24px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .import-tab:hover { background: #e9ecef; }
+    .import-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+    
+    @media (max-width: 768px) {
+        .import-summary { grid-template-columns: repeat(2, 1fr); }
+        .file-item { flex-wrap: wrap; }
+        .file-result { width: 100%; text-align: left; margin-top: 10px; }
+    }
+</style>
+
+
+<!-- Tabs -->
+<div class="import-tabs">
+    <button class="import-tab active" data-tab="upload">📥 Drag & Drop Import</button>
+    <button class="import-tab" data-tab="generated">📁 Generierte CSVs</button>
+    <button class="import-tab" data-tab="template">📋 Template & Hilfe</button>
+</div>
+
+<!-- TAB: UPLOAD (Drag & Drop) -->
+<div id="tab-upload" class="tab-content">
+    <div class="gen-card">
+        <div class="gen-card-header">
+            <span class="gen-card-title">📥 CSV-Dateien importieren</span>
+            <a href="?download_template" class="gen-btn gen-btn-secondary">📥 Template</a>
         </div>
-    </div>
-    
-    <?php if ($message): ?>
-    <div class="<?php echo $messageType === 'error' ? 'error-box' : ($messageType === 'success' ? 'success-box' : 'info-box'); ?>">
-        <?php echo $message; ?>
-    </div>
-    <?php endif; ?>
-    
-    <!-- TABS -->
-    <div class="tabs">
-        <button class="tab <?php echo $activeTab === 'upload' ? 'active' : ''; ?>" onclick="location.href='?tab=upload'">
-            📤 CSV Hochladen
-        </button>
-        <button class="tab <?php echo $activeTab === 'batch' ? 'active' : ''; ?>" onclick="location.href='?tab=batch'">
-            📦 Batch Import (docs/)
-        </button>
-        <?php if ($activeTab === 'preview'): ?>
-        <button class="tab active">👁️ Vorschau</button>
-        <?php endif; ?>
-        <?php if ($activeTab === 'results'): ?>
-        <button class="tab active">✅ Ergebnisse</button>
-        <?php endif; ?>
-    </div>
-    
-    <!-- TAB: UPLOAD -->
-    <?php if ($activeTab === 'upload'): ?>
-    <div class="card">
-        <h2>📤 CSV-Datei hochladen</h2>
         
-        <form method="POST" enctype="multipart/form-data" id="uploadForm">
-            <input type="hidden" name="action" value="upload_preview">
-            <input type="hidden" name="tab" value="upload">
-            
-            <div class="form-group">
-                <label>📁 Modul auswählen</label>
-                <select name="module" required>
-                    <option value="">-- Bitte wählen --</option>
-                    <?php foreach ($modules as $key => $mod): ?>
-                    <option value="<?php echo $key; ?>"><?php echo $mod['icon'] . ' ' . $mod['name']; ?></option>
-                    <?php endforeach; ?>
-                </select>
+        <!-- Drop Zone -->
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">📄</div>
+            <div class="drop-zone-title">CSV-Dateien hier ablegen</div>
+            <div class="drop-zone-hint">
+                oder klicken zum Auswählen • Mehrere Dateien möglich<br>
+                <strong>Auto-Erkennung:</strong> mathematik_*.csv → Mathematik
             </div>
-            
-            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click();">
-                <div class="icon">📄</div>
-                <p><strong>CSV-Datei hier ablegen</strong></p>
-                <p>oder klicken zum Auswählen</p>
-                <p style="font-size: 12px; color: #999;">Format: CSV mit Semikolon-Trennung (;)</p>
-                <input type="file" name="csv_file" id="csvFile" accept=".csv" required>
-            </div>
-            
-            <p id="selectedFile" style="margin: 10px 0; font-weight: 600; color: var(--primary);"></p>
-            
-            <button type="submit" class="btn btn-primary btn-large">
-                👁️ Vorschau anzeigen
-            </button>
-        </form>
+            <input type="file" id="fileInput" accept=".csv" multiple>
+        </div>
         
-        <div class="template-info">
-            <h4>📋 CSV-Format</h4>
-            <code>frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ</code>
+        <!-- File Queue -->
+        <div class="file-queue" id="fileQueue" style="display: none;">
+            <div class="file-queue-header">
+                <span class="file-queue-title">📋 Dateien zum Import (<span id="fileCount">0</span>)</span>
+                <button class="gen-btn gen-btn-danger" id="clearQueue" style="padding: 6px 12px; font-size: 0.8rem;">
+                    🗑️ Alle entfernen
+                </button>
+            </div>
+            <div id="fileList"></div>
             
-            <h4 style="margin-top: 15px;">Pflichtfelder:</h4>
-            <ul>
-                <li><strong>frage</strong> - Die Frage</li>
-                <li><strong>antwort_a, b, c, d</strong> - Die 4 Antwortmöglichkeiten</li>
-                <li><strong>richtig</strong> - Buchstabe der richtigen Antwort (A, B, C oder D)</li>
-                <li><strong>schwierigkeit</strong> - 1-5 (1=sehr leicht, 5=sehr schwer)</li>
-                <li><strong>min_alter, max_alter</strong> - Altersbereich 5-21</li>
-            </ul>
-            
-            <h4 style="margin-top: 15px;">Optionale Felder:</h4>
-            <ul>
-                <li><strong>erklaerung</strong> - Erklärung zur richtigen Antwort</li>
-                <li><strong>typ</strong> - Fragentyp (z.B. basic, advanced)</li>
-            </ul>
-            
-            <p style="margin-top: 15px;">
-                <a href="?download_template" class="btn btn-info">📥 Template herunterladen</a>
-            </p>
+            <div class="import-controls">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="dryRunCheck">
+                    <span>🔍 Dry-Run (nur validieren)</span>
+                </label>
+                <div style="flex: 1;"></div>
+                <button class="gen-btn gen-btn-primary" id="startImport" style="padding: 12px 30px;">
+                    🚀 Import starten
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results Summary (nach Import) -->
+        <div class="import-summary" id="importSummary" style="display: none;">
+            <div class="summary-card total">
+                <div class="summary-value" id="summaryTotal">0</div>
+                <div class="summary-label">Fragen geprüft</div>
+            </div>
+            <div class="summary-card success">
+                <div class="summary-value" id="summaryImported">0</div>
+                <div class="summary-label">Importiert</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="summary-value" id="summaryDuplicates">0</div>
+                <div class="summary-label">Duplikate</div>
+            </div>
+            <div class="summary-card danger">
+                <div class="summary-value" id="summaryErrors">0</div>
+                <div class="summary-label">Fehler</div>
+            </div>
         </div>
     </div>
-    <?php endif; ?>
-    
-    <!-- TAB: PREVIEW -->
-    <?php if ($activeTab === 'preview' && $previewData): ?>
-    <div class="card">
-        <h2>👁️ Vorschau: <?php echo htmlspecialchars($previewData['filename']); ?></h2>
-        
-        <div class="info-box">
-            <strong>Modul:</strong> <?php echo $modules[$previewData['module']]['icon'] . ' ' . $modules[$previewData['module']]['name']; ?><br>
-            <strong>Zeilen gefunden:</strong> <?php echo $previewData['total_rows']; ?> Fragen (zeige max. 10)
+</div>
+
+<!-- TAB: GENERATED FILES -->
+<div id="tab-generated" class="tab-content" style="display: none;">
+    <div class="gen-card">
+        <div class="gen-card-header">
+            <span class="gen-card-title">📁 Generierte CSV-Dateien</span>
+            <button class="gen-btn gen-btn-secondary" id="refreshGenerated">🔄 Aktualisieren</button>
         </div>
-        
-        <div style="overflow-x: auto;">
-            <table class="preview-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <?php foreach (['frage', 'antwort_a', 'antwort_b', 'antwort_c', 'antwort_d', 'richtig', 'schwierigkeit', 'min_alter', 'max_alter'] as $col): ?>
-                        <th><?php echo $col; ?></th>
-                        <?php endforeach; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($previewData['rows'] as $i => $row): ?>
-                    <tr>
-                        <td><?php echo $i + 1; ?></td>
-                        <?php foreach (['frage', 'antwort_a', 'antwort_b', 'antwort_c', 'antwort_d', 'richtig', 'schwierigkeit', 'min_alter', 'max_alter'] as $col): ?>
-                        <td><?php echo htmlspecialchars(substr($row[$col] ?? '', 0, 50)); ?><?php echo strlen($row[$col] ?? '') > 50 ? '...' : ''; ?></td>
-                        <?php endforeach; ?>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-        
-        <form method="POST" style="margin-top: 20px;">
-            <input type="hidden" name="action" value="import_uploaded">
-            <input type="hidden" name="filepath" value="<?php echo htmlspecialchars($previewData['filepath']); ?>">
-            <input type="hidden" name="module" value="<?php echo htmlspecialchars($previewData['module']); ?>">
-            
-            <div class="checkbox-group">
-                <input type="checkbox" name="dry_run" id="dry_run">
-                <label for="dry_run"><strong>Dry-Run:</strong> Nur validieren, NICHT importieren</label>
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-large">
-                ✅ Jetzt importieren (<?php echo $previewData['total_rows']; ?> Fragen)
-            </button>
-            <a href="?tab=upload" class="btn btn-danger">❌ Abbrechen</a>
-        </form>
-    </div>
-    <?php endif; ?>
-    
-    <!-- TAB: BATCH -->
-    <?php if ($activeTab === 'batch'): ?>
-    <div class="card">
-        <h2>📦 Batch Import aus /docs/</h2>
-        
-        <p style="margin-bottom: 15px;">
-            Importiert alle vorbereiteten CSV-Dateien aus dem <code>/docs/</code> Verzeichnis.
+        <p style="margin-bottom: 15px; color: var(--text-muted);">
+            Klicke auf eine Datei um sie zu importieren. Das Modul wird automatisch erkannt.
         </p>
-        
-        <h3>📋 Verfügbare CSV-Dateien (<?php echo count($csvMapping); ?>)</h3>
-        
-        <div class="file-list">
-            <?php foreach ($csvMapping as $csvFile => $module): ?>
-                <?php 
-                    $exists = file_exists($docsPath . $csvFile);
-                    $icon = $modules[$module]['icon'] ?? '📄';
-                ?>
-                <div class="file-item <?php echo $exists ? '' : 'missing'; ?>">
-                    <span class="icon"><?php echo $icon; ?></span>
-                    <div class="details">
-                        <div class="module"><?php echo $modules[$module]['name'] ?? ucfirst($module); ?></div>
-                        <div class="filename"><?php echo $csvFile; ?></div>
-                        <?php if (!$exists): ?>
-                        <span class="status-badge status-missing">FEHLT</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+        <div id="generatedFilesList">Lade...</div>
+    </div>
+</div>
+
+<!-- TAB: TEMPLATE -->
+<div id="tab-template" class="tab-content" style="display: none;">
+    <div class="gen-card">
+        <div class="gen-card-header">
+            <span class="gen-card-title">📋 CSV-Format & Hilfe</span>
         </div>
         
-        <div class="warning-box" style="margin-top: 20px;">
-            <strong>⚠️ Hinweis:</strong> Duplikate werden automatisch übersprungen (Hash-Vergleich).
-        </div>
+        <h4 style="color: var(--primary); margin-bottom: 10px;">Format (Semikolon-getrennt):</h4>
+        <code style="display: block; background: var(--primary); color: var(--accent); padding: 15px; border-radius: 8px; font-size: 0.85rem; overflow-x: auto;">
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+        </code>
         
-        <form method="POST">
-            <input type="hidden" name="action" value="batch_import">
-            <input type="hidden" name="tab" value="batch">
-            
-            <div class="checkbox-group">
-                <input type="checkbox" name="dry_run" id="dry_run_batch">
-                <label for="dry_run_batch"><strong>Dry-Run:</strong> Nur validieren, NICHT importieren</label>
+        <div class="gen-grid gen-grid-2" style="margin-top: 20px;">
+            <div>
+                <h4 style="color: var(--primary); margin-bottom: 10px;">📌 Pflichtfelder:</h4>
+                <ul style="margin-left: 20px; color: var(--text-muted); line-height: 1.8;">
+                    <li><strong>frage</strong> - Die Frage</li>
+                    <li><strong>antwort_a, b, c, d</strong> - 4 Antworten</li>
+                    <li><strong>richtig</strong> - A, B, C oder D</li>
+                    <li><strong>schwierigkeit</strong> - 1-5</li>
+                    <li><strong>min_alter, max_alter</strong> - z.B. 5-8</li>
+                </ul>
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-large">
-                📦 Alle <?php echo count($csvMapping); ?> CSVs importieren
-            </button>
-        </form>
-    </div>
-    <?php endif; ?>
-    
-    <!-- TAB: RESULTS -->
-    <?php if ($activeTab === 'results' && !empty($results)): ?>
-    
-    <div class="summary">
-        <div class="summary-box">
-            <div class="summary-value"><?php echo $totalQuestions; ?></div>
-            <div class="summary-label">Fragen geprüft</div>
+            <div>
+                <h4 style="color: var(--primary); margin-bottom: 10px;">🔍 Auto-Modul-Erkennung:</h4>
+                <ul style="margin-left: 20px; color: var(--text-muted); line-height: 1.8;">
+                    <li><code>mathematik_*.csv</code> → Mathematik</li>
+                    <li><code>englisch_age5-8.csv</code> → Englisch</li>
+                    <li><code>physik_questions.csv</code> → Physik</li>
+                </ul>
+                <p style="margin-top: 10px; font-size: 0.85rem;">
+                    Dateiname muss mit Modulnamen beginnen!
+                </p>
+            </div>
         </div>
-        <div class="summary-box success">
-            <div class="summary-value"><?php echo $totalImported; ?></div>
-            <div class="summary-label"><?php echo isset($_POST['dry_run']) ? 'Bereit zum Import' : 'Importiert'; ?></div>
-        </div>
-        <div class="summary-box warning">
-            <div class="summary-value"><?php echo $totalDuplicates; ?></div>
-            <div class="summary-label">Duplikate übersprungen</div>
-        </div>
-        <div class="summary-box danger">
-            <div class="summary-value"><?php echo $totalErrors; ?></div>
-            <div class="summary-label">Fehler</div>
+        
+        <div style="margin-top: 20px;">
+            <a href="?download_template" class="gen-btn gen-btn-primary">📥 Template herunterladen</a>
         </div>
     </div>
-    
-    <?php if (isset($_POST['dry_run'])): ?>
-    <div class="warning-box">
-        <strong>🔍 DRY-RUN:</strong> Es wurden keine Fragen importiert. Dies war nur eine Validierung.
-    </div>
-    <?php else: ?>
-    <div class="success-box">
-        <strong>✅ Import abgeschlossen!</strong> <?php echo $totalImported; ?> neue Fragen wurden importiert.
-    </div>
-    <?php endif; ?>
-    
-    <div class="card">
-        <h2>📊 Ergebnisse</h2>
+</div>
+
+
+<script>
+// ============================================================================
+// TODO-005: Multi-File Drag & Drop Import
+// ============================================================================
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileQueue = document.getElementById('fileQueue');
+const fileList = document.getElementById('fileList');
+const fileCount = document.getElementById('fileCount');
+const startImport = document.getElementById('startImport');
+const clearQueue = document.getElementById('clearQueue');
+const dryRunCheck = document.getElementById('dryRunCheck');
+
+// Module für manuelle Auswahl
+const modules = <?= json_encode($modules) ?>;
+
+// File Queue
+let filesToImport = [];
+
+// Tab Switching
+document.querySelectorAll('.import-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.import-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
         
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>Modul</th>
-                    <th>Datei</th>
-                    <th>Status</th>
-                    <th>Importiert</th>
-                    <th>Duplikate</th>
-                    <th>Fehler</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($results as $r): ?>
-                <tr>
-                    <td>
-                        <span style="font-size: 20px;"><?php echo $modules[$r['module']]['icon'] ?? '📄'; ?></span>
-                        <strong><?php echo $modules[$r['module']]['name'] ?? ucfirst($r['module']); ?></strong>
-                    </td>
-                    <td><code><?php echo htmlspecialchars($r['file']); ?></code></td>
-                    <td>
-                        <?php
-                        $statusClass = 'status-' . $r['status'];
-                        $statusText = [
-                            'success' => '✅ OK',
-                            'error' => '❌ Fehler',
-                            'missing' => '⚠️ Fehlt',
-                            'pending' => '⏳'
-                        ][$r['status']] ?? $r['status'];
-                        ?>
-                        <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
-                    </td>
-                    <td style="color: var(--success); font-weight: bold;">
-                        <?php echo $r['imported']; ?> / <?php echo $r['total']; ?>
-                    </td>
-                    <td style="color: var(--warning);"><?php echo $r['duplicates']; ?></td>
-                    <td style="color: var(--danger);">
-                        <?php echo $r['errors']; ?>
-                        <?php if (!empty($r['error_messages'])): ?>
-                        <ul class="error-list">
-                            <?php foreach (array_slice($r['error_messages'], 0, 3) as $err): ?>
-                            <li><?php echo htmlspecialchars($err); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="card">
-        <h2>🔄 Weiter?</h2>
-        <a href="?tab=upload" class="btn btn-primary">📤 Weitere CSV hochladen</a>
-        <a href="?tab=batch" class="btn btn-warning">📦 Batch Import</a>
-        <a href="adaptive_learning.php" class="btn btn-info">🧪 Testen</a>
-        <a href="admin_v4.php" class="btn btn-primary">← Dashboard</a>
-    </div>
-    
-    <?php endif; ?>
-    
-    <script>
-    // Drag & Drop für Upload-Zone
-    const uploadZone = document.getElementById('uploadZone');
-    const csvFile = document.getElementById('csvFile');
-    const selectedFile = document.getElementById('selectedFile');
-    
-    if (uploadZone) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, e => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
+        // Load generated files when tab is opened
+        if (tab.dataset.tab === 'generated') loadGeneratedFiles();
+    });
+});
+
+// ============================================================================
+// DRAG & DROP
+// ============================================================================
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+    dropZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); });
+});
+
+['dragenter', 'dragover'].forEach(e => {
+    dropZone.addEventListener(e, () => dropZone.classList.add('dragover'));
+});
+
+['dragleave', 'drop'].forEach(e => {
+    dropZone.addEventListener(e, () => dropZone.classList.remove('dragover'));
+});
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('drop', e => {
+    const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv'));
+    if (files.length > 0) addFilesToQueue(files);
+});
+
+fileInput.addEventListener('change', () => {
+    const files = Array.from(fileInput.files);
+    if (files.length > 0) addFilesToQueue(files);
+    fileInput.value = ''; // Reset for re-selection
+});
+
+// ============================================================================
+// FILE QUEUE MANAGEMENT
+// ============================================================================
+
+async function addFilesToQueue(files) {
+    for (const file of files) {
+        // Skip duplicates
+        if (filesToImport.find(f => f.file.name === file.name)) continue;
         
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, () => uploadZone.classList.add('dragover'));
-        });
+        // Detect module
+        const response = await fetch(`?api=detect_module&filename=${encodeURIComponent(file.name)}`);
+        const detection = await response.json();
         
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, () => uploadZone.classList.remove('dragover'));
-        });
-        
-        uploadZone.addEventListener('drop', e => {
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].name.endsWith('.csv')) {
-                csvFile.files = files;
-                selectedFile.textContent = '📄 ' + files[0].name;
-            }
-        });
-        
-        csvFile.addEventListener('change', () => {
-            if (csvFile.files.length > 0) {
-                selectedFile.textContent = '📄 ' + csvFile.files[0].name;
-            }
+        filesToImport.push({
+            file: file,
+            module: detection.module,
+            moduleName: detection.module_name,
+            moduleIcon: detection.module_icon,
+            detected: detection.detected,
+            status: 'pending' // pending, importing, success, error
         });
     }
-    </script>
-</body>
-</html>
+    
+    renderFileQueue();
+}
+
+function renderFileQueue() {
+    if (filesToImport.length === 0) {
+        fileQueue.style.display = 'none';
+        return;
+    }
+    
+    fileQueue.style.display = 'block';
+    fileCount.textContent = filesToImport.length;
+    
+    fileList.innerHTML = filesToImport.map((item, index) => `
+        <div class="file-item ${item.status}" data-index="${index}">
+            <div class="file-icon">${item.moduleIcon || '📄'}</div>
+            <div class="file-details">
+                <div class="file-name">${item.file.name}</div>
+                <div class="file-meta">${formatFileSize(item.file.size)}</div>
+                ${item.status === 'importing' ? '<div class="file-progress"><div class="file-progress-bar" style="width: 50%;"></div></div>' : ''}
+            </div>
+            <span class="file-module ${item.detected ? '' : 'unknown'}">
+                ${item.detected ? item.moduleName : '❓ Nicht erkannt'}
+            </span>
+            ${!item.detected && item.status === 'pending' ? `
+                <select class="gen-select" style="width: 150px;" onchange="setModule(${index}, this.value)">
+                    <option value="">Modul wählen...</option>
+                    ${Object.entries(modules).map(([key, m]) => `<option value="${key}">${m.icon} ${m.name}</option>`).join('')}
+                </select>
+            ` : ''}
+            ${item.status === 'success' ? `
+                <div class="file-result">
+                    <div class="file-result-stat imported">✅ ${item.result.imported} importiert</div>
+                    <div class="file-result-stat duplicates">⚠️ ${item.result.duplicates} Duplikate</div>
+                </div>
+            ` : ''}
+            ${item.status === 'error' ? `
+                <div class="file-result">
+                    <div class="file-result-stat errors">❌ ${item.error}</div>
+                </div>
+            ` : ''}
+            ${item.status === 'pending' ? `
+                <div class="file-actions">
+                    <button class="file-btn file-btn-remove" onclick="removeFromQueue(${index})">✕</button>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+    
+    // Enable/disable import button
+    const canImport = filesToImport.some(f => f.status === 'pending' && f.module);
+    startImport.disabled = !canImport;
+}
+
+function setModule(index, module) {
+    if (filesToImport[index]) {
+        filesToImport[index].module = module;
+        filesToImport[index].moduleName = modules[module]?.name || '';
+        filesToImport[index].moduleIcon = modules[module]?.icon || '📄';
+        filesToImport[index].detected = !!module;
+        renderFileQueue();
+    }
+}
+
+function removeFromQueue(index) {
+    filesToImport.splice(index, 1);
+    renderFileQueue();
+}
+
+clearQueue.addEventListener('click', () => {
+    filesToImport = [];
+    renderFileQueue();
+    document.getElementById('importSummary').style.display = 'none';
+});
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+
+// ============================================================================
+// IMPORT PROCESS
+// ============================================================================
+
+startImport.addEventListener('click', async () => {
+    const dryRun = dryRunCheck.checked;
+    const toImport = filesToImport.filter(f => f.status === 'pending' && f.module);
+    
+    if (toImport.length === 0) return;
+    
+    startImport.disabled = true;
+    startImport.textContent = '⏳ Importiere...';
+    
+    let totalStats = { total: 0, imported: 0, duplicates: 0, errors: 0 };
+    
+    for (const item of toImport) {
+        const index = filesToImport.indexOf(item);
+        item.status = 'importing';
+        renderFileQueue();
+        
+        try {
+            const formData = new FormData();
+            formData.append('csv_file', item.file);
+            formData.append('module', item.module);
+            formData.append('dry_run', dryRun ? '1' : '0');
+            
+            const response = await fetch('?api=import_single', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                item.status = 'success';
+                item.result = result;
+                totalStats.total += result.total;
+                totalStats.imported += result.imported;
+                totalStats.duplicates += result.duplicates;
+                totalStats.errors += result.errors;
+            } else {
+                item.status = 'error';
+                item.error = result.error || 'Import fehlgeschlagen';
+            }
+        } catch (e) {
+            item.status = 'error';
+            item.error = 'Netzwerkfehler';
+        }
+        
+        renderFileQueue();
+    }
+    
+    // Show summary
+    document.getElementById('summaryTotal').textContent = totalStats.total;
+    document.getElementById('summaryImported').textContent = totalStats.imported;
+    document.getElementById('summaryDuplicates').textContent = totalStats.duplicates;
+    document.getElementById('summaryErrors').textContent = totalStats.errors;
+    document.getElementById('importSummary').style.display = 'grid';
+    
+    startImport.disabled = false;
+    startImport.textContent = '🚀 Import starten';
+});
+
+// ============================================================================
+// GENERATED FILES
+// ============================================================================
+
+async function loadGeneratedFiles() {
+    const container = document.getElementById('generatedFilesList');
+    container.innerHTML = '<p>Lade...</p>';
+    
+    try {
+        const response = await fetch('?api=list_generated');
+        const data = await response.json();
+        
+        if (data.files.length === 0) {
+            container.innerHTML = `
+                <div class="gen-alert gen-alert-info">
+                    Keine generierten CSV-Dateien gefunden. 
+                    Nutze den <a href="/questions/generate_module_csv.php">CSV Generator</a> um welche zu erstellen.
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+                ${data.files.slice(0, 30).map(file => `
+                    <div class="file-item" style="cursor: pointer;" onclick="importGeneratedFile('${file.path}', '${file.module}')">
+                        <div class="file-icon">${file.module_icon}</div>
+                        <div class="file-details">
+                            <div class="file-name">${file.module_name}</div>
+                            <div class="file-meta">${file.filename}</div>
+                            <div class="file-meta">${file.rows} Fragen • ${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } catch (e) {
+        container.innerHTML = '<div class="gen-alert gen-alert-danger">Fehler beim Laden</div>';
+    }
+}
+
+async function importGeneratedFile(filepath, module) {
+    if (!confirm(`Datei in Modul "${module}" importieren?`)) return;
+    
+    try {
+        const formData = new FormData();
+        formData.append('filepath', filepath);
+        formData.append('module', module);
+        formData.append('dry_run', '0');
+        
+        const response = await fetch('?api=import_single', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`✅ Import erfolgreich!\n\n${result.imported} importiert\n${result.duplicates} Duplikate\n${result.errors} Fehler`);
+            loadGeneratedFiles(); // Refresh list
+        } else {
+            alert('❌ Fehler: ' + (result.error || 'Unbekannter Fehler'));
+        }
+    } catch (e) {
+        alert('❌ Netzwerkfehler');
+    }
+}
+
+document.getElementById('refreshGenerated').addEventListener('click', loadGeneratedFiles);
+</script>
+
+<?php require_once __DIR__ . '/includes/generator_footer.php'; ?>
