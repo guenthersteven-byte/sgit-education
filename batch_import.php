@@ -668,7 +668,7 @@ function renderFileQueue() {
             ` : ''}
             ${item.status === 'success' ? `
                 <div class="file-result">
-                    <div class="file-result-stat imported">✅ ${item.result.imported} importiert</div>
+                    <div class="file-result-stat imported">✅ ${item.result.imported} → <strong>${item.moduleName}</strong></div>
                     <div class="file-result-stat duplicates">⚠️ ${item.result.duplicates} Duplikate</div>
                 </div>
             ` : ''}
@@ -771,10 +771,27 @@ startImport.addEventListener('click', async () => {
     }
     
     // Show summary
+    const moduleSummary = filesToImport
+        .filter(f => f.status === 'success' && f.result?.imported > 0)
+        .map(f => `${f.moduleIcon} ${f.moduleName}: ${f.result.imported}`)
+        .join(' | ');
+    
     document.getElementById('summaryTotal').textContent = totalStats.total;
     document.getElementById('summaryImported').textContent = totalStats.imported;
     document.getElementById('summaryDuplicates').textContent = totalStats.duplicates;
     document.getElementById('summaryErrors').textContent = totalStats.errors;
+    
+    // Module-Übersicht hinzufügen
+    const summaryDiv = document.getElementById('importSummary');
+    let moduleInfo = summaryDiv.querySelector('.module-import-info');
+    if (!moduleInfo) {
+        moduleInfo = document.createElement('div');
+        moduleInfo.className = 'module-import-info';
+        moduleInfo.style.cssText = 'grid-column: 1 / -1; text-align: center; margin-top: 10px; padding: 10px; background: rgba(26,53,3,0.05); border-radius: 8px; font-size: 0.9rem;';
+        summaryDiv.appendChild(moduleInfo);
+    }
+    moduleInfo.innerHTML = moduleSummary ? `<strong>📦 Module:</strong> ${moduleSummary}` : '';
+    
     document.getElementById('importSummary').style.display = 'grid';
     
     startImport.disabled = false;

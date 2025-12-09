@@ -664,7 +664,14 @@ $sessionState = getSessionState();
         background: rgba(67,210,64,0.1);
         animation: pulse-border 1s infinite;
     }
-    .module-item.pending { opacity: 0.6; }
+    .module-item.pending { 
+        opacity: 0.85; 
+        border-style: dashed;
+    }
+    .module-item {
+        cursor: default;
+        user-select: none;
+    }
     
     @keyframes pulse-border {
         0%, 100% { box-shadow: 0 0 0 0 rgba(67,210,64,0.4); }
@@ -822,10 +829,13 @@ $sessionState = getSessionState();
     
     <!-- Module Grid -->
     <div class="gen-card">
-        <h3 style="margin-bottom: 15px; color: var(--primary, #1A3503);">📚 Module</h3>
+        <h3 style="margin-bottom: 5px; color: var(--primary, #1A3503);">📚 Module</h3>
+        <p style="color: var(--text-muted, #666); font-size: 0.85rem; margin-bottom: 15px;">
+            ℹ️ Statusanzeige - Module werden automatisch der Reihe nach abgearbeitet
+        </p>
         <div class="module-grid" id="moduleGrid">
             <?php foreach ($quizModules as $key => $mod): ?>
-            <div class="module-item pending" data-module="<?= $key ?>">
+            <div class="module-item pending" data-module="<?= $key ?>" title="<?= $mod['name'] ?> - wird automatisch bearbeitet">
                 <div class="module-icon"><?= $mod['icon'] ?></div>
                 <div class="module-name"><?= $mod['name'] ?></div>
                 <div class="module-progress">0/0</div>

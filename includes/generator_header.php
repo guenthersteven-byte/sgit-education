@@ -35,12 +35,6 @@ $pageTitle = $pageTitle ?? 'Generator';
 
 // Navigation Items
 $navItems = [
-    'ai_generator' => [
-        'icon' => '🤖',
-        'title' => 'AI Generator',
-        'url' => '/windows_ai_generator.php',
-        'desc' => 'Direkt in DB'
-    ],
     'auto_generator' => [
         'icon' => '⚡',
         'title' => 'Auto-Generator',
@@ -62,7 +56,7 @@ $navItems = [
     'db_manager' => [
         'icon' => '🗄️',
         'title' => 'DB Manager',
-        'url' => '/admin_questions.php',
+        'url' => '/admin_v4.php?tab=questions',
         'desc' => 'Fragen verwalten'
     ]
 ];
