@@ -267,13 +267,13 @@ require_once __DIR__ . '/includes/generator_header.php';
         text-align: center;
         cursor: pointer;
         transition: all 0.3s;
-        background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+        background: rgba(0,0,0,0.2);
         position: relative;
     }
     
     .drop-zone:hover, .drop-zone.dragover {
         border-color: var(--accent);
-        background: linear-gradient(135deg, rgba(67,210,64,0.08) 0%, rgba(67,210,64,0.02) 100%);
+        background: rgba(67,210,64,0.1);
         transform: scale(1.01);
     }
     
@@ -284,15 +284,15 @@ require_once __DIR__ . '/includes/generator_header.php';
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(67,210,64,0.15);
+        background: rgba(67,210,64,0.2);
         font-size: 1.5rem;
         font-weight: bold;
-        color: var(--primary);
+        color: var(--accent);
         border-radius: 14px;
     }
     
     .drop-zone-icon { font-size: 4rem; margin-bottom: 15px; }
-    .drop-zone-title { font-size: 1.3rem; font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+    .drop-zone-title { font-size: 1.3rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
     .drop-zone-hint { color: var(--text-muted); font-size: 0.9rem; }
     .drop-zone input[type="file"] { display: none; }
     
@@ -304,14 +304,14 @@ require_once __DIR__ . '/includes/generator_header.php';
         align-items: center;
         margin-bottom: 15px;
     }
-    .file-queue-title { font-weight: 600; color: var(--primary); }
+    .file-queue-title { font-weight: 600; color: var(--accent); }
     
     .file-item {
         display: flex;
         align-items: center;
         gap: 15px;
         padding: 15px;
-        background: var(--card);
+        background: rgba(0,0,0,0.3);
         border: 1px solid var(--border);
         border-radius: 10px;
         margin-bottom: 10px;
@@ -319,18 +319,18 @@ require_once __DIR__ . '/includes/generator_header.php';
     }
     
     .file-item:hover { border-color: var(--accent); }
-    .file-item.importing { background: rgba(67,210,64,0.08); border-color: var(--accent); }
-    .file-item.success { background: #d4edda; border-color: #28a745; }
-    .file-item.error { background: #f8d7da; border-color: #dc3545; }
+    .file-item.importing { background: rgba(67,210,64,0.15); border-color: var(--accent); }
+    .file-item.success { background: rgba(40, 167, 69, 0.2); border-color: #28a745; }
+    .file-item.error { background: rgba(220, 53, 69, 0.2); border-color: #dc3545; }
     
     .file-icon { font-size: 2rem; }
     .file-details { flex: 1; }
-    .file-name { font-weight: 600; font-size: 0.95rem; }
+    .file-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
     .file-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
     .file-module {
         padding: 4px 12px;
         background: var(--accent);
-        color: white;
+        color: #000;
         border-radius: 20px;
         font-size: 0.8rem;
         font-weight: 500;
@@ -340,7 +340,7 @@ require_once __DIR__ . '/includes/generator_header.php';
     .file-progress {
         width: 100%;
         height: 4px;
-        background: var(--bg);
+        background: rgba(0,0,0,0.3);
         border-radius: 2px;
         margin-top: 8px;
         overflow: hidden;
@@ -353,9 +353,9 @@ require_once __DIR__ . '/includes/generator_header.php';
     
     .file-result { text-align: right; min-width: 120px; }
     .file-result-stat { font-size: 0.8rem; }
-    .file-result-stat.imported { color: #28a745; }
+    .file-result-stat.imported { color: #6cff6c; }
     .file-result-stat.duplicates { color: #ffc107; }
-    .file-result-stat.errors { color: #dc3545; }
+    .file-result-stat.errors { color: #ff6b6b; }
     
     .file-actions { display: flex; gap: 8px; }
     .file-btn {
@@ -366,7 +366,7 @@ require_once __DIR__ . '/includes/generator_header.php';
         font-size: 0.8rem;
         transition: all 0.2s;
     }
-    .file-btn-remove { background: #f8d7da; color: #dc3545; }
+    .file-btn-remove { background: rgba(220, 53, 69, 0.3); color: #ff6b6b; }
     .file-btn-remove:hover { background: #dc3545; color: white; }
     
     /* Import Controls */
@@ -392,11 +392,12 @@ require_once __DIR__ . '/includes/generator_header.php';
         border-radius: 12px;
         text-align: center;
         color: white;
+        border: 1px solid var(--border);
     }
-    .summary-card.total { background: linear-gradient(135deg, var(--primary), #2d5a08); }
-    .summary-card.success { background: linear-gradient(135deg, #28a745, #1e7e34); }
-    .summary-card.warning { background: linear-gradient(135deg, #ffc107, #d39e00); color: #333; }
-    .summary-card.danger { background: linear-gradient(135deg, #dc3545, #bd2130); }
+    .summary-card.total { background: rgba(26, 53, 3, 0.8); }
+    .summary-card.success { background: rgba(40, 167, 69, 0.3); }
+    .summary-card.warning { background: rgba(255, 193, 7, 0.3); color: #ffc107; }
+    .summary-card.danger { background: rgba(220, 53, 69, 0.3); color: #ff6b6b; }
     .summary-value { font-size: 2rem; font-weight: bold; }
     .summary-label { font-size: 0.85rem; opacity: 0.9; }
     
@@ -404,7 +405,7 @@ require_once __DIR__ . '/includes/generator_header.php';
     .import-tabs { display: flex; gap: 5px; margin-bottom: 20px; }
     .import-tab {
         padding: 12px 24px;
-        background: var(--card);
+        background: rgba(0,0,0,0.3);
         border: 1px solid var(--border);
         border-radius: 8px 8px 0 0;
         cursor: pointer;
@@ -414,8 +415,8 @@ require_once __DIR__ . '/includes/generator_header.php';
         transition: all 0.2s;
         text-decoration: none;
     }
-    .import-tab:hover { background: #e9ecef; }
-    .import-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .import-tab:hover { background: rgba(67, 210, 64, 0.1); color: #fff; }
+    .import-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
     
     @media (max-width: 768px) {
         .import-summary { grid-template-columns: repeat(2, 1fr); }

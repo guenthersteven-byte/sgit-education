@@ -611,194 +611,301 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>🤖 AI Generator Bot v1.4 - sgiT Education</title>
+    <title>🤖 AI Generator Bot v1.7 - sgiT Education</title>
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: linear-gradient(135deg, #1A3503, #2d5a06); 
-            padding: 20px; 
-            min-height: 100vh;
-            margin: 0;
-        }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            background: white; 
-            border-radius: 20px; 
-            padding: 40px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
-        }
-        h1 { 
-            color: #1A3503; 
-            border-bottom: 3px solid #43D240; 
-            padding-bottom: 15px; 
-            margin-bottom: 30px;
-        }
-        h2 {
-            color: #1A3503;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        .badge {
-            display: inline-block;
-            background: #43D240;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-        .badge.slow { background: #ffc107; color: #333; }
-        .badge.v13 { background: #17a2b8; }
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #b6d4fe;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .success-box {
-            background: #d4edda;
-            border: 1px solid #28a745;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .error-box {
-            background: #f8d7da;
-            border: 1px solid #dc3545;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        select, input[type="number"] {
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            width: 200px;
-        }
-        button {
-            background: #43D240;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        button:hover { background: #3ab837; }
-        button.stop { background: #dc3545; }
-        button.stop:hover { background: #c82333; }
-        button.secondary { background: #6c757d; }
-        button.warning { background: #ffc107; color: #333; }
-        button.danger { background: #dc3545; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-            margin: 0;
-        }
-        .results {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #43D240;
-        }
-        .results.running {
-            border-left-color: #ffc107;
-            background: #fff8e1;
-        }
-        .log-output {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .status-indicator.running { background: #ffc107; animation: pulse 1s infinite; }
-        .status-indicator.stopped { background: #dc3545; }
-        .status-indicator.idle { background: #6c757d; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        :root {
+            --dark-green: #1A3503;
+            --neon-green: #43D240;
+            --bg-dark: #0d1a02;
+            --card-bg: rgba(0,0,0,0.3);
+            --border-green: rgba(67, 210, 64, 0.3);
         }
         
-        /* v1.2+: Modul-Manager Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: linear-gradient(135deg, #0d1a02 0%, #1A3503 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            border: 1px solid var(--border-green);
+        }
+        
+        .header-bar .title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .header-bar .nav-links a {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-left: 10px;
+            background: var(--neon-green);
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .header-bar .nav-links a:hover {
+            background: #3ab837;
+        }
+        
+        .header-bar .nav-links a.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        h1 { 
+            color: var(--neon-green); 
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: var(--neon-green);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: var(--neon-green);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        
+        .badge.v13 { background: #17a2b8; color: #fff; }
+        
+        /* Info/Success/Warning Boxes */
+        .info-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .success-box {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: 1px solid var(--border-green);
+            background: rgba(0,0,0,0.3);
+            color: #aaa;
+            font-size: 15px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #fff;
+            border-color: var(--neon-green);
+        }
+        
+        .tab.active {
+            color: #000;
+            font-weight: bold;
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .gen-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-green);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .gen-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(67, 210, 64, 0.2);
+        }
+        
+        .gen-card .card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+        
+        .gen-card .card-desc {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .gen-card ul {
+            color: #aaa;
+            font-size: 13px;
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .gen-card ul li {
+            margin-bottom: 5px;
+        }
+        
+        .gen-card .btn-card {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background: var(--neon-green);
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .gen-card .btn-card:hover {
+            background: #3ab837;
+        }
+        
+        .gen-card .btn-card.blue {
+            background: #17a2b8;
+            color: #fff;
+        }
+        
+        .gen-card .btn-card.blue:hover {
+            background: #138496;
+        }
+        
+        /* Quick Links */
+        .quick-links {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px solid var(--border-green);
+        }
+        
+        .quick-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .quick-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Module Cards (DB-Manager) */
         .module-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
+        
         .module-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-green);
             border-radius: 12px;
             padding: 15px;
             cursor: pointer;
             transition: all 0.2s;
         }
+        
         .module-card:hover {
-            border-color: #43D240;
+            border-color: var(--neon-green);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        
         .module-card.selected {
-            border-color: #43D240;
-            background: #e8f5e9;
+            border-color: var(--neon-green);
+            background: rgba(67, 210, 64, 0.1);
         }
-        .module-card.empty {
-            opacity: 0.5;
-        }
+        
         .module-name {
             font-weight: bold;
-            color: #1A3503;
+            color: var(--neon-green);
             margin-bottom: 8px;
-            text-transform: capitalize;
         }
+        
         .module-stats {
             font-size: 13px;
-            color: #666;
+            color: #aaa;
         }
+        
         .module-stats .count {
             font-size: 24px;
             font-weight: bold;
-            color: #1A3503;
+            color: #fff;
         }
+        
         .module-stats .ai-badge {
             display: inline-block;
             background: #17a2b8;
@@ -808,29 +915,62 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             font-size: 11px;
             margin-left: 5px;
         }
+        
+        /* Total Stats */
+        .total-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(67, 210, 64, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--border-green);
+        }
+        
+        .total-stat {
+            text-align: center;
+        }
+        
+        .total-stat .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+        
+        .total-stat .label {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* Preview Panel */
         .preview-panel {
-            background: #f8f9fa;
+            background: rgba(0,0,0,0.4);
             border-radius: 12px;
             padding: 20px;
             margin-top: 20px;
             display: none;
+            border: 1px solid var(--border-green);
         }
+        
         .preview-panel.active {
             display: block;
         }
+        
         .preview-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
+        
         .preview-list {
             max-height: 500px;
             overflow-y: auto;
         }
+        
         .preview-item {
-            background: white;
-            border: 1px solid #e9ecef;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 10px;
@@ -839,30 +979,32 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             align-items: flex-start;
             gap: 15px;
         }
+        
         .preview-item:hover {
-            border-color: #43D240;
+            border-color: var(--neon-green);
         }
+        
         .preview-item .content {
             flex: 1;
         }
+        
         .preview-item .question {
             font-weight: 500;
             margin-bottom: 5px;
+            color: #fff;
         }
+        
         .preview-item .meta {
             font-size: 12px;
-            color: #666;
+            color: #888;
         }
+        
         .preview-item .options {
             font-size: 11px;
-            color: #888;
+            color: #666;
             margin-top: 5px;
         }
-        .preview-item .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+        
         .preview-item .delete-btn {
             background: #dc3545;
             color: white;
@@ -872,74 +1014,37 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             cursor: pointer;
             font-size: 11px;
         }
+        
         .preview-item .delete-btn:hover {
             background: #c82333;
         }
-        .preview-item.deleting {
-            opacity: 0.5;
-            pointer-events: none;
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--neon-green);
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .preview-item.deleted {
-            background: #f8d7da;
-            border-color: #dc3545;
-        }
+        
+        .btn:hover { background: #3ab837; }
+        .btn.secondary { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn.danger { background: #dc3545; color: #fff; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        
+        /* Action Bar */
         .action-bar {
             display: flex;
             gap: 10px;
             margin-top: 20px;
             flex-wrap: wrap;
-        }
-        .total-stats {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-            border-radius: 12px;
-        }
-        .total-stat {
-            text-align: center;
-        }
-        .total-stat .number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #1A3503;
-        }
-        .total-stat .label {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e9ecef;
-        }
-        .tab {
-            padding: 12px 24px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 16px;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-        }
-        .tab:hover {
-            color: #1A3503;
-        }
-        .tab.active {
-            color: #1A3503;
-            font-weight: bold;
-            border-bottom-color: #43D240;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
         }
         
         /* Pagination */
@@ -949,21 +1054,23 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             justify-content: center;
             margin-top: 15px;
         }
-        .pagination button {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
+        
         .load-more-info {
             text-align: center;
-            color: #666;
+            color: #888;
             font-size: 13px;
             margin-top: 10px;
         }
     </style>
 </head>
 <body>
+<!-- Header Bar -->
+<div class="header-bar">
+    <div class="title">🤖 sgiT Generator</div>
+</div>
+
 <div class="container">
-    <h1>🤖 AI Generator Bot <span class="badge slow">Dauerlauf</span> <span class="badge v13">v1.6</span></h1>
+    <h1>🤖 AI Generator Bot <span class="badge v13">v1.7</span></h1>
     
     <?php if (isset($_GET['stopped'])): ?>
     <div class="success-box">
@@ -973,113 +1080,81 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     
     <!-- Tabs Navigation -->
     <div class="tabs">
-        <button class="tab active" onclick="showTab('generator')">🚀 Generator</button>
-        <button class="tab" onclick="window.location.href='/questions/generate_module_csv.php'">📝 CSV Generator</button>
+        <button class="tab active" onclick="showTab('generator')">⚙️ Generatoren</button>
         <button class="tab" onclick="showTab('dbmanager')">🗄️ DB-Manager</button>
     </div>
     
-    <!-- Tab 1: Generator (Original) -->
+    <!-- Tab 1: Generatoren (v1.7 - Refactored) -->
     <div id="tab-generator" class="tab-content active">
         
         <div class="info-box">
-            <h4>ℹ️ Was macht dieser Bot?</h4>
-            <p>Dieser Bot generiert <strong>langsam und kontinuierlich</strong> Fragen für alle 16 Module:</p>
-            <ul>
-                <li>🐢 <strong>Alle 2 Minuten</strong> eine Frage pro Modul</li>
-                <li>♻️ Läuft in <strong>Dauerschleife</strong> bis gestoppt</li>
-                <li>💾 Speichert alle generierten Fragen in der Datenbank</li>
-                <li>📊 Loggt Erfolge und Fehler für Analyse</li>
-            </ul>
+            <h4>⚙️ Verfügbare Generatoren</h4>
+            <p>Wähle den passenden Generator für deine Anforderungen:</p>
         </div>
         
-        <div class="warning-box">
-            <strong>⚠️ Hinweis:</strong> Der Dauerlauf-Modus kann <strong>Stunden</strong> laufen. 
-            Browser-Tab offen lassen oder CLI nutzen!
+        <!-- Generator Cards -->
+        <div class="cards-grid">
+            
+            <!-- CSV Generator Card -->
+            <div class="gen-card">
+                <div class="card-title">📝 CSV Generator</div>
+                <p class="card-desc">
+                    Generiert Fragen und speichert sie als CSV-Datei.<br>
+                    <strong>Empfohlen</strong> für kontrollierte Generierung.
+                </p>
+                <ul>
+                    <li>Einzelne Module auswählen</li>
+                    <li>Anzahl Fragen bestimmen</li>
+                    <li>CSV zur Prüfung vor Import</li>
+                </ul>
+                <a href="/questions/generate_module_csv.php" class="btn-card">
+                    🚀 CSV Generator öffnen
+                </a>
+            </div>
+            
+            <!-- Auto-Generator Card -->
+            <div class="gen-card">
+                <div class="card-title">⏱️ Auto-Generator (Scheduler)</div>
+                <p class="card-desc">
+                    Zeitgesteuerte Generierung für alle Module.<br>
+                    <strong>Ideal</strong> für Massen-Generierung.
+                </p>
+                <ul>
+                    <li>Zeitlimits: 1h bis 24h</li>
+                    <li>Alle 18 Quiz-Module</li>
+                    <li>Pause/Resume möglich</li>
+                </ul>
+                <a href="/auto_generator.php" class="btn-card blue">
+                    ⏱️ Auto-Generator öffnen
+                </a>
+            </div>
+            
+            <!-- Batch Import Card -->
+            <div class="gen-card">
+                <div class="card-title">📥 Batch Import</div>
+                <p class="card-desc">
+                    CSV-Dateien per Drag & Drop importieren.<br>
+                    <strong>Schnell</strong> mehrere Dateien verarbeiten.
+                </p>
+                <ul>
+                    <li>Drag & Drop Upload</li>
+                    <li>Auto-Modul-Erkennung</li>
+                    <li>Live-Fortschritt</li>
+                </ul>
+                <a href="/batch_import.php" class="btn-card">
+                    📥 Batch Import öffnen
+                </a>
+            </div>
+            
         </div>
         
-        <?php
-        $botRunning = AIGeneratorBot::isRunning();
-        ?>
-        
-        <p>
-            <span class="status-indicator <?= $botRunning ? 'running' : 'idle' ?>"></span>
-            <strong>Status:</strong> <?= $botRunning ? '🟡 Bot läuft möglicherweise' : '⚪ Bereit' ?>
-        </p>
-        
-        <form method="post">
-            <div class="form-group">
-                <label>🕐 Intervall zwischen Modulen:</label>
-                <select name="interval">
-                    <option value="30">30 Sekunden (Test)</option>
-                    <option value="60">1 Minute</option>
-                    <option value="120" selected>2 Minuten (empfohlen)</option>
-                    <option value="300">5 Minuten (sehr langsam)</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>🎯 Modus:</label>
-                <select name="mode">
-                    <option value="continuous">♾️ Dauerlauf (bis Stop)</option>
-                    <option value="single_round">1️⃣ Eine Runde (alle Module 1x)</option>
-                    <option value="quick">🚀 Quick Test (10s Intervall)</option>
-                </select>
-            </div>
-            
-            <button type="submit" name="start_bot">▶️ Bot starten</button>
-            <a href="?stop=1"><button type="button" class="stop">⏹️ Bot stoppen</button></a>
-            <a href="../bot_summary.php"><button type="button" class="secondary">📊 Summary</button></a>
-        </form>
-        
-        <?php
-        if (isset($_POST['start_bot'])) {
-            $interval = intval($_POST['interval'] ?? 120);
-            $mode = $_POST['mode'] ?? 'continuous';
-            
-            $config = [
-                'delayBetweenModules' => $interval,
-                'continuous' => ($mode === 'continuous')
-            ];
-            
-            if ($mode === 'quick') {
-                $config['delayBetweenModules'] = 10;
-                $config['continuous'] = false;
-            }
-            
-            echo '<div class="results running">';
-            echo '<h3>🔄 Bot läuft...</h3>';
-            echo '<p>Intervall: ' . $interval . 's | Modus: ' . $mode . '</p>';
-            echo '<p><small>Diese Seite zeigt Live-Output. Browser-Tab offen lassen!</small></p>';
-            echo '<div class="log-output" id="log">';
-            
-            // Output buffering für Live-Ausgabe
-            ob_implicit_flush(true);
-            if (ob_get_level()) ob_end_flush();
-            
-            $bot = new AIGeneratorBot($config);
-            $results = $bot->run();
-            
-            echo '</div>';
-            echo '<h4>Ergebnis:</h4>';
-            echo '<ul>';
-            echo '<li>Runden: ' . ($results['rounds'] ?? 0) . '</li>';
-            echo '<li>Generiert: ' . ($results['generated'] ?? 0) . '</li>';
-            echo '<li>Fehlgeschlagen: ' . ($results['failed'] ?? 0) . '</li>';
-            echo '<li>Laufzeit: ' . ($results['runtime_minutes'] ?? 0) . ' Minuten</li>';
-            echo '</ul>';
-            echo '</div>';
-        }
-        ?>
-        
-        <h3 style="margin-top: 30px;">📋 CLI-Nutzung</h3>
-        <p>Für Dauerlauf im Hintergrund (empfohlen):</p>
-        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 8px;">
-cd C:\xampp\htdocs\Education\bots\tests
-php AIGeneratorBot.php --mode=continuous --interval=120
-
-# Zum Stoppen: Erstelle Datei STOP_AI_BOT in bots/logs/
-echo. > ..\logs\STOP_AI_BOT
-        </pre>
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <h4>🔗 Weitere Tools</h4>
+            <a href="../bot_summary.php">📊 Bot Summary</a>
+            <a href="/admin_v4.php">🏠 Admin Dashboard</a>
+            <a href="/statistics.php">📈 Statistiken</a>
+        </div>
         
     </div>
     

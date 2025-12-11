@@ -103,16 +103,18 @@ function showLoginPage($error = null) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1A3503, #0A1A03); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); max-width: 400px; width: 90%; text-align: center; }
-        .logo { width: 80px; height: 80px; background: linear-gradient(135deg, #1A3503, #43D240); border-radius: 20px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
-        h1 { color: #1A3503; margin-bottom: 25px; font-size: 1.5rem; }
-        input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; margin-bottom: 20px; }
-        input:focus { outline: none; border-color: #43D240; }
-        button { width: 100%; padding: 15px; background: linear-gradient(135deg, #43D240, #35B035); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .error { background: #FFEBEE; color: #C62828; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        body { display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--card-bg); border: 1px solid var(--border); padding: 50px 40px; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); max-width: 400px; width: 90%; text-align: center; }
+        .logo { width: 80px; height: 80px; background: rgba(67, 210, 64, 0.2); border: 2px solid var(--border); border-radius: 20px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: var(--accent); }
+        h1 { color: var(--accent); margin-bottom: 25px; font-size: 1.5rem; }
+        input { width: 100%; padding: 15px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: #fff; border-radius: 12px; font-size: 16px; margin-bottom: 20px; }
+        input:focus { outline: none; border-color: var(--accent); }
+        input::placeholder { color: var(--text-muted); }
+        button { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        button:hover { background: var(--accent-hover); }
+        .error { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(220, 53, 69, 0.4); }
     </style>
 </head>
 <body>
@@ -135,35 +137,26 @@ function showLoginPage($error = null) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sgiT Admin v<?= SGIT_VERSION ?></title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --orange: #E86F2C;
-            --bitcoin: #F7931A;
-            --bg: #f5f7fa;
-            --card: #ffffff;
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); min-height: 100vh; }
-        
-        .header { background: linear-gradient(135deg, var(--primary), #2d5a06); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        /* Admin-spezifische Overrides */
+        .header { background: rgba(0, 0, 0, 0.4); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border); }
         .brand { display: flex; align-items: center; gap: 15px; }
-        .logo { width: 50px; height: 50px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .brand h1 { font-size: 1.4rem; }
-        .brand h1 small { font-size: 0.7rem; opacity: 0.8; margin-left: 8px; }
+        .logo { width: 50px; height: 50px; background: rgba(67, 210, 64, 0.2); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent); }
+        .brand h1 { font-size: 1.4rem; color: #fff; }
+        .brand h1 small { font-size: 0.7rem; opacity: 0.6; margin-left: 8px; }
         
         .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
         .header-nav a { padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
-        .nav-primary { background: var(--accent); color: white; }
-        .nav-secondary { background: rgba(255,255,255,0.15); color: white; }
+        .nav-primary { background: var(--accent); color: #000; }
+        .nav-secondary { background: rgba(255,255,255,0.1); color: white; }
         .nav-danger { background: #c0392b; color: white; }
         .header-nav a:hover { transform: translateY(-2px); }
         
         .container { max-width: 1200px; margin: 0 auto; padding: 25px; }
         
         /* Bitcoin Ticker */
-        .bitcoin-ticker { background: linear-gradient(135deg, var(--bitcoin), #E88A00); border-radius: 16px; padding: 20px 30px; color: white; margin-bottom: 25px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; }
+        .bitcoin-ticker { background: linear-gradient(135deg, var(--bitcoin), #E88A00); border-radius: 16px; padding: 20px 30px; color: white; margin-bottom: 25px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; border: 1px solid rgba(247, 147, 26, 0.5); }
         .btc-stat { text-align: center; min-width: 100px; }
         .btc-stat .label { font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; margin-bottom: 5px; }
         .btc-stat .value { font-size: 1.3rem; font-weight: 700; }
@@ -171,37 +164,37 @@ function showLoginPage($error = null) {
         /* Quick Actions Grid */
         .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
         
-        .action-card { background: var(--card); border-radius: 16px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.06); transition: all 0.2s; }
-        .action-card:hover { transform: translateY(-3px); box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
-        .action-card h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        .action-card p { color: #666; font-size: 0.9rem; margin-bottom: 15px; }
-        .action-card a { display: inline-block; padding: 10px 20px; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
+        .action-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; transition: all 0.2s; }
+        .action-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 5px 25px rgba(67, 210, 64, 0.1); }
+        .action-card h3 { font-size: 1.1rem; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .action-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+        .action-card a { display: inline-block; padding: 10px 20px; background: var(--accent); color: #000; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
         .action-card a:hover { background: #35B035; }
         
         .action-card.orange h3 { color: var(--orange); }
-        .action-card.orange a { background: var(--orange); }
+        .action-card.orange a { background: var(--orange); color: #fff; }
         .action-card.orange a:hover { background: #d45a1a; }
         
         /* Bot Section */
-        .bot-section { background: linear-gradient(135deg, var(--primary), #2d5a06); border-radius: 16px; padding: 25px; color: white; margin-bottom: 25px; }
-        .bot-section h2 { font-size: 1.1rem; margin-bottom: 20px; }
+        .bot-section { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 16px; padding: 25px; color: white; margin-bottom: 25px; }
+        .bot-section h2 { font-size: 1.1rem; margin-bottom: 20px; color: var(--accent); }
         .bot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
-        .bot-card { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; text-align: center; }
+        .bot-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 15px; text-align: center; }
         .bot-card.running { border: 2px solid var(--accent); }
         .bot-icon { font-size: 1.5rem; margin-bottom: 8px; }
         .bot-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; }
-        .bot-status { font-size: 0.75rem; opacity: 0.8; }
+        .bot-status { font-size: 0.75rem; color: var(--text-muted); }
         .bot-status.on { color: var(--accent); }
-        .bot-card a { display: inline-block; margin-top: 10px; padding: 6px 14px; background: var(--accent); color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; }
+        .bot-card a { display: inline-block; margin-top: 10px; padding: 6px 14px; background: var(--accent); color: #000; text-decoration: none; border-radius: 6px; font-size: 0.8rem; }
         
         /* System Status */
         .status-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; }
-        .status-item { background: var(--card); border-radius: 10px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .status-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; color: var(--text); }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .status-dot.online { background: var(--accent); }
+        .status-dot.online { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
         .status-dot.offline { background: #e74c3c; }
         
-        footer { text-align: center; padding: 20px; color: #999; font-size: 0.85rem; }
+        footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 20px; }
         footer a { color: var(--accent); text-decoration: none; }
     </style>
 </head>

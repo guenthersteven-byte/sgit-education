@@ -56,7 +56,7 @@ $navItems = [
     'db_manager' => [
         'icon' => '🗄️',
         'title' => 'DB Manager',
-        'url' => '/admin_v4.php?tab=questions',
+        'url' => '/bots/tests/AIGeneratorBot.php',
         'desc' => 'Fragen verwalten'
     ]
 ];
@@ -77,16 +77,17 @@ $navItems = [
             --orange: #E86F2C;
             --bitcoin: #F7931A;
             --danger: #e74c3c;
-            --bg: #f5f7fa;
-            --card: #ffffff;
-            --text: #333;
-            --text-muted: #666;
-            --border: #e0e0e0;
+            --bg-dark: #0d1a02;
+            --card: rgba(0,0,0,0.3);
+            --card-hover: rgba(0,0,0,0.4);
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --border: rgba(67, 210, 64, 0.3);
         }
         
         body { 
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            background: var(--bg); 
+            background: linear-gradient(135deg, #0d1a02 0%, #1A3503 100%);
             min-height: 100vh;
             color: var(--text);
         }
@@ -95,7 +96,7 @@ $navItems = [
            HEADER
            ============================================ */
         .gen-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background: rgba(0,0,0,0.4);
             color: white;
             padding: 15px 25px;
             display: flex;
@@ -103,7 +104,7 @@ $navItems = [
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 1px solid var(--border);
         }
         
         .gen-brand {
@@ -115,18 +116,21 @@ $navItems = [
         .gen-logo {
             width: 42px;
             height: 42px;
-            background: rgba(255,255,255,0.15);
+            background: rgba(67, 210, 64, 0.2);
+            border: 1px solid var(--border);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 0.9rem;
+            color: var(--accent);
         }
         
         .gen-brand h1 {
             font-size: 1.2rem;
             font-weight: 600;
+            color: #fff;
         }
         
         .gen-brand h1 small {
@@ -150,16 +154,16 @@ $navItems = [
             transition: all 0.2s;
         }
         
-        .gen-nav-admin { background: rgba(255,255,255,0.15); color: white; }
-        .gen-nav-admin:hover { background: rgba(255,255,255,0.25); }
-        .gen-nav-stats { background: var(--accent); color: white; }
+        .gen-nav-admin { background: rgba(255,255,255,0.1); color: white; }
+        .gen-nav-admin:hover { background: rgba(255,255,255,0.2); }
+        .gen-nav-stats { background: var(--accent); color: #000; }
         .gen-nav-stats:hover { background: var(--accent-hover); }
         
         /* ============================================
            TAB NAVIGATION
            ============================================ */
         .gen-tabs {
-            background: var(--card);
+            background: rgba(0,0,0,0.3);
             border-bottom: 1px solid var(--border);
             padding: 0 25px;
             display: flex;
@@ -182,14 +186,14 @@ $navItems = [
         }
         
         .gen-tab:hover {
-            color: var(--primary);
-            background: rgba(67, 210, 64, 0.05);
+            color: #fff;
+            background: rgba(67, 210, 64, 0.1);
         }
         
         .gen-tab.active {
-            color: var(--primary);
+            color: #000;
+            background: var(--accent);
             border-bottom-color: var(--accent);
-            background: rgba(67, 210, 64, 0.08);
         }
         
         .gen-tab-icon {
@@ -203,7 +207,7 @@ $navItems = [
         }
         
         .gen-tab.active .gen-tab-desc {
-            color: var(--accent);
+            color: rgba(0,0,0,0.6);
         }
         
         /* ============================================
@@ -220,10 +224,14 @@ $navItems = [
            ============================================ */
         .gen-card {
             background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             margin-bottom: 20px;
+        }
+        
+        .gen-card:hover {
+            border-color: var(--accent);
         }
         
         .gen-card-header {
@@ -238,7 +246,7 @@ $navItems = [
         .gen-card-title {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--accent);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -251,11 +259,11 @@ $navItems = [
             font-weight: 500;
         }
         
-        .gen-badge-success { background: #d4edda; color: #155724; }
-        .gen-badge-warning { background: #fff3cd; color: #856404; }
-        .gen-badge-danger { background: #f8d7da; color: #721c24; }
-        .gen-badge-info { background: #d1ecf1; color: #0c5460; }
-        .gen-badge-primary { background: var(--accent); color: white; }
+        .gen-badge-success { background: rgba(40, 167, 69, 0.3); color: #6cff6c; }
+        .gen-badge-warning { background: rgba(255, 193, 7, 0.3); color: #ffc107; }
+        .gen-badge-danger { background: rgba(220, 53, 69, 0.3); color: #ff6b6b; }
+        .gen-badge-info { background: rgba(23, 162, 184, 0.3); color: #17a2b8; }
+        .gen-badge-primary { background: var(--accent); color: #000; }
         
         /* ============================================
            BUTTONS
@@ -276,16 +284,16 @@ $navItems = [
         
         .gen-btn-primary {
             background: var(--accent);
-            color: white;
+            color: #000;
         }
         .gen-btn-primary:hover { background: var(--accent-hover); }
         
         .gen-btn-secondary {
-            background: var(--bg);
-            color: var(--text);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
             border: 1px solid var(--border);
         }
-        .gen-btn-secondary:hover { background: #e9ecef; }
+        .gen-btn-secondary:hover { background: rgba(255,255,255,0.2); }
         
         .gen-btn-danger {
             background: var(--danger);
@@ -309,11 +317,17 @@ $navItems = [
             border-radius: 8px;
             font-size: 0.9rem;
             transition: border-color 0.2s;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
         }
         
         .gen-input:focus, .gen-select:focus {
             outline: none;
             border-color: var(--accent);
+        }
+        
+        .gen-input::placeholder {
+            color: var(--text-muted);
         }
         
         .gen-label {
@@ -356,17 +370,17 @@ $navItems = [
             font-size: 0.9rem;
         }
         
-        .gen-alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .gen-alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .gen-alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .gen-alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .gen-alert-success { background: rgba(40, 167, 69, 0.2); color: #6cff6c; border: 1px solid rgba(40, 167, 69, 0.4); }
+        .gen-alert-warning { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.4); }
+        .gen-alert-danger { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.4); }
+        .gen-alert-info { background: rgba(23, 162, 184, 0.2); color: #17a2b8; border: 1px solid rgba(23, 162, 184, 0.4); }
         
         /* ============================================
            PROGRESS
            ============================================ */
         .gen-progress {
             height: 8px;
-            background: var(--bg);
+            background: rgba(0,0,0,0.3);
             border-radius: 4px;
             overflow: hidden;
         }

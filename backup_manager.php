@@ -581,48 +581,26 @@ if (isset($_GET['action']) && $authenticated) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💾 Backup Manager v2.1 - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <style>
-        :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --accent-hover: #3ab837;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --success: #28a745;
-            --info: #17a2b8;
-            --bg-dark: #0d1f02;
-            --bg-light: #f8f9fa;
-            --text-light: #ffffff;
-            --text-dark: #333333;
-            --border: #dee2e6;
-            --shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary) 50%, #2d5a06 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: var(--text-dark);
-        }
+        /* Backup Manager Dark Theme Overrides */
+        body { padding: 20px; }
         
         .container { max-width: 1200px; margin: 0 auto; }
         
         .header {
-            background: rgba(255,255,255,0.95);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 30px 40px;
             margin-bottom: 30px;
-            box-shadow: var(--shadow);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
         .header h1 {
-            color: var(--primary);
+            color: var(--accent);
             font-size: 2em;
             display: flex;
             align-items: center;
@@ -632,8 +610,8 @@ if (isset($_GET['action']) && $authenticated) {
         .header-actions { display: flex; gap: 15px; align-items: center; }
         
         .version-badge {
-            background: var(--primary);
-            color: white;
+            background: var(--accent);
+            color: #000;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85em;
@@ -641,12 +619,14 @@ if (isset($_GET['action']) && $authenticated) {
         }
         
         .card {
-            background: rgba(255,255,255,0.95);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 25px 30px;
             margin-bottom: 25px;
-            box-shadow: var(--shadow);
         }
+        
+        .card:hover { border-color: var(--accent); }
         
         .card-header {
             display: flex;
@@ -658,7 +638,7 @@ if (isset($_GET['action']) && $authenticated) {
         }
         
         .card-header h2 {
-            color: var(--primary);
+            color: var(--accent);
             font-size: 1.4em;
             display: flex;
             align-items: center;
@@ -680,8 +660,8 @@ if (isset($_GET['action']) && $authenticated) {
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #2d8a2a);
-            color: white;
+            background: var(--accent);
+            color: #000;
         }
         
         .btn-primary:hover {
@@ -692,8 +672,8 @@ if (isset($_GET['action']) && $authenticated) {
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: #c82333; }
         
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-secondary:hover { background: #5a6268; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
         
         .btn-info { background: var(--info); color: white; }
         
@@ -710,7 +690,8 @@ if (isset($_GET['action']) && $authenticated) {
         }
         
         .status-item {
-            background: var(--bg-light);
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
@@ -719,14 +700,14 @@ if (isset($_GET['action']) && $authenticated) {
         
         .status-item .label {
             font-size: 0.85em;
-            color: #666;
+            color: var(--text-muted);
             margin-bottom: 8px;
         }
         
         .status-item .value {
             font-size: 1.5em;
             font-weight: bold;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         .status-item .value.success { color: var(--success); }

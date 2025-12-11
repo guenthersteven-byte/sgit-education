@@ -222,11 +222,12 @@ function timeAgo($datetime) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏆 Leaderboard - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ================================================================
-         * VARIABLES & RESET
+         * VARIABLES & RESET - DARK THEME
          * ================================================================ */
         :root {
             --primary: #1A3503;
@@ -235,12 +236,13 @@ function timeAgo($datetime) {
             --silver: #C0C0C0;
             --bronze: #CD7F32;
             --orange: #E86F2C;
-            --blue: #1E3A5F;
+            --blue: #3498db;
             --bitcoin: #F7931A;
-            --bg: #f0f4e8;
-            --card: #ffffff;
-            --text: #333;
-            --text-light: #666;
+            --bg: linear-gradient(135deg, #0d1a02 0%, #1A3503 100%);
+            --card: rgba(0, 0, 0, 0.3);
+            --text: #ffffff;
+            --text-light: #aaaaaa;
+            --border: rgba(67, 210, 64, 0.3);
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -256,7 +258,8 @@ function timeAgo($datetime) {
          * HEADER
          * ================================================================ */
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, #2d5a08 50%, var(--accent) 100%);
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid var(--border);
             color: white;
             padding: 25px 30px;
             text-align: center;
@@ -277,13 +280,14 @@ function timeAgo($datetime) {
         .header h1 {
             font-size: 2.2rem;
             font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             position: relative;
             z-index: 1;
+            color: var(--accent);
         }
         
         .header p {
-            opacity: 0.9;
+            opacity: 0.8;
             margin-top: 8px;
             font-size: 1.1rem;
         }
@@ -298,16 +302,17 @@ function timeAgo($datetime) {
         
         .header-nav a {
             padding: 10px 18px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
             color: white;
             text-decoration: none;
             border-radius: 25px;
             font-size: 0.9rem;
             transition: all 0.3s;
+            border: 1px solid var(--border);
         }
         
         .header-nav a:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(67, 210, 64, 0.2);
             transform: translateY(-2px);
         }
         
@@ -320,8 +325,8 @@ function timeAgo($datetime) {
             flex-wrap: wrap;
             gap: 30px;
             padding: 20px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
         }
         
         .stat-item {
@@ -331,7 +336,7 @@ function timeAgo($datetime) {
         .stat-item .value {
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         .stat-item .label {
@@ -365,18 +370,19 @@ function timeAgo($datetime) {
         }
         
         /* ================================================================
-         * CARDS
+         * CARDS - DARK THEME
          * ================================================================ */
         .card {
             background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             transition: transform 0.3s;
         }
         
         .card:hover {
             transform: translateY(-3px);
+            border-color: var(--accent);
         }
         
         .card-header {
@@ -385,7 +391,7 @@ function timeAgo($datetime) {
             gap: 12px;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid var(--border);
         }
         
         .card-icon {
@@ -395,7 +401,7 @@ function timeAgo($datetime) {
         .card-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         .card-subtitle {
@@ -404,7 +410,7 @@ function timeAgo($datetime) {
         }
         
         /* ================================================================
-         * LEADERBOARD LIST
+         * LEADERBOARD LIST - DARK THEME
          * ================================================================ */
         .leaderboard-list {
             list-style: none;
@@ -415,28 +421,29 @@ function timeAgo($datetime) {
             align-items: center;
             padding: 12px 15px;
             margin-bottom: 10px;
-            background: #f8faf5;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
             border-radius: 15px;
             transition: all 0.3s;
         }
         
         .leaderboard-item:hover {
-            background: #eef5e8;
+            background: rgba(67, 210, 64, 0.1);
             transform: scale(1.02);
         }
         
         .leaderboard-item.rank-1 {
-            background: linear-gradient(135deg, #fff9e6, #fff3cc);
+            background: rgba(255, 215, 0, 0.15);
             border: 2px solid var(--gold);
         }
         
         .leaderboard-item.rank-2 {
-            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            background: rgba(192, 192, 192, 0.15);
             border: 2px solid var(--silver);
         }
         
         .leaderboard-item.rank-3 {
-            background: linear-gradient(135deg, #fff5eb, #ffe8d6);
+            background: rgba(205, 127, 50, 0.15);
             border: 2px solid var(--bronze);
         }
         
@@ -470,7 +477,7 @@ function timeAgo($datetime) {
         .player-name {
             font-weight: 600;
             font-size: 1.05rem;
-            color: var(--primary);
+            color: #fff;
         }
         
         .player-meta {
@@ -494,7 +501,7 @@ function timeAgo($datetime) {
         }
         
         /* ================================================================
-         * MODULE CHAMPIONS
+         * MODULE CHAMPIONS - DARK THEME
          * ================================================================ */
         .champion-grid {
             display: grid;
@@ -503,12 +510,12 @@ function timeAgo($datetime) {
         }
         
         .champion-card {
-            background: #f8faf5;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
             border-radius: 15px;
             padding: 15px;
             text-align: center;
             transition: all 0.3s;
-            border: 2px solid transparent;
         }
         
         .champion-card:hover {
@@ -534,7 +541,7 @@ function timeAgo($datetime) {
         .champion-name {
             font-weight: 600;
             font-size: 0.9rem;
-            color: var(--primary);
+            color: #fff;
             margin-top: 5px;
         }
         
@@ -545,7 +552,7 @@ function timeAgo($datetime) {
         }
         
         /* ================================================================
-         * ACHIEVEMENTS FEED
+         * ACHIEVEMENTS FEED - DARK THEME
          * ================================================================ */
         .achievement-feed {
             max-height: 400px;
@@ -556,7 +563,7 @@ function timeAgo($datetime) {
             display: flex;
             align-items: center;
             padding: 12px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border);
             gap: 12px;
         }
         
@@ -581,7 +588,7 @@ function timeAgo($datetime) {
         
         .achievement-name {
             font-weight: 600;
-            color: var(--primary);
+            color: #fff;
         }
         
         .achievement-player {
@@ -591,7 +598,7 @@ function timeAgo($datetime) {
         
         .achievement-time {
             font-size: 0.75rem;
-            color: #999;
+            color: var(--text-light);
         }
         
         .achievement-sats {
@@ -600,7 +607,7 @@ function timeAgo($datetime) {
         }
         
         /* ================================================================
-         * EMPTY STATE
+         * EMPTY STATE - DARK THEME
          * ================================================================ */
         .empty-state {
             text-align: center;
@@ -615,13 +622,15 @@ function timeAgo($datetime) {
         }
         
         /* ================================================================
-         * FOOTER
+         * FOOTER - DARK THEME
          * ================================================================ */
         footer {
             text-align: center;
             padding: 25px;
-            color: #999;
+            color: var(--text-light);
             font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
         }
         
         footer a {

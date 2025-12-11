@@ -139,43 +139,33 @@ $moduleIcons = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📊 Statistik - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --orange: #E86F2C;
-            --blue: #1E3A5F;
-            --bitcoin: #F7931A;
-            --bg: #f5f7fa;
-            --card: #ffffff;
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); min-height: 100vh; }
-        
-        .header { background: linear-gradient(135deg, var(--primary), var(--blue)); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .header h1 { font-size: 1.4rem; }
+        /* Stats-spezifische Overrides */
+        .header { background: rgba(0, 0, 0, 0.4); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border); }
+        .header h1 { font-size: 1.4rem; color: #fff; }
         .header-nav { display: flex; gap: 10px; }
-        .header-nav a { padding: 10px 18px; background: rgba(255,255,255,0.15); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; }
-        .header-nav a:hover { background: rgba(255,255,255,0.25); }
+        .header-nav a { padding: 10px 18px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
         
         .container { max-width: 1400px; margin: 0 auto; padding: 25px; }
         
         /* Stats Overview */
         .stats-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .stat-card { background: var(--card); border-radius: 14px; padding: 25px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border-top: 4px solid var(--accent); }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 25px; text-align: center; border-top: 4px solid var(--accent); }
         .stat-card.orange { border-top-color: var(--orange); }
-        .stat-card.blue { border-top-color: var(--blue); }
+        .stat-card.blue { border-top-color: #3498db; }
         .stat-card.bitcoin { border-top-color: var(--bitcoin); }
         .stat-card .icon { font-size: 2rem; margin-bottom: 10px; }
-        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); }
-        .stat-card .label { font-size: 0.85rem; color: #666; margin-top: 5px; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+        .stat-card .label { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
         
         /* Section */
-        .section { background: var(--card); border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .section-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .section-badge { background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .section { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 25px; margin-bottom: 25px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 1.1rem; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        .section-badge { background: var(--accent); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
         
         /* Grid */
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
@@ -187,13 +177,13 @@ $moduleIcons = [
         
         /* Module List */
         .module-list { max-height: 350px; overflow-y: auto; }
-        .module-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .module-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .module-item:last-child { border-bottom: none; }
         .module-icon { font-size: 1.3rem; width: 35px; }
-        .module-name { flex: 1; font-weight: 500; }
-        .module-bar { flex: 2; height: 10px; background: #eee; border-radius: 5px; margin: 0 15px; overflow: hidden; }
+        .module-name { flex: 1; font-weight: 500; color: var(--text); }
+        .module-bar { flex: 2; height: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; margin: 0 15px; overflow: hidden; }
         .module-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 5px; }
-        .module-count { font-weight: 600; color: var(--blue); min-width: 50px; text-align: right; }
+        .module-count { font-weight: 600; color: var(--accent); min-width: 50px; text-align: right; }
         
         /* Wallet Section */
         .wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
@@ -204,41 +194,41 @@ $moduleIcons = [
         
         /* Top List */
         .top-list { list-style: none; }
-        .top-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .top-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .top-item:last-child { border-bottom: none; }
-        .top-rank { width: 30px; height: 30px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; margin-right: 15px; }
+        .top-rank { width: 30px; height: 30px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; margin-right: 15px; }
         .top-rank.gold { background: #FFD700; color: #333; }
         .top-rank.silver { background: #C0C0C0; color: #333; }
         .top-rank.bronze { background: #CD7F32; }
-        .top-name { flex: 1; font-weight: 500; }
+        .top-name { flex: 1; font-weight: 500; color: var(--text); }
         .top-value { font-weight: 600; color: var(--bitcoin); }
         
         /* Foxy Section */
         .foxy-header { background: linear-gradient(135deg, var(--orange), #d45a1a); color: white; padding: 20px; border-radius: 12px 12px 0 0; margin: -25px -25px 20px -25px; }
         .foxy-header h3 { display: flex; align-items: center; gap: 10px; }
         .foxy-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .foxy-stat { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; }
+        .foxy-stat { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; }
         .foxy-stat .value { font-size: 1.5rem; font-weight: 700; color: var(--orange); }
-        .foxy-stat .label { font-size: 0.8rem; color: #666; }
+        .foxy-stat .label { font-size: 0.8rem; color: var(--text-muted); }
         
         /* Transaction List */
         .tx-list { max-height: 300px; overflow-y: auto; }
-        .tx-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+        .tx-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text); }
         .tx-item:last-child { border-bottom: none; }
         .tx-amount { font-weight: 600; }
-        .tx-amount.positive { color: var(--accent); }
-        .tx-amount.negative { color: #e74c3c; }
+        .tx-amount.positive { color: #6cff6c; }
+        .tx-amount.negative { color: #ff6b6b; }
         
         /* Bot Section */
         .bot-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .bot-stat { background: var(--primary); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .bot-stat { background: var(--primary); border: 1px solid var(--border); color: white; padding: 20px; border-radius: 12px; text-align: center; }
         .bot-stat .value { font-size: 1.5rem; font-weight: 700; }
         .bot-stat .label { font-size: 0.75rem; opacity: 0.8; margin-top: 5px; }
-        .bot-stat.success { background: var(--accent); }
-        .bot-stat.error { background: #e74c3c; }
+        .bot-stat.success { background: rgba(40, 167, 69, 0.3); }
+        .bot-stat.error { background: rgba(220, 53, 69, 0.3); }
         @media (max-width: 768px) { .bot-stats { grid-template-columns: repeat(2, 1fr); } }
         
-        footer { text-align: center; padding: 20px; color: #999; font-size: 0.85rem; }
+        footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 20px; }
         footer a { color: var(--accent); text-decoration: none; }
     </style>
 </head>

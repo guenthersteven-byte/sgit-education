@@ -865,18 +865,21 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sgiT Education - Adaptive Learning v5.6</title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* Adaptive Learning Dark Theme Overrides */
         
         :root {
             --primary: #1A3503;
             --accent: #43D240;
             --bitcoin: #F7931A;
+            --card-bg: rgba(0, 0, 0, 0.3);
+            --border: rgba(67, 210, 64, 0.3);
         }
         
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: linear-gradient(135deg, #0d1a02 0%, #1A3503 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -928,14 +931,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         
         .header {
-            background: rgba(255,255,255,0.95);
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
@@ -947,7 +951,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .logo { height: 50px; }
         .app-title {
-            color: var(--primary);
+            color: var(--accent);
             font-size: 24px;
             font-weight: bold;
         }
@@ -955,25 +959,26 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             font-size: 12px;
             color: var(--accent);
             font-weight: normal;
+            opacity: 0.7;
         }
         .user-info {
             text-align: right;
         }
         .user-greeting {
             font-size: 16px;
-            color: var(--primary);
+            color: #fff;
             margin-bottom: 5px;
         }
         .logout-btn {
             font-size: 12px;
-            color: #dc3545;
+            color: #ff6b6b;
             cursor: pointer;
             text-decoration: underline;
         }
         .user-level {
             font-size: 18px;
             font-weight: bold;
-            color: var(--primary);
+            color: var(--accent);
             margin: 5px 0;
         }
         .level-points {
@@ -996,7 +1001,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         .score-number {
             font-size: 28px;
             font-weight: bold;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         .score-number.sats {
@@ -1005,7 +1010,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         
         .score-label {
             font-size: 12px;
-            color: #666;
+            color: #aaa;
         }
         
         /* Login Modal */
@@ -1022,7 +1027,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             justify-content: center;
         }
         .login-box {
-            background: white;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 40px;
             max-width: 500px;
@@ -1031,52 +1037,55 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .login-title {
             font-size: 32px;
-            color: var(--primary);
+            color: var(--accent);
             margin-bottom: 10px;
         }
         .login-subtitle {
             font-size: 16px;
-            color: #666;
+            color: #aaa;
             margin-bottom: 30px;
         }
         .login-input {
             width: 100%;
             padding: 15px;
             margin-bottom: 15px;
-            border: 2px solid #ddd;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
             border-radius: 10px;
             font-size: 16px;
         }
+        .login-input::placeholder { color: #888; }
         .login-warning {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
             font-size: 14px;
-            color: #856404;
+            color: #ffc107;
         }
         .login-info {
-            background: #e3f2fd;
-            border: 2px solid #2196F3;
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid #2196F3;
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
             font-size: 14px;
-            color: #1565C0;
+            color: #64b5f6;
         }
         .login-btn {
             width: 100%;
             padding: 15px;
             background: var(--accent);
-            color: white;
+            color: #000;
             border: none;
             border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
         }
-        .login-btn:hover { background: var(--primary); }
+        .login-btn:hover { background: #35B035; }
         .login-error {
             color: #dc3545;
             margin-top: 10px;
@@ -1091,19 +1100,20 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             margin: 0 auto;
         }
         .module-card {
-            background: white;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
             border-radius: 15px;
             padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #fff;
         }
         .module-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            background: var(--accent);
-            color: white;
+            border-color: var(--accent);
+            background: rgba(67, 210, 64, 0.2);
+            box-shadow: 0 10px 25px rgba(67, 210, 64, 0.2);
         }
         .module-icon {
             font-size: 48px;
@@ -1128,13 +1138,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             justify-content: center;
         }
         .quiz-container {
-            background: white;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 40px;
             max-width: 800px;
             width: 90%;
             margin: 20px;
             position: relative;
+            color: #fff;
         }
         .quiz-header {
             display: flex;
@@ -1146,12 +1158,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .module-title {
             font-size: 28px;
-            color: var(--primary);
+            color: var(--accent);
             font-weight: bold;
         }
         .module-total {
             font-size: 14px;
-            color: #666;
+            color: #aaa;
             margin-top: 5px;
         }
         .session-info {
@@ -1159,17 +1171,17 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .session-label {
             font-size: 12px;
-            color: #666;
+            color: #aaa;
         }
         .session-value {
             font-size: 20px;
             font-weight: bold;
-            color: var(--primary);
+            color: var(--accent);
         }
         .progress-bar {
             width: 100%;
             height: 30px;
-            background: #f0f0f0;
+            background: rgba(0,0,0,0.3);
             border-radius: 15px;
             overflow: hidden;
             margin-bottom: 20px;
@@ -1187,13 +1199,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         .question-text {
             font-size: 24px;
             margin-bottom: 30px;
-            color: #333;
+            color: #fff;
             min-height: 60px;
         }
         .loading {
             text-align: center;
             padding: 20px;
-            color: #666;
+            color: #aaa;
         }
         .spinner {
             border: 4px solid #f3f3f3;
@@ -1281,15 +1293,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         .close-btn:hover { color: #dc3545; }
         
-        /* TODO-006: Quiz Actions Container */
+        /* TODO-006: Quiz Actions Container (versteckt bis Antwort) */
         .quiz-actions {
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             gap: 15px;
             margin-top: 20px;
         }
-        .quiz-actions.show { display: flex; }
+        .quiz-actions.show { display: flex !important; }
         
         .next-btn {
             padding: 15px 40px;
@@ -1665,17 +1677,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         /* ========================================
          * 🚩 TODO-006: Flag-System Styles
          * ======================================== */
-        .quiz-actions {
-            display: none;
-            gap: 15px;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-        
-        .quiz-actions.show {
-            display: flex;
-        }
+        /* Note: .quiz-actions bereits oben definiert (Zeile ~1284) */
         
         .flag-btn {
             background: #f0f0f0;
