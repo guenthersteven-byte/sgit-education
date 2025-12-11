@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Was ist das wichtigste Teil eines Computers?;Monitor;Netzwerkkabel;CPU;Gehäuse;C;1;5;8;Die CPU (Central Processing Unit) hilft dem Computer, Aufgaben auszuführen.;ai_generated
+Was ist das wichtigste Programm auf deinem Handy?;Software;Datei;Netzwerk;App;D;1;5;8;Apps helfen uns, verschiedene Aufgaben zu erledigen und nutzen.;ai_generated
+Wie heißt das Netzwerk, das wir mit dem Computer benutzen um online zu sein?;Telefonleitung;WLAN;Computernetz;Internet;D;1;5;8;Das Internet verbindet uns über die W-LAN, Mobilfunk oder Satellitenverbindungen.;ai_generated
+Wie heißen die kleinen Teile in einem Computer?;Software;Hardware;Netzwerk;Datei;B;1;5;8;Hardware sind die physischen Teile, wie z.B. Bildschirm und Tastatur.;ai_generated
+Was ist ein wichtiger Teil eines Computers, der uns hilft, unsere Dateien zu speichern?;Monitor;CPU;RAM;Festplatte;D;1;5;8;Die Festplatte speichert alle unsere Dateien und Daten.;ai_generated

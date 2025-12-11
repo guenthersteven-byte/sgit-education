@@ -579,6 +579,52 @@ class BotLogger {
         return $results;
     }
     
+    /**
+     * Suggestion als erledigt markieren
+     */
+    public static function resolveSuggestion($suggestionId) {
+        $db = self::getDB();
+        if (!$db) return false;
+        
+        try {
+            $stmt = $db->prepare("UPDATE bot_suggestions SET status = 'resolved' WHERE id = :id");
+            $stmt->bindValue(':id', $suggestionId, SQLITE3_INTEGER);
+            return $stmt->execute() !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Alle Suggestions als erledigt markieren
+     */
+    public static function resolveAllSuggestions() {
+        $db = self::getDB();
+        if (!$db) return false;
+        
+        try {
+            return $db->exec("UPDATE bot_suggestions SET status = 'resolved' WHERE status = 'open'") !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Suggestion löschen
+     */
+    public static function deleteSuggestion($suggestionId) {
+        $db = self::getDB();
+        if (!$db) return false;
+        
+        try {
+            $stmt = $db->prepare("DELETE FROM bot_suggestions WHERE id = :id");
+            $stmt->bindValue(':id', $suggestionId, SQLITE3_INTEGER);
+            return $stmt->execute() !== false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
     public static function getStatistics() {
         $db = self::getDB();
         

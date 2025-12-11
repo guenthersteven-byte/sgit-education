@@ -1276,37 +1276,51 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <head>
     <meta charset="UTF-8">
     <title>sgiT AI Generator v<?= SGIT_VERSION ?> 🚀</title>
+    <link rel="stylesheet" href="/assets/css/dark-theme.css">
     <style>
-        body { font-family: 'Segoe UI', Arial; background: linear-gradient(135deg, #1A3503, #2d5a06); padding: 20px; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        h1 { color: #1A3503; border-bottom: 3px solid #43D240; padding-bottom: 10px; }
-        h2 { color: #1A3503; }
+        body { padding: 0; }
+        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 40px; }
+        h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 10px; }
+        h2 { color: var(--accent); }
         .status-box { padding: 20px; border-radius: 10px; margin: 20px 0; font-weight: bold; }
-        .status-online { background: #d4edda; color: #155724; }
-        .status-offline { background: #f8d7da; color: #721c24; }
-        button { background: #43D240; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; margin: 5px; }
-        button:hover { background: #3ab837; }
-        button.danger { background: #dc3545; }
+        .status-online { background: rgba(40, 167, 69, 0.2); color: #6cff6c; border: 1px solid rgba(40, 167, 69, 0.4); }
+        .status-offline { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.4); }
+        button { background: var(--accent); color: #000; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; margin: 5px; font-weight: 600; }
+        button:hover { background: var(--accent-hover); }
+        button.danger { background: var(--danger); color: white; }
         button.danger:hover { background: #c82333; }
-        .result { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #43D240; }
+        .result { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--accent); border: 1px solid var(--border); }
         .result.success { border-left-color: #28a745; }
         .result.warning { border-left-color: #ffc107; }
-        .question { font-size: 24px; margin-bottom: 20px; }
+        .question { font-size: 24px; margin-bottom: 20px; color: var(--text); }
         .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .option { padding: 15px; background: white; border: 2px solid #ddd; border-radius: 8px; text-align: center; }
-        .option.correct { background: #d4edda; border-color: #28a745; font-weight: bold; }
-        select, input { padding: 10px; font-size: 16px; margin: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        .option { padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; text-align: center; color: var(--text); }
+        .option.correct { background: rgba(40, 167, 69, 0.2); border-color: #28a745; font-weight: bold; color: #6cff6c; }
+        select, input { padding: 10px; font-size: 16px; margin: 10px; border: 1px solid var(--border); border-radius: 5px; background: rgba(0,0,0,0.3); color: var(--text); }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
-        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; }
-        .stat-value { font-size: 32px; font-weight: bold; color: #1A3503; }
-        .stat-label { color: #666; font-size: 14px; }
-        .version-badge { background: #43D240; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; margin-left: 10px; }
-        .fix-badge { background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+        .stat-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 32px; font-weight: bold; color: var(--accent); }
+        .stat-label { color: var(--text-muted); font-size: 14px; }
+        .version-badge { background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px; font-size: 14px; margin-left: 10px; }
+        .fix-badge { background: rgba(40, 167, 69, 0.3); color: #6cff6c; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        pre { background: rgba(0,0,0,0.5); color: #f8f8f2; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 12px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
-<div class="container">
+<!-- Generator Navigation Bar (TODO-008) -->
+<nav style="background: rgba(0,0,0,0.4); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(67, 210, 64, 0.3);">
+    <div style="display: flex; align-items: center; gap: 10px; color: white;">
+        <span style="font-weight: bold;">sgiT Generator</span>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <a href="/windows_ai_generator.php" style="padding: 8px 14px; background: #43D240; color: #000; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500;">🤖 AI Generator</a>
+        <a href="/questions/generate_module_csv.php" style="padding: 8px 14px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">📝 CSV Generator</a>
+        <a href="/batch_import.php" style="padding: 8px 14px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">📥 CSV Import</a>
+        <a href="/admin_v4.php" style="padding: 8px 14px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">🏠 Admin</a>
+    </div>
+</nav>
+
+<div class="container" style="margin-top: 25px;">
     <h1>🤖 sgiT AI Question Generator <span class="version-badge">v10.6 PERFORMANCE</span></h1>
     <p>
         <span class="fix-badge">✅ FIX #1</span> Flexibleres Parsing

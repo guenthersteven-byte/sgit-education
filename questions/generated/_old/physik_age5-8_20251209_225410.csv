@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Beine hat ein Katze?;8;2;6;4;D;1;5;8;Katzen haben vier Beine zum Laufen. Wie viele Beine hast du?;ai_generated
+Was passiert, wenn man ein Glas Wasser in den Wind stellt?;Es bleibt stehen.;Es fliegt hoch!;Es läuft runter.;Es dreht sich um die Welt.;B;1;5;8;Das Wasser wird durch das Windkraft freigegeben und fliegt;ai_generated
+Was passiert, wenn man Licht von einem Feuer ans Licht zeigt?;Die Farbe des Feuers verändert sich.;Das Licht wird sichtbar.;Der Feuer verschwindet;Es kommt kein Licht mehr.;B;1;5;8;Licht wird durch ein Spiegelung sichtbar.;ai_generated
+Was passiert, wenn man einen warmen Gegenstand an einem kalten Ort platziert?;Der Gegenstand wird kalt;Der Gegenstand wird warm.;Es gibt keine Veränderung der Temperatur.;Die Temperatur ändert sich nicht.;A;1;5;8;Warmere Gegenstände verlieren Wärme und werden kalt;ai_generated
+Wie heißt die Kraft, die ein Auto an den Boden wirkt?;Last;Druck;Kraft;Gewicht;C;1;5;8;Kraft ist die Veränderung im Körper.;ai_generated

@@ -1,0 +1,2 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Stell dir vor, du hast eine Menge Spielfiguren und willst wissen, wie viele es gibt. Wie kannst du diese Informationen in deinem Programm speichern?;Variablen;Funktionen;Schleifen;Algorithmen;A;2;8;11;Variablen sind wie kleine Kästchen, in denen wir Dinge speichern, um später auf sie zuzugreifen. Es ist wie ein Platzhalter für die Zahl der Figuren.;ai_generated

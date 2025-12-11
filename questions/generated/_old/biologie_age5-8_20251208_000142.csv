@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Beine hat ein Tiger?;2;6;4;8;C;1;5;8;Tiger haben vier Beine, damit sie laufen und springen können.;ai_generated
+Wie sieht eine Blume aus?;mit Fleisch;ohne Blätter;In Farbe, Form oder Muster;durch Schüsseln;C;1;5;8;Blumen sind in verschiedenen Farben und Formen. Sie haben oft schöne Blütenblätter, die sich nach unten strecken.;ai_generated
+Was ist der Name des größten Tieres?;Pinguin;Wal;Hund;Katze;B;1;5;8;Der Wal ist das größte Landtiere, die wir kennen.;ai_generated
+Was macht unser Körper?;Wir bewegen uns;Trinken;Schlafen;Essen;A;1;5;8;Unser Körper hilft uns, zu laufen, zu tanzen und zu spielen.;ai_generated
+Was ist die kleinste Einheit?;Zell;Schnauze;Blut;Beere;A;1;5;8;Eine Zelle ist die kleinste Einheit eines Lebewesens.;ai_generated

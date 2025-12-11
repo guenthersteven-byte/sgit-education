@@ -982,19 +982,6 @@ if (isset($_GET['api'])) {
     </style>
 </head>
 <body>
-    <!-- Generator Navigation Bar (TODO-008) -->
-    <nav style="background: linear-gradient(135deg, #1A3503, #2d5a06); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0;">
-        <div style="display: flex; align-items: center; gap: 10px; color: white;">
-            <span style="font-weight: bold;">sgiT Generator</span>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <a href="/windows_ai_generator.php" style="padding: 8px 14px; background: rgba(255,255,255,0.15); color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">🤖 AI Generator</a>
-            <a href="/questions/generate_module_csv.php" style="padding: 8px 14px; background: #43D240; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">📝 CSV Generator</a>
-            <a href="/batch_import.php" style="padding: 8px 14px; background: rgba(255,255,255,0.15); color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">📥 CSV Import</a>
-            <a href="/admin_v4.php" style="padding: 8px 14px; background: rgba(255,255,255,0.15); color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem;">🏠 Admin</a>
-        </div>
-    </nav>
-    
     <div class="container">
         <a href="/admin_v4.php" class="back-link">← Zurück zum Admin</a>
         

@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Kugeln sind in der Box?;7;5;2;3;D;1;5;8;Es gibt drei Kugeln in der Box. Die anderen Antworten sind falsch.;ai_generated
+Wie viele Finger hat ein Mensch?;5;6;8;7;A;1;5;8;Ein Mensch hat fünf Finger. Die anderen Antworten sind falsch.;ai_generated
+Was ist die Hälfte von 5?;3;2;4;6;B;1;5;8;Die Hälfte von 5 ist 2. Die anderen Antworten sind falsch.;ai_generated
+Was ist 10 % von 10?;1;3;2;5;A;1;5;8;10% von 10 ist 1. Die anderen Antworten sind falsch.;ai_generated
+Wie viele Punkte hat ein Spiel, wenn es zu Ende gespielt wird?;40;5;10;20;D;1;5;8;Das Spiel hat 20 Punkte. Die anderen Antworten sind falsch.;ai_generated

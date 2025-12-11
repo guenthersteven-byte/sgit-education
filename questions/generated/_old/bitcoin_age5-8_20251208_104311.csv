@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wer erfand Bitcoin?;Bill Gates;Jeff Bezos;Satoshi Nakamoto;Elon Musk;C;1;5;8;Satoshi Nakamoto war ein geheimnisamer Mann, der Bitcoin erschaffen hat.;ai_generated
+Was ist Blockchain?;Ein Buch, in dem man alles notieren kann und es immer sicher gespeichert wird.;Ein Online-Spiel;Eine Spielkonsole;Ein Computer;A;1;5;8;;ai_generated
+Wie nennt man die Arbeit, die Leute machen, um neue Bitcoin zu finden?;Mining;Rechnen;Lernen;Schreiben;A;1;5;8;;ai_generated
+Wo speichert man die Bitcoin-Tokens, die man hat?;Tasche;Kiste;Bankkonto;Wallet;D;1;5;8;;ai_generated
+Was macht Bitcoin so cool?;Es ist schlecht für die Umwelt;Es ist teuer;Es ist zu kompliziert;Es ist dezentralisiert, d.h. niemand hat die Kontrolle;D;1;5;8;;ai_generated

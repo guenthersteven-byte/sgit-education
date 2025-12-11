@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Welche Farbe ist ein Apfel?;Blau;Rot;Grün;Violett;B;1;5;8;Apfel sind meistens rot. Aber sie können auch grün oder gelb sein, je nach Sorte.;ai_generated
+Welches Zeichen zeigt ein Maler auf einer Leinwand?;Zeichen;Werkzeug;Farbe;Pinsel;D;1;5;8;Ein Pinsel ist ein Werkzeug, das Maler benutzen, um Farbe zu streichen.;ai_generated
+Welcher Künstler malte die Mona Lisa?;Michelangelo;Raphael;Leonardo da Vinci;Donatello;C;1;5;8;Leonardo da Vinci ist der Künstler, der die berühmte Mona Lisa gemalt hat.;ai_generated
+Welche Technik nennt man die Malerei mit vielen Farben und Linien?;Impressionismus;Realismus;Surrealismus;Abstraktion;B;1;5;8;Realismus zeichnet Menschen, Tiere und Landschaften mit realen Details.;ai_generated
+Welches der folgenden ist ein bekanntes Kunstwerk?;Der Nachtische;Die Sonne;Das Meer;Die Nachtigall;A;1;5;8;Der Nachtische ist ein berühmtes Gemälde von Caspar David Friedrich.;ai_generated

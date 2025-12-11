@@ -1381,6 +1381,7 @@ if (php_sapi_name() === 'cli') {
         $results = $bot->run();
     }
     
-    echo "\n\nGefundene Schwachstellen: " . count($results['vulnerabilities']) . "\n";
+    $vulnCount = isset($results['vulnerabilities']) ? count($results['vulnerabilities']) : 0;
+    echo "\n\nGefundene Schwachstellen: " . $vulnCount . "\n";
 }
 ?>

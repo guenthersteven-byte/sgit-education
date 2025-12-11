@@ -78,6 +78,30 @@ if (!$isLoggedIn) {
 }
 // ============================================================================
 
+// AJAX-Aktionen für Suggestions
+if (isset($_GET['action']) && $isLoggedIn) {
+    header('Content-Type: application/json');
+    
+    switch ($_GET['action']) {
+        case 'resolve_suggestion':
+            $id = intval($_GET['id'] ?? 0);
+            $result = BotLogger::resolveSuggestion($id);
+            echo json_encode(['success' => $result]);
+            exit;
+            
+        case 'resolve_all':
+            $result = BotLogger::resolveAllSuggestions();
+            echo json_encode(['success' => $result]);
+            exit;
+            
+        case 'delete_suggestion':
+            $id = intval($_GET['id'] ?? 0);
+            $result = BotLogger::deleteSuggestion($id);
+            echo json_encode(['success' => $result]);
+            exit;
+    }
+}
+
 // Daten laden (mit Fehlerbehandlung)
 try {
     $stats = BotLogger::getStatistics();
@@ -117,17 +141,31 @@ if ($selectedRun) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🤖 Bot Summary - sgiT Education</title>
+    <link rel="stylesheet" href="../assets/css/dark-theme.css">
     <style>
+        /* Bot Summary Specific Styles - Dark Theme */
+        :root {
+            --bg-dark: #0d1a02;
+            --bg-card: rgba(26, 53, 3, 0.4);
+            --border-green: rgba(67, 210, 64, 0.3);
+            --text-primary: #e8f5e9;
+            --text-secondary: #a5d6a7;
+            --accent: #43D240;
+        }
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
-            background: #f5f5f5;
-            color: #333;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1A3503 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
         }
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #1A3503, #2d5a06);
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border-green);
             color: white;
             padding: 20px 30px;
             display: flex;
@@ -164,28 +202,28 @@ if ($selectedRun) {
             margin-bottom: 30px;
         }
         .stat-card {
-            background: white;
+            background: var(--bg-card);
+            border: 1px solid var(--border-green);
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
         }
         .stat-value {
             font-size: 42px;
             font-weight: bold;
-            color: #1A3503;
+            color: var(--accent);
         }
-        .stat-value.success { color: #28a745; }
+        .stat-value.success { color: #43D240; }
         .stat-value.error { color: #dc3545; }
         .stat-value.warning { color: #ffc107; }
         .stat-label {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
             margin-top: 5px;
         }
         .stat-bar {
             height: 8px;
-            background: #e9ecef;
+            background: rgba(255,255,255,0.1);
             border-radius: 4px;
             margin-top: 15px;
             overflow: hidden;
@@ -198,23 +236,23 @@ if ($selectedRun) {
         
         /* Section */
         .section {
-            background: white;
+            background: var(--bg-card);
+            border: 1px solid var(--border-green);
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             overflow: hidden;
         }
         .section-header {
-            background: #f8f9fa;
+            background: rgba(0,0,0,0.2);
             padding: 15px 20px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border-green);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .section-header h2 {
             font-size: 18px;
-            color: #1A3503;
+            color: var(--text-primary);
         }
         .section-content {
             padding: 20px;
@@ -228,17 +266,17 @@ if ($selectedRun) {
         th, td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border-green);
         }
         th {
-            background: #f8f9fa;
+            background: rgba(0,0,0,0.2);
             font-weight: 600;
-            color: #555;
+            color: var(--text-secondary);
             font-size: 13px;
             text-transform: uppercase;
         }
         tr:hover {
-            background: #f8f9fa;
+            background: rgba(67, 210, 64, 0.1);
         }
         
         /* Badges */
@@ -249,10 +287,10 @@ if ($selectedRun) {
             font-size: 12px;
             font-weight: 500;
         }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-info { background: #d1ecf1; color: #0c5460; }
-        .badge-warning { background: #fff3cd; color: #856404; }
-        .badge-error { background: #f8d7da; color: #721c24; }
+        .badge-success { background: rgba(67, 210, 64, 0.2); color: #43D240; }
+        .badge-info { background: rgba(23, 162, 184, 0.2); color: #17a2b8; }
+        .badge-warning { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .badge-error { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
         .badge-critical { background: #dc3545; color: white; }
         
         /* Priority Badges */
@@ -263,14 +301,14 @@ if ($selectedRun) {
         
         /* Bot Cards */
         .bot-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: var(--bg-card);
+            border: 1px solid var(--border-green);
             border-radius: 12px;
             padding: 20px;
             transition: all 0.3s ease;
         }
         .bot-card:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(67, 210, 64, 0.2);
             transform: translateY(-2px);
         }
         .bot-header {
@@ -280,8 +318,8 @@ if ($selectedRun) {
             margin-bottom: 10px;
         }
         .bot-icon { font-size: 24px; }
-        .bot-name { font-weight: bold; font-size: 16px; color: #1A3503; }
-        .bot-desc { color: #666; font-size: 13px; margin-bottom: 15px; }
+        .bot-name { font-weight: bold; font-size: 16px; color: var(--text-primary); }
+        .bot-desc { color: var(--text-secondary); font-size: 13px; margin-bottom: 15px; }
         .bot-actions { display: flex; gap: 10px; margin-bottom: 10px; }
         .btn-start { flex: 1; text-align: center; }
         .btn-stop { 
@@ -291,10 +329,10 @@ if ($selectedRun) {
         .btn-stop:hover { background: #5a6268; }
         .bot-status {
             font-size: 12px;
-            color: #666;
+            color: var(--text-secondary);
             text-align: center;
             padding-top: 5px;
-            border-top: 1px solid #e9ecef;
+            border-top: 1px solid var(--border-green);
         }
         
         /* Status */
@@ -304,27 +342,28 @@ if ($selectedRun) {
         
         /* Suggestions */
         .suggestion-card {
-            background: #fff8e1;
-            border: 1px solid #ffecb3;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
         }
         .suggestion-card.critical {
-            background: #ffebee;
-            border-color: #ffcdd2;
+            background: rgba(220, 53, 69, 0.1);
+            border-color: rgba(220, 53, 69, 0.3);
         }
         .suggestion-card.high {
-            background: #fff3e0;
-            border-color: #ffcc80;
+            background: rgba(253, 126, 20, 0.1);
+            border-color: rgba(253, 126, 20, 0.3);
         }
         .suggestion-title {
             font-weight: bold;
             margin-bottom: 8px;
+            color: var(--text-primary);
         }
         .suggestion-files {
             font-size: 12px;
-            color: #666;
+            color: var(--text-secondary);
             margin-top: 10px;
         }
         
@@ -343,16 +382,19 @@ if ($selectedRun) {
         .btn:hover { background: #3ab837; }
         .btn-sm { padding: 5px 10px; font-size: 12px; }
         .btn-outline {
-            background: white;
-            color: #43D240;
-            border: 1px solid #43D240;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+        .btn-outline:hover {
+            background: rgba(67, 210, 64, 0.1);
         }
         
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: var(--text-secondary);
         }
         .empty-state .icon {
             font-size: 48px;
@@ -361,14 +403,14 @@ if ($selectedRun) {
         
         /* Details Panel */
         .details-panel {
-            background: #f8f9fa;
+            background: rgba(0,0,0,0.3);
             border-radius: 8px;
             padding: 15px;
             margin-top: 10px;
             font-size: 13px;
         }
         .details-panel pre {
-            background: #2d2d2d;
+            background: #1a1a1a;
             color: #f8f8f2;
             padding: 10px;
             border-radius: 6px;
@@ -389,7 +431,7 @@ if ($selectedRun) {
         /* Log Entry */
         .log-entry {
             padding: 10px 15px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border-green);
             display: flex;
             align-items: flex-start;
             gap: 15px;
@@ -397,10 +439,10 @@ if ($selectedRun) {
         .log-entry:last-child { border-bottom: none; }
         .log-entry .icon { font-size: 20px; }
         .log-entry .content { flex: 1; }
-        .log-entry .time { color: #999; font-size: 12px; }
+        .log-entry .time { color: var(--text-secondary); font-size: 12px; }
         .log-entry .module-tag {
             display: inline-block;
-            background: #e9ecef;
+            background: rgba(67, 210, 64, 0.2);
             padding: 2px 8px;
             border-radius: 4px;
             font-size: 11px;
@@ -409,19 +451,19 @@ if ($selectedRun) {
         
         /* Welcome Box */
         .welcome-box {
-            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-            border: 1px solid #a5d6a7;
+            background: var(--bg-card);
+            border: 1px solid var(--border-green);
             border-radius: 12px;
             padding: 30px;
             text-align: center;
             margin-bottom: 30px;
         }
         .welcome-box h2 {
-            color: #1A3503;
+            color: var(--text-primary);
             margin-bottom: 15px;
         }
         .welcome-box p {
-            color: #555;
+            color: var(--text-secondary);
             margin-bottom: 20px;
         }
     </style>
@@ -434,6 +476,7 @@ if ($selectedRun) {
         <span style="opacity: 0.8; font-size: 14px;">sgiT Education Quality Assurance</span>
     </div>
     <div class="header-actions">
+        <a href="scheduler/scheduler_ui.php">⏰ Scheduler</a>
         <a href="tests/AIGeneratorBot.php">▶️ AI Bot starten</a>
         <a href="../index.php">🏠 Zur Plattform</a>
     </div>
@@ -542,7 +585,12 @@ if ($selectedRun) {
         <div class="section">
             <div class="section-header">
                 <h2>💡 Verbesserungsvorschläge</h2>
-                <span style="font-size: 13px; color: #666;"><?= count($suggestions) ?> offen</span>
+                <div>
+                    <span style="font-size: 13px; color: var(--text-secondary); margin-right: 15px;"><?= count($suggestions) ?> offen</span>
+                    <?php if (!empty($suggestions)): ?>
+                    <button onclick="resolveAllSuggestions()" class="btn btn-sm btn-outline">✓ Alle erledigt</button>
+                    <?php endif; ?>
+                </div>
             </div>
             <div class="section-content">
                 <?php if (empty($suggestions)): ?>
@@ -553,12 +601,18 @@ if ($selectedRun) {
                     </div>
                 <?php else: ?>
                     <?php foreach (array_slice($suggestions, 0, 5) as $sug): ?>
-                        <div class="suggestion-card <?= $sug['priority'] ?? 'medium' ?>">
-                            <div class="suggestion-title">
-                                <span class="badge priority-<?= $sug['priority'] ?? 'medium' ?>"><?= strtoupper($sug['priority'] ?? 'MEDIUM') ?></span>
-                                <?= htmlspecialchars($sug['title'] ?? '') ?>
+                        <div class="suggestion-card <?= $sug['priority'] ?? 'medium' ?>" id="suggestion-<?= $sug['id'] ?>">
+                            <div class="suggestion-title" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span class="badge priority-<?= $sug['priority'] ?? 'medium' ?>"><?= strtoupper($sug['priority'] ?? 'MEDIUM') ?></span>
+                                    <?= htmlspecialchars($sug['title'] ?? '') ?>
+                                </div>
+                                <div>
+                                    <button onclick="resolveSuggestion(<?= $sug['id'] ?>)" class="btn btn-sm" title="Als erledigt markieren">✓</button>
+                                    <button onclick="deleteSuggestion(<?= $sug['id'] ?>)" class="btn btn-sm btn-outline" style="color: #dc3545; border-color: #dc3545;" title="Löschen">🗑️</button>
+                                </div>
                             </div>
-                            <p style="font-size: 14px; color: #666;"><?= htmlspecialchars($sug['description'] ?? '') ?></p>
+                            <p style="font-size: 14px; color: var(--text-secondary);"><?= htmlspecialchars($sug['description'] ?? '') ?></p>
                             <?php if (!empty($sug['affected_files'])): ?>
                                 <div class="suggestion-files">
                                     📁 Betroffene Dateien: <code><?= htmlspecialchars($sug['affected_files']) ?></code>
@@ -567,7 +621,7 @@ if ($selectedRun) {
                         </div>
                     <?php endforeach; ?>
                     <?php if (count($suggestions) > 5): ?>
-                        <p style="text-align: center; color: #666; margin-top: 15px;">
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 15px;">
                             + <?= count($suggestions) - 5 ?> weitere Vorschläge
                         </p>
                     <?php endif; ?>
@@ -802,6 +856,49 @@ function clearStopFlag(botType) {
         .then(data => {
             if (data.success) {
                 document.getElementById('status-' + botType).innerHTML = '🟢 Bereit';
+            }
+        });
+}
+
+// Einzelne Suggestion als erledigt markieren
+function resolveSuggestion(id) {
+    fetch('?action=resolve_suggestion&id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const card = document.getElementById('suggestion-' + id);
+                if (card) {
+                    card.style.opacity = '0.5';
+                    card.style.textDecoration = 'line-through';
+                    setTimeout(() => card.remove(), 500);
+                }
+            }
+        });
+}
+
+// Alle Suggestions als erledigt markieren
+function resolveAllSuggestions() {
+    if (!confirm('Alle Vorschläge als erledigt markieren?')) return;
+    
+    fetch('?action=resolve_all')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+}
+
+// Suggestion löschen
+function deleteSuggestion(id) {
+    if (!confirm('Vorschlag wirklich löschen?')) return;
+    
+    fetch('?action=delete_suggestion&id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const card = document.getElementById('suggestion-' + id);
+                if (card) card.remove();
             }
         });
 }

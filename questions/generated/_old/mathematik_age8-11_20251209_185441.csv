@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Ecken hat ein Quadrat?;8;10;6;4;D;2;8;11;Ein Quadrat hat immer vier right angles. 4 Ecken, 4 Seiten.;ai_generated
+Wenn wir 5 Euro teilen durch 2, wie viel bekommen wir pro Person?;4 Euro;2,5 Euro;6 Euro;3 Euro;B;2;8;11;Wir teilen die 5 Euro durch 2. Das ist 5/2 = 2,5.;ai_generated
+Wie viel Prozent entspricht 10 von 100?;10%;30%;20%;50%;A;2;8;11;Wenn man 10 von 100 hat, entspricht das 10%.;ai_generated
+Wie viele Zentimeter sind in einem Meter?;100;200;50;1000;A;2;8;11;Ein Meter hat 100 Zentimeter.;ai_generated
+Was ist die Lösung der Gleichung: 2x + 5 = 11?;4;3;5;6;B;2;8;11;Subtrahiere 5 von beiden Seiten, dann dividieren wir durch 2. Das Ergebnis ist 3.;ai_generated

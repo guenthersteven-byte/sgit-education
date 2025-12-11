@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie heißt die kleine Box in der Programmierung, wo wir Informationen speichern?;Programm;Variable;Schleife;Funktion;B;1;5;8;Eine Variable ist wie eine kleine Box, wo wir Informationen aufbewahren.;ai_generated
+Wenn wir immer wieder die gleiche Aufgabe ausführen wollen, können wir mit 'Schleifen' ein Programm einfacher machen.;Vielleicht;Vielleicht nicht;Nein;Ja;D;1;5;8;Schleifen helfen uns, Aufgaben zu wiederholen, ohne immer den Code neu zu schreiben.;ai_generated
+Was macht die Funktion in der Programmierung?;Schleifen erstellen;Informationen speichern;Einen Code schreiben;Ein Programm ausführen;D;1;5;8;Eine Funktion ist wie eine Anleitung, um ein Programm zu starten und Aufgaben auszuführen.;ai_generated
+Was bedeutet der Algorithmus in der Programmierung?;Einen Code schreiben;Informationen speichern;Ein Plan für das Programm;Schleifen erstellen;C;1;5;8;Ein Algorithmus ist wie ein Spielplan, um die Aufgaben des Programms zu organisieren.;ai_generated
+Wie heißt der Code, der die Aufgabe auf dem Computer ausführt?;Funktion;Schleife;Programm;Variable;C;1;5;8;Ein Programm ist wie ein Spiel mit den Aufgaben, die der Computer ausführen soll.;ai_generated

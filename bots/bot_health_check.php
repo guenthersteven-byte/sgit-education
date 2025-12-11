@@ -63,7 +63,8 @@ class BotHealthCheck {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => self::$config['timeoutSeconds'],
             CURLOPT_CONNECTTIMEOUT => self::$config['timeoutSeconds'],
-            CURLOPT_NOBODY => true,  // HEAD Request für Schnelligkeit
+            CURLOPT_FOLLOWLOCATION => true,  // Folge Redirects
+            CURLOPT_MAXREDIRS => 3,
             CURLOPT_USERAGENT => 'sgiT BotHealthCheck/1.0'
         ]);
         

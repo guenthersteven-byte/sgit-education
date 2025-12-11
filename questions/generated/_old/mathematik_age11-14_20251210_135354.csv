@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wenn die Geschwindigkeit eines Autos 60 km/h beträgt und es 3 Stunden unterwegs ist, wie weit fährt es insgesamt?;30 km;180 km;90 km;240 km;B;3;11;14;Geschwindigkeit * Zeit = Strecke. 60 km/h * 3 Stunden = 180 km.;ai_generated
+Berechne den Bruch, der 50% von einem Wert entspricht.;1/4;1/2;5/2;3/4;B;3;11;14;Ein Bruch, der 50% des Wertes darstellt, ist die Hälfte. 1/2 = 50%.;ai_generated
+Was ist der Wert von  50 % von 100?;25;75;50;100;C;3;11;14;50% von 100 ist gleich 1/2 * 100 = 50.;ai_generated
+Welche Formel soll verwendet werden, um das Volumen eines Würfels zu berechnen?;V = a² * h;V = 4/3πr³;V = πr²h;V = a * b * c;A;3;11;14;Volumen eines Würfels berechnet sich mit V = a² * h. hier ist a der Länge des Würfels und h die Höhe des Würfels.;ai_generated
+Welche Formel lässt sich verwenden, um den Prozentsatz von einem Wert zu berechnen?;% = (Teil / Gesamt) * 100;x*y = z^2;x^2 + y^2 = z^2;(Teil / Gesamt) * 1;A;3;11;14;% = (Teil / Gesamt) * 100, um den Prozentsatz von einem Wert zu berechnen.;ai_generated

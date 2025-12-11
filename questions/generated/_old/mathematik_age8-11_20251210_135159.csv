@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Seiten hat ein Quadrat?;5;4;7;6;B;2;8;11;Ein Quadrat hat 4 gleich lange Seiten.  Es ist ein Grundshape mit vier gleichen Seiten.;ai_generated
+Welche Zahl ergibt 10 + 5?;8;7;9;15;D;2;8;11;10 plus 5 ist gleich 15.  Wir addieren die Zahlen, um das Ergebnis zu finden.;ai_generated
+Wenn du 1/2 von einem Apfel isst, wie viele Teile hast du?;1/3;1/4;2;1;D;2;8;11;1/2 bedeutet, dass du die Hälfte des Apfels isst.  Wenn du 1/2 isst, hast du 1 Teil.;ai_generated
+Was ist ein Prozentsatz?;Eine Zahl, die aus dem Ganzen besteht;Ein Wort;Eine Zahl, die aus der Gesamtzahl besteht;Ein Satz;C;2;8;11;Ein Prozentsatz ist ein Prozentsatz von 100.  Es bedeutet eine Anzahl der Teile, die es gibt.;ai_generated
+Wie viele Personen sind in einer Familie?;4 bis 9;5 bis 10;2 bis 6;3 bis 7;C;2;8;11;Familien können zwischen 2 und 6 Personen haben, da es verschiedene Familienformen gibt.;ai_generated

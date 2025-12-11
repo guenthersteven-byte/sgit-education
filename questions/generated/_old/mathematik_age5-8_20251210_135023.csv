@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Augen hat ein Fisch?;4;0;6;2;B;1;5;8;Fische haben keine Augen, sondern sehen mit ihren Schnauzen.;ai_generated
+Wie viele Teller sind im Haus?;7;10;5;2;C;1;5;8;Wenn man die Anzahl der Teller im Haus zählen kann, dann sind es 5.;ai_generated
+Wie viel Prozent von einem Ballon ist blau?;50;70;25;100;D;1;5;8;Ein Ballon kann ganz in Blau sein, wenn es der Fall ist, dann sind 100 Prozent Blau.;ai_generated
+Wie viele Teile sind in einem Apfel?;6;8;2;4;D;1;5;8;Es gibt 4 Teile in einem Apfel: Kern, Schale, Ränder und Fruchtfleisch.;ai_generated
+Wenn wir 2+2=?;4;1;3;5;A;1;5;8;Zwei plus zwei ist gleich vier.;ai_generated
