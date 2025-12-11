@@ -53,9 +53,10 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 function getBotStatus() {
     $bots = [
         'ai_generator' => ['name' => 'AI Generator', 'icon' => '🤖', 'file' => 'AIGeneratorBot.php'],
+        'dependency' => ['name' => 'Dependency', 'icon' => '📦', 'file' => 'DependencyCheckBot.php'],
         'function_test' => ['name' => 'Function Test', 'icon' => '🧪', 'file' => 'FunctionTestBot.php'],
-        'security' => ['name' => 'Security', 'icon' => '🔒', 'file' => 'SecurityBot.php'],
-        'load_test' => ['name' => 'Load Test', 'icon' => '⚡', 'file' => 'LoadTestBot.php']
+        'load_test' => ['name' => 'Load Test', 'icon' => '⚡', 'file' => 'LoadTestBot.php'],
+        'security' => ['name' => 'Security', 'icon' => '🔒', 'file' => 'SecurityBot.php']
     ];
     
     $logsDir = __DIR__ . '/bots/logs/';
@@ -237,42 +238,12 @@ function showLoginPage($error = null) {
             </div>
         </div>
         
-        <!-- Quick Actions -->
+        <!-- Quick Actions - Alphabetisch sortiert -->
         <div class="actions-grid">
-            <div class="action-card">
-                <h3>📊 Statistik Dashboard</h3>
-                <p>Alle Statistiken auf einen Blick: Fragen, Module, Wallet, Foxy und mehr.</p>
-                <a href="statistics.php">Öffnen →</a>
-            </div>
-            
-            <div class="action-card" style="border-left: 4px solid #FFD700;">
-                <h3>🏆 Leaderboard</h3>
-                <p>Highscores, Top-Lerner, Streaks und Modul-Champions für die Kids.</p>
-                <a href="leaderboard.php">Rangliste →</a>
-            </div>
-            
-            <div class="action-card orange">
-                <h3>🦊 Foxy Lernassistent</h3>
-                <p>Konfiguration, Animationen und DB-Seeder für den Lernfuchs.</p>
-                <a href="clippy/test.php">Konfigurieren →</a>
-            </div>
-            
-            <div class="action-card">
-                <h3>📥 CSV Import</h3>
-                <p>Fragen aus CSV-Dateien importieren (Batch-Import für alle Module).</p>
-                <a href="batch_import.php">Importieren →</a>
-            </div>
-            
             <div class="action-card">
                 <h3>🤖 AI Generator Bot</h3>
                 <p>KI-gesteuerte Fragengenerierung mit Ollama (Gemma2:2b).</p>
                 <a href="bots/tests/AIGeneratorBot.php">Generator →</a>
-            </div>
-            
-            <div class="action-card">
-                <h3>₿ Wallet Admin</h3>
-                <p>Kinder-Wallets, Transaktionen und Achievements verwalten.</p>
-                <a href="wallet/wallet_admin.php">Verwalten →</a>
             </div>
             
             <div class="action-card">
@@ -282,15 +253,33 @@ function showLoginPage($error = null) {
             </div>
             
             <div class="action-card">
-                <h3>🔍 User Debug Center</h3>
-                <p>User-Management, DB-Analyse und Fehlerdiagnose.</p>
-                <a href="debug_users.php">Debug →</a>
-            </div>
-            
-            <div class="action-card">
                 <h3>📈 Bot Dashboard</h3>
                 <p>Übersicht aller Bot-Durchläufe und Test-Ergebnisse.</p>
                 <a href="bots/bot_summary.php">Dashboard →</a>
+            </div>
+            
+            <div class="action-card" style="border-left: 4px solid #e74c3c;">
+                <h3>🚩 Cleanup: Gemeldete Fragen</h3>
+                <p>Überprüfe und verwalte von Lernenden gemeldete fehlerhafte Fragen.</p>
+                <a href="admin_cleanup_flags.php">Öffnen →</a>
+            </div>
+            
+            <div class="action-card">
+                <h3>📥 CSV Import</h3>
+                <p>Fragen aus CSV-Dateien importieren (Batch-Import für alle Module).</p>
+                <a href="batch_import.php">Importieren →</a>
+            </div>
+            
+            <div class="action-card orange">
+                <h3>🦊 Foxy Lernassistent</h3>
+                <p>Konfiguration, Animationen und DB-Seeder für den Lernfuchs.</p>
+                <a href="clippy/test.php">Konfigurieren →</a>
+            </div>
+            
+            <div class="action-card" style="border-left: 4px solid #FFD700;">
+                <h3>🏆 Leaderboard</h3>
+                <p>Highscores, Top-Lerner, Streaks und Modul-Champions für die Kids.</p>
+                <a href="leaderboard.php">Rangliste →</a>
             </div>
             
             <div class="action-card" style="border-left: 4px solid #3498db;">
@@ -299,10 +288,16 @@ function showLoginPage($error = null) {
                 <a href="fix_bug026_wal_mode.php">Prüfen →</a>
             </div>
             
-            <div class="action-card" style="border-left: 4px solid #e74c3c;">
-                <h3>🚩 Cleanup: Gemeldete Fragen</h3>
-                <p>Überprüfe und verwalte von Lernenden gemeldete fehlerhafte Fragen.</p>
-                <a href="admin_cleanup_flags.php">Öffnen →</a>
+            <div class="action-card">
+                <h3>🔍 User Debug Center</h3>
+                <p>User-Management, DB-Analyse und Fehlerdiagnose.</p>
+                <a href="debug_users.php">Debug →</a>
+            </div>
+            
+            <div class="action-card">
+                <h3>₿ Wallet Admin</h3>
+                <p>Kinder-Wallets, Transaktionen und Achievements verwalten.</p>
+                <a href="wallet/wallet_admin.php">Verwalten →</a>
             </div>
         </div>
         
