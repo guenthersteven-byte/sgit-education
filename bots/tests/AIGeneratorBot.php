@@ -408,9 +408,10 @@ class AIGeneratorBot {
     }
     
     /**
-     * Löscht alle Fragen eines Moduls
+     * v1.8 GEÄNDERT: Deaktiviert alle Fragen eines Moduls (Soft-Delete)
+     * Hash bleibt erhalten, AI generiert dieselbe Frage nicht erneut!
      */
-    public static function deleteModuleQuestions($module, $onlyAI = false) {
+    public static function deactivateModuleQuestions($module, $onlyAI = false) {
         $dbPath = dirname(dirname(__DIR__)) . '/AI/data/questions.db';
         if (!file_exists($dbPath)) {
             return ['success' => false, 'error' => 'Datenbank nicht gefunden'];
@@ -419,38 +420,40 @@ class AIGeneratorBot {
         try {
             $db = new SQLite3($dbPath);
             
-            // Erst zählen was gelöscht wird
+            // Erst zählen was deaktiviert wird
             if ($onlyAI) {
                 $stmt = $db->prepare('
                     SELECT COUNT(*) as count FROM questions 
                     WHERE LOWER(module) = LOWER(:module) 
                     AND (ai_generated = 1 OR model_used IS NOT NULL)
+                    AND is_active = 1
                 ');
             } else {
                 $stmt = $db->prepare('
                     SELECT COUNT(*) as count FROM questions 
                     WHERE LOWER(module) = LOWER(:module)
+                    AND is_active = 1
                 ');
             }
             $stmt->bindValue(':module', $module, SQLITE3_TEXT);
             $countResult = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
-            $deleteCount = intval($countResult['count'] ?? 0);
+            $deactivateCount = intval($countResult['count'] ?? 0);
             
-            if ($deleteCount == 0) {
+            if ($deactivateCount == 0) {
                 $db->close();
-                return ['success' => true, 'deleted' => 0, 'message' => 'Keine Fragen zum Löschen gefunden'];
+                return ['success' => true, 'deactivated' => 0, 'message' => 'Keine aktiven Fragen zum Deaktivieren gefunden'];
             }
             
-            // Jetzt löschen
+            // Jetzt deaktivieren (Soft-Delete)
             if ($onlyAI) {
                 $stmt = $db->prepare('
-                    DELETE FROM questions 
+                    UPDATE questions SET is_active = 0
                     WHERE LOWER(module) = LOWER(:module) 
                     AND (ai_generated = 1 OR model_used IS NOT NULL)
                 ');
             } else {
                 $stmt = $db->prepare('
-                    DELETE FROM questions 
+                    UPDATE questions SET is_active = 0
                     WHERE LOWER(module) = LOWER(:module)
                 ');
             }
@@ -461,8 +464,8 @@ class AIGeneratorBot {
             
             return [
                 'success' => true, 
-                'deleted' => $deleteCount, 
-                'message' => "$deleteCount Fragen aus '$module' gelöscht"
+                'deactivated' => $deactivateCount, 
+                'message' => "$deactivateCount Fragen aus '$module' deaktiviert (Hash bleibt erhalten)"
             ];
             
         } catch (Exception $e) {
@@ -471,9 +474,10 @@ class AIGeneratorBot {
     }
     
     /**
-     * v1.3 NEU: Löscht eine einzelne Frage anhand der ID
+     * v1.3 → v1.8 GEÄNDERT: Deaktiviert eine einzelne Frage (Soft-Delete)
+     * Hash bleibt erhalten, AI generiert dieselbe Frage nicht erneut!
      */
-    public static function deleteSingleQuestion($id) {
+    public static function deactivateSingleQuestion($id) {
         $dbPath = dirname(dirname(__DIR__)) . '/AI/data/questions.db';
         if (!file_exists($dbPath)) {
             return ['success' => false, 'error' => 'Datenbank nicht gefunden'];
@@ -483,7 +487,7 @@ class AIGeneratorBot {
             $db = new SQLite3($dbPath);
             
             // Erst prüfen ob die Frage existiert
-            $stmt = $db->prepare('SELECT id, question, module FROM questions WHERE id = :id');
+            $stmt = $db->prepare('SELECT id, question, module, is_active FROM questions WHERE id = :id');
             $stmt->bindValue(':id', intval($id), SQLITE3_INTEGER);
             $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
             
@@ -492,8 +496,8 @@ class AIGeneratorBot {
                 return ['success' => false, 'error' => 'Frage nicht gefunden (ID: ' . $id . ')'];
             }
             
-            // Löschen
-            $stmt = $db->prepare('DELETE FROM questions WHERE id = :id');
+            // Soft-Delete: is_active = 0 statt DELETE
+            $stmt = $db->prepare('UPDATE questions SET is_active = 0 WHERE id = :id');
             $stmt->bindValue(':id', intval($id), SQLITE3_INTEGER);
             $stmt->execute();
             
@@ -501,9 +505,9 @@ class AIGeneratorBot {
             
             return [
                 'success' => true, 
-                'deleted_id' => $id,
+                'deactivated_id' => $id,
                 'module' => $result['module'],
-                'message' => "Frage #$id gelöscht"
+                'message' => "Frage #$id deaktiviert (Hash bleibt erhalten)"
             ];
             
         } catch (Exception $e) {
@@ -577,16 +581,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             exit;
         }
         
-        // Modul komplett löschen
-        if ($_GET['ajax'] === 'delete' && isset($_GET['module'])) {
+        // Modul deaktivieren (Soft-Delete)
+        if ($_GET['ajax'] === 'deactivate' && isset($_GET['module'])) {
             $onlyAI = isset($_GET['only_ai']) && $_GET['only_ai'] === '1';
-            echo json_encode(AIGeneratorBot::deleteModuleQuestions($_GET['module'], $onlyAI));
+            echo json_encode(AIGeneratorBot::deactivateModuleQuestions($_GET['module'], $onlyAI));
             exit;
         }
         
-        // v1.3 NEU: Einzelne Frage löschen
-        if ($_GET['ajax'] === 'delete_single' && isset($_GET['id'])) {
-            echo json_encode(AIGeneratorBot::deleteSingleQuestion($_GET['id']));
+        // v1.8: Einzelne Frage deaktivieren (Soft-Delete)
+        if ($_GET['ajax'] === 'deactivate_single' && isset($_GET['id'])) {
+            echo json_encode(AIGeneratorBot::deactivateSingleQuestion($_GET['id']));
             exit;
         }
         
@@ -606,12 +610,40 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     $totalQuestions = array_sum(array_column($moduleStats, 'total'));
     $totalAI = array_sum(array_column($moduleStats, 'ai_count'));
     
+    // v1.8 NEU: Erweiterte Statistiken (wie statistics.php)
+    $extendedStats = [
+        'total' => $totalQuestions,
+        'ai_direct' => $totalAI,
+        'ai_csv' => 0,
+        'with_explanation' => 0,
+        'sats_distributed' => 0
+    ];
+    
+    // Fragen-DB für erweiterte Stats
+    $questionsDbPath = dirname(dirname(__DIR__)) . '/AI/data/questions.db';
+    if (file_exists($questionsDbPath)) {
+        try {
+            $db = new PDO('sqlite:' . $questionsDbPath);
+            $extendedStats['ai_csv'] = $db->query("SELECT COUNT(*) FROM questions WHERE source = 'csv_import'")->fetchColumn() ?: 0;
+            $extendedStats['with_explanation'] = $db->query("SELECT COUNT(*) FROM questions WHERE explanation IS NOT NULL AND explanation != ''")->fetchColumn() ?: 0;
+        } catch (Exception $e) {}
+    }
+    
+    // Wallet-DB für Sats
+    $walletDbPath = dirname(dirname(__DIR__)) . '/wallet/wallet.db';
+    if (file_exists($walletDbPath)) {
+        try {
+            $db = new PDO('sqlite:' . $walletDbPath);
+            $extendedStats['sats_distributed'] = $db->query("SELECT COALESCE(SUM(total_earned), 0) FROM child_wallets")->fetchColumn() ?: 0;
+        } catch (Exception $e) {}
+    }
+    
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>🤖 AI Generator Bot v1.7 - sgiT Education</title>
+    <title>🤖 AI Generator Bot v1.8 - sgiT Education</title>
     <style>
         :root {
             --dark-green: #1A3503;
@@ -1005,8 +1037,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             margin-top: 5px;
         }
         
-        .preview-item .delete-btn {
-            background: #dc3545;
+        .preview-item .deactivate-btn {
+            background: #f39c12;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -1015,8 +1047,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             font-size: 11px;
         }
         
-        .preview-item .delete-btn:hover {
-            background: #c82333;
+        .preview-item .deactivate-btn:hover {
+            background: #d68910;
         }
         
         /* Buttons */
@@ -1070,7 +1102,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 </div>
 
 <div class="container">
-    <h1>🤖 AI Generator Bot <span class="badge v13">v1.7</span></h1>
+    <h1>🤖 AI Generator Bot <span class="badge v13">v1.8</span></h1>
     
     <?php if (isset($_GET['stopped'])): ?>
     <div class="success-box">
@@ -1164,7 +1196,46 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         <h2>🗄️ Modul-Datenbank Manager</h2>
         <p>Verwalte die generierten Fragen pro Modul. <strong>Klicke auf ein Modul</strong> um Fragen zu sehen und einzeln oder alle zu löschen.</p>
         
-        <!-- Gesamt-Statistiken -->
+        <!-- v1.8: Statistik Dashboard -->
+        <div class="stats-dashboard" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-green); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="color: var(--neon-green); margin: 0;">📊 Statistik Dashboard</h4>
+                <div class="quick-nav" style="display: flex; gap: 10px;">
+                    <a href="/admin_v4.php" class="btn btn-sm secondary">🏠 Admin</a>
+                    <a href="/adaptive_learning.php" class="btn btn-sm secondary">📚 Lernen</a>
+                    <a href="/clippy/test.php" class="btn btn-sm" style="background: #f39c12; color: #fff;">🦊 Foxy</a>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+                <div style="text-align: center; padding: 15px; background: rgba(67,210,64,0.1); border-radius: 10px; border: 1px solid var(--border-green);">
+                    <div style="font-size: 10px; color: #888; margin-bottom: 5px;">📝</div>
+                    <div style="font-size: 24px; font-weight: bold; color: var(--neon-green);"><?= number_format($extendedStats['total']) ?></div>
+                    <div style="font-size: 11px; color: #aaa;">Fragen gesamt</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: rgba(23,162,184,0.1); border-radius: 10px; border: 1px solid rgba(23,162,184,0.3);">
+                    <div style="font-size: 10px; color: #888; margin-bottom: 5px;">🤖</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #17a2b8;"><?= number_format($extendedStats['ai_direct']) ?></div>
+                    <div style="font-size: 11px; color: #aaa;">AI → direkt in DB</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: rgba(40,167,69,0.1); border-radius: 10px; border: 1px solid rgba(40,167,69,0.3);">
+                    <div style="font-size: 10px; color: #888; margin-bottom: 5px;">📄</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #28a745;"><?= number_format($extendedStats['ai_csv']) ?></div>
+                    <div style="font-size: 11px; color: #aaa;">AI → via CSV</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: rgba(255,193,7,0.1); border-radius: 10px; border: 1px solid rgba(255,193,7,0.3);">
+                    <div style="font-size: 10px; color: #888; margin-bottom: 5px;">💡</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #ffc107;"><?= number_format($extendedStats['with_explanation']) ?></div>
+                    <div style="font-size: 11px; color: #aaa;">Mit Erklärung</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: rgba(247,147,26,0.1); border-radius: 10px; border: 1px solid rgba(247,147,26,0.3);">
+                    <div style="font-size: 10px; color: #888; margin-bottom: 5px;">₿</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #f7931a;"><?= number_format($extendedStats['sats_distributed']) ?></div>
+                    <div style="font-size: 11px; color: #aaa;">Sats verteilt</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gesamt-Statistiken (kompakt) -->
         <div class="total-stats">
             <div class="total-stat">
                 <div class="number" id="total-questions"><?= $totalQuestions ?></div>
@@ -1217,13 +1288,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             <div class="load-more-info" id="load-more-info"></div>
             
             <div class="action-bar">
-                <button class="warning" onclick="deleteModule(false)">
-                    🗑️ Alle Fragen dieses Moduls löschen
+                <button class="btn secondary" onclick="deactivateModule(false)">
+                    ⏸️ Alle Fragen dieses Moduls deaktivieren
                 </button>
-                <button class="danger" onclick="deleteModule(true)">
-                    🤖 Nur KI-generierte löschen
+                <button class="btn" style="background: #f39c12;" onclick="deactivateModule(true)">
+                    🤖 Nur KI-generierte deaktivieren
                 </button>
-                <button class="secondary" onclick="closePreview()">
+                <button class="btn secondary" onclick="closePreview()">
                     ✖️ Schließen
                 </button>
             </div>
@@ -1338,8 +1409,8 @@ function renderQuestions() {
                     ${options.length > 0 ? `<div class="options">Optionen: ${options.map(o => escapeHtml(o)).join(' | ')}</div>` : ''}
                 </div>
                 <div class="actions">
-                    <button class="delete-btn" onclick="deleteSingleQuestion(${q.id})" title="Diese Frage löschen">
-                        🗑️ Löschen
+                    <button class="deactivate-btn" onclick="deactivateSingleQuestion(${q.id})" title="Diese Frage deaktivieren (Hash bleibt erhalten)">
+                        ⏸️ Deaktiv.
                     </button>
                 </div>
             </div>
@@ -1348,14 +1419,14 @@ function renderQuestions() {
     document.getElementById('preview-content').innerHTML = html;
 }
 
-// v1.3 NEU: Einzelne Frage löschen
-function deleteSingleQuestion(id) {
-    if (!confirm(`Frage #${id} wirklich löschen?`)) return;
+// v1.8: Einzelne Frage deaktivieren (Soft-Delete, Hash bleibt erhalten)
+function deactivateSingleQuestion(id) {
+    if (!confirm(`Frage #${id} wirklich deaktivieren?\n\n(Hash bleibt erhalten - AI generiert diese Frage nicht erneut)`)) return;
     
     const item = document.getElementById(`question-${id}`);
     if (item) item.classList.add('deleting');
     
-    fetch(`?ajax=delete_single&id=${id}`)
+    fetch(`?ajax=deactivate_single&id=${id}`)
         .then(r => r.json())
         .then(data => {
             if (data.success) {
@@ -1366,7 +1437,7 @@ function deleteSingleQuestion(id) {
                 if (item) {
                     item.classList.remove('deleting');
                     item.classList.add('deleted');
-                    item.innerHTML = `<div class="content"><em>✅ Frage #${id} gelöscht</em></div>`;
+                    item.innerHTML = `<div class="content"><em>⏸️ Frage #${id} deaktiviert (Hash erhalten)</em></div>`;
                     
                     // Nach 1s ausblenden
                     setTimeout(() => {
@@ -1398,24 +1469,23 @@ function closePreview() {
     currentOffset = 0;
 }
 
-// Modul löschen (alle oder nur AI)
-function deleteModule(onlyAI) {
+// Modul deaktivieren (alle oder nur AI) - Soft-Delete
+function deactivateModule(onlyAI) {
     if (!selectedModule) return;
     
     const typeText = onlyAI ? 'alle KI-generierten Fragen' : 'ALLE Fragen';
-    const confirmText = `Wirklich ${typeText} aus "${selectedModule}" löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!`;
+    const confirmText = `Wirklich ${typeText} aus "${selectedModule}" deaktivieren?\n\n(Hash bleibt erhalten - AI generiert diese Fragen nicht erneut)`;
     
     if (!confirm(confirmText)) return;
-    if (!onlyAI && !confirm('LETZTE WARNUNG: Wirklich ALLE Fragen unwiderruflich löschen?')) return;
     
     const resultDiv = document.getElementById('delete-result');
-    resultDiv.innerHTML = '<div class="info-box">⏳ Lösche...</div>';
+    resultDiv.innerHTML = '<div class="info-box">⏳ Deaktiviere...</div>';
     
-    fetch(`?ajax=delete&module=${selectedModule}&only_ai=${onlyAI ? '1' : '0'}`)
+    fetch(`?ajax=deactivate&module=${selectedModule}&only_ai=${onlyAI ? '1' : '0'}`)
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                resultDiv.innerHTML = `<div class="success-box">✅ ${data.message}</div>`;
+                resultDiv.innerHTML = `<div class="success-box">⏸️ ${data.message}</div>`;
                 setTimeout(() => location.reload(), 1500);
             } else {
                 resultDiv.innerHTML = `<div class="error-box">❌ Fehler: ${data.error}</div>`;
