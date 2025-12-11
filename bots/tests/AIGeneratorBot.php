@@ -1235,22 +1235,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </div>
         </div>
         
-        <!-- Gesamt-Statistiken (kompakt) -->
-        <div class="total-stats">
-            <div class="total-stat">
-                <div class="number" id="total-questions"><?= $totalQuestions ?></div>
-                <div class="label">Fragen gesamt</div>
-            </div>
-            <div class="total-stat">
-                <div class="number" id="total-ai"><?= $totalAI ?></div>
-                <div class="label">KI-generiert</div>
-            </div>
-            <div class="total-stat">
-                <div class="number"><?= count(array_filter($moduleStats, fn($m) => $m['total'] > 0)) ?></div>
-                <div class="label">Module mit Fragen</div>
-            </div>
-        </div>
-        
         <!-- Modul-Grid -->
         <div class="module-grid">
             <?php foreach ($moduleStats as $module => $stats): ?>
@@ -1534,9 +1518,8 @@ function updateModuleStats() {
                 }
             }
             
-            // Gesamt-Stats aktualisieren
-            document.getElementById('total-questions').textContent = totalQ;
-            document.getElementById('total-ai').textContent = totalAI;
+            // Statistik-Dashboard wird bei Page-Reload aktualisiert
+            // (Live-Update nicht nötig, da Stats sich selten ändern)
         });
 }
 

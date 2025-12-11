@@ -1,16 +1,30 @@
 {
-    "generated": "2025-12-08 19:56:29",
+    "generated": "2025-12-11 18:54:38",
     "stats": {
-        "total_files": 116,
-        "php_files": 27,
+        "total_files": 314,
+        "php_files": 30,
         "total_dependencies": 22,
-        "unused_files": 10,
+        "unused_files": 11,
         "missing_files": 0,
         "circular_deps": 0,
-        "ajax_references": 54,
+        "ajax_references": 67,
         "dynamic_includes": 4
     },
     "nodes": [
+        {
+            "id": "profil\/index.php",
+            "label": "index.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "questions\/generate_module_csv.php",
+            "label": "generate_module_csv.php",
+            "unused": false,
+            "dependencies": 0,
+            "dependents": 2
+        },
         {
             "id": "session.php",
             "label": "session.php",
@@ -35,6 +49,13 @@
         {
             "id": "setup_database.php",
             "label": "setup_database.php",
+            "unused": true,
+            "dependencies": 0,
+            "dependents": 0
+        },
+        {
+            "id": "setup_flagging.php",
+            "label": "setup_flagging.php",
             "unused": true,
             "dependencies": 0,
             "dependents": 0
@@ -163,7 +184,7 @@
             "label": "windows_ai_generator.php",
             "unused": false,
             "dependencies": 0,
-            "dependents": 1
+            "dependents": 3
         },
         {
             "id": "zeichnen\/canvas.php",
