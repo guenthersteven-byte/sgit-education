@@ -1,7 +1,12 @@
 <?php
 /**
- * sgiT Education - Zeichnen Canvas v2.0
+ * sgiT Education - Zeichnen Canvas v3.0
  * Hauptzeichenfläche mit Fabric.js
+ * 
+ * NEUERUNGEN v3.0 (11.12.2025):
+ * - Erweiterte Brushes: Marker, Kreide, Neon, Aquarell, Airbrush
+ * - HSL-Farbkreis mit Pipette
+ * - Verbesserte Brush-Auswahl mit Icons
  * 
  * NEUERUNGEN v2.0 (07.12.2025):
  * - Undo/Redo History (bis zu 20 Schritte)
@@ -10,8 +15,8 @@
  * - Touch-Support für Tablets
  * - Vorlagen/Templates
  * 
- * @version 2.0
- * @date 07.12.2025
+ * @version 3.0
+ * @date 11.12.2025
  */
 
 session_start();
@@ -37,14 +42,14 @@ if ($tutorialId) {
     }
 }
 
-// Werkzeuge basierend auf Alter
-$tools = ['pencil', 'brush', 'eraser'];
-if ($userAge >= 8) {
-    $tools = array_merge($tools, ['line', 'rectangle', 'circle', 'triangle']);
-}
-if ($userAge >= 12) {
-    $tools = array_merge($tools, ['text', 'fill', 'spray']);
-}
+// Werkzeuge basierend auf Alter - ERWEITERT v3.0
+$basicTools = ['pencil', 'brush', 'marker', 'eraser'];
+$advancedTools = ['chalk', 'neon', 'line', 'rectangle', 'circle', 'triangle'];
+$proTools = ['watercolor', 'airbrush', 'text', 'fill'];
+
+$tools = $basicTools;
+if ($userAge >= 8) $tools = array_merge($tools, $advancedTools);
+if ($userAge >= 12) $tools = array_merge($tools, $proTools);
 
 // Farbpalette nach Alter
 $basicColors = ['#000000', '#FF0000', '#FF8000', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#FF00FF', '#FFFFFF'];
@@ -65,6 +70,8 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎨 <?= $tutorialData ? htmlspecialchars($tutorialData['title']) : 'Freies Zeichnen' ?> - sgiT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="/zeichnen/js/brushes.js"></script>
+    <script src="/zeichnen/js/colorpicker.js"></script>
     <style>
         :root {
             --sgit-dark: #1A3503;
@@ -399,22 +406,41 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
     </div>
     
     <div class="main-content">
-        <!-- Sidebar Tools -->
+        <!-- Sidebar Tools - v3.0 erweitert -->
         <div class="sidebar">
+            <!-- Zeichenwerkzeuge -->
             <?php if (in_array('pencil', $tools)): ?>
             <button class="tool-btn active" onclick="setTool('pencil')" id="tool-pencil" title="Stift">✏️</button>
             <?php endif; ?>
             <?php if (in_array('brush', $tools)): ?>
             <button class="tool-btn" onclick="setTool('brush')" id="tool-brush" title="Pinsel">🖌️</button>
             <?php endif; ?>
-            <?php if (in_array('spray', $tools)): ?>
-            <button class="tool-btn" onclick="setTool('spray')" id="tool-spray" title="Spray">💨</button>
+            <?php if (in_array('marker', $tools)): ?>
+            <button class="tool-btn" onclick="setTool('marker')" id="tool-marker" title="Marker">🖍️</button>
             <?php endif; ?>
+            <?php if (in_array('chalk', $tools)): ?>
+            <button class="tool-btn" onclick="setTool('chalk')" id="tool-chalk" title="Kreide">🪨</button>
+            <?php endif; ?>
+            <?php if (in_array('neon', $tools)): ?>
+            <button class="tool-btn" onclick="setTool('neon')" id="tool-neon" title="Neon">✨</button>
+            <?php endif; ?>
+            <?php if (in_array('watercolor', $tools)): ?>
+            <button class="tool-btn" onclick="setTool('watercolor')" id="tool-watercolor" title="Aquarell">💧</button>
+            <?php endif; ?>
+            <?php if (in_array('airbrush', $tools)): ?>
+            <button class="tool-btn" onclick="setTool('airbrush')" id="tool-airbrush" title="Airbrush">💨</button>
+            <?php endif; ?>
+            
             <div class="divider"></div>
+            
+            <!-- Radierer -->
             <?php if (in_array('eraser', $tools)): ?>
             <button class="tool-btn" onclick="setTool('eraser')" id="tool-eraser" title="Radierer">🧽</button>
             <?php endif; ?>
+            
             <div class="divider"></div>
+            
+            <!-- Formen -->
             <?php if (in_array('line', $tools)): ?>
             <button class="tool-btn" onclick="setTool('line')" id="tool-line" title="Linie">📏</button>
             <?php endif; ?>
@@ -427,6 +453,11 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             <?php if (in_array('triangle', $tools)): ?>
             <button class="tool-btn" onclick="setTool('triangle')" id="tool-triangle" title="Dreieck">🔺</button>
             <?php endif; ?>
+            
+            <div class="divider"></div>
+            
+            <!-- Color Picker Toggle -->
+            <button class="tool-btn" onclick="toggleColorPicker()" id="tool-colorpicker" title="Farbkreis">🎨</button>
         </div>
         
         <!-- Canvas Area -->
@@ -507,6 +538,15 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         <kbd>Strg</kbd>+<kbd>S</kbd> Speichern
     </div>
     
+    <!-- Color Picker Popup v3.0 -->
+    <div class="colorpicker-popup" id="colorPickerPopup" style="display:none; position:fixed; top:100px; left:80px; z-index:1000;">
+        <div class="colorpicker-header" style="background:#1A3503; color:white; padding:8px 12px; border-radius:12px 12px 0 0; display:flex; justify-content:space-between; align-items:center; cursor:move;">
+            <span>🎨 Farbkreis</span>
+            <button onclick="toggleColorPicker()" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;">✕</button>
+        </div>
+        <div id="colorPickerContainer"></div>
+    </div>
+    
     <script>
         // =====================================================
         // CANVAS SETUP
@@ -581,22 +621,45 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         saveState();
         
         // =====================================================
-        // TOOLS
+        // TOOLS - v3.0 mit erweiterten Brushes
         // =====================================================
+        const drawingTools = ['pencil', 'brush', 'marker', 'chalk', 'neon', 'watercolor', 'airbrush'];
+        
         function setTool(tool) {
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tool-' + tool)?.classList.add('active');
             currentTool = tool;
             
-            if (['pencil', 'brush', 'spray'].includes(tool)) {
+            if (drawingTools.includes(tool)) {
                 canvas.isDrawingMode = true;
-                if (tool === 'brush') {
-                    canvas.freeDrawingBrush = new fabric.CircleBrush(canvas);
-                } else if (tool === 'spray') {
-                    canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
-                } else {
-                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                
+                // Brush Factory verwenden für erweiterte Brushes
+                switch(tool) {
+                    case 'pencil':
+                        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                        break;
+                    case 'brush':
+                        canvas.freeDrawingBrush = new fabric.CircleBrush(canvas);
+                        break;
+                    case 'marker':
+                        canvas.freeDrawingBrush = new fabric.MarkerBrush(canvas);
+                        break;
+                    case 'chalk':
+                        canvas.freeDrawingBrush = new fabric.ChalkBrush(canvas);
+                        break;
+                    case 'neon':
+                        canvas.freeDrawingBrush = new fabric.NeonBrush(canvas);
+                        break;
+                    case 'watercolor':
+                        canvas.freeDrawingBrush = new fabric.WatercolorBrush(canvas);
+                        break;
+                    case 'airbrush':
+                        canvas.freeDrawingBrush = new fabric.AirbrushBrush(canvas);
+                        break;
+                    default:
+                        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                 }
+                
                 canvas.freeDrawingBrush.width = brushSize;
                 canvas.freeDrawingBrush.color = currentColor;
             } else if (tool === 'eraser') {
@@ -817,6 +880,84 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             canvas.setWidth(newWidth);
             canvas.setHeight(newHeight);
             canvas.renderAll();
+        });
+        
+        // =====================================================
+        // COLOR PICKER v3.0
+        // =====================================================
+        let colorPickerVisible = false;
+        let colorPicker = null;
+        
+        function initColorPicker() {
+            colorPicker = new SGITColorPicker({
+                initialColor: currentColor,
+                onChange: (color) => {
+                    setColor(color);
+                    colorPicker.addRecentColor(color);
+                },
+                onPipetteStart: () => {
+                    canvas.isDrawingMode = false;
+                    document.body.style.cursor = 'crosshair';
+                },
+                onPipetteEnd: () => {
+                    setTool(currentTool);
+                }
+            });
+            colorPicker.render('colorPickerContainer');
+            
+            // Draggable machen
+            makeDraggable(document.getElementById('colorPickerPopup'));
+        }
+        
+        function toggleColorPicker() {
+            const popup = document.getElementById('colorPickerPopup');
+            colorPickerVisible = !colorPickerVisible;
+            popup.style.display = colorPickerVisible ? 'block' : 'none';
+            
+            if (colorPickerVisible && !colorPicker) {
+                initColorPicker();
+            }
+            
+            // Button-Status aktualisieren
+            document.getElementById('tool-colorpicker')?.classList.toggle('active', colorPickerVisible);
+        }
+        
+        // Draggable Helper
+        function makeDraggable(element) {
+            const header = element.querySelector('.colorpicker-header');
+            let isDragging = false;
+            let offsetX, offsetY;
+            
+            header.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - element.offsetLeft;
+                offsetY = e.clientY - element.offsetTop;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    element.style.left = (e.clientX - offsetX) + 'px';
+                    element.style.top = (e.clientY - offsetY) + 'px';
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        }
+        
+        // Pipette-Funktionalität für Canvas
+        canvas.on('mouse:down', function(opt) {
+            if (colorPicker && colorPicker.pipetteActive) {
+                const pointer = canvas.getPointer(opt.e);
+                const ctx = canvas.getContext();
+                const pixel = ctx.getImageData(pointer.x, pointer.y, 1, 1).data;
+                const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+                
+                colorPicker.setColor(hex);
+                colorPicker.stopPipette();
+                setColor(hex);
+            }
         });
     </script>
 </body>
