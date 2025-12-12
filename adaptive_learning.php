@@ -2346,20 +2346,53 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         let currentQuestionId = 0;  // TODO-006: Für Flagging
         let lastSessionData = null;
         
-        // 🦊 Foxy 50/50 Joker
-        let jokerCount = parseInt(localStorage.getItem('foxyJokerCount') ?? 3);
+        // ================================================================
+        // 🦊 BUG-045: Joker Pro User (Datenbank statt localStorage)
+        // ================================================================
+        let jokerCount = 3;
         let jokerUsedThisQuestion = false;
+        let isWalletUserForJoker = false;  // Wird bei loadJokerStatus gesetzt
         
-        // Joker täglich auffüllen
-        (function checkJokerRefill() {
-            const lastRefill = localStorage.getItem('foxyJokerLastRefill');
-            const today = new Date().toDateString();
-            if (lastRefill !== today) {
-                jokerCount = 3;
-                localStorage.setItem('foxyJokerCount', 3);
-                localStorage.setItem('foxyJokerLastRefill', today);
+        // Joker-Status von API laden (für Wallet-User) oder localStorage (Gäste)
+        async function loadJokerStatus() {
+            try {
+                const response = await fetch('/api/joker.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    isWalletUserForJoker = data.wallet_user === true;
+                    jokerCount = data.joker_count;
+                    
+                    if (data.refilled) {
+                        showToast('info', '🎲', 'Joker aufgefüllt!', 'Du hast wieder 3 Joker für heute!');
+                    }
+                    
+                    updateJokerDisplay();
+                    
+                    if (debugMode) {
+                        console.log('[DEBUG] Joker loaded:', data);
+                    }
+                }
+            } catch (err) {
+                // Fallback auf localStorage für Offline/Fehler
+                console.warn('[JOKER] API-Fehler, nutze localStorage:', err);
+                isWalletUserForJoker = false;
+                jokerCount = parseInt(localStorage.getItem('foxyJokerCount') ?? 3);
+                
+                // Lokaler Refill-Check
+                const lastRefill = localStorage.getItem('foxyJokerLastRefill');
+                const today = new Date().toDateString();
+                if (lastRefill !== today) {
+                    jokerCount = 3;
+                    localStorage.setItem('foxyJokerCount', 3);
+                    localStorage.setItem('foxyJokerLastRefill', today);
+                }
+                updateJokerDisplay();
             }
-        })();
+        }
+        
+        // Initial laden
+        loadJokerStatus();
         
         function updateJokerDisplay() {
             const btn = document.getElementById('jokerBtn');
@@ -2370,7 +2403,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             else btn.classList.remove('used');
         }
         
-        function useFiftyFifty() {
+        async function useFiftyFifty() {
             if (jokerCount <= 0 || jokerUsedThisQuestion) return;
             
             const options = document.querySelectorAll('.option-btn:not(.joker-hidden)');
@@ -2384,9 +2417,32 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 btn.classList.add('joker-hidden');
             });
             
-            jokerCount--;
             jokerUsedThisQuestion = true;
-            localStorage.setItem('foxyJokerCount', jokerCount);
+            
+            // BUG-045: Joker über API oder localStorage speichern
+            if (isWalletUserForJoker) {
+                try {
+                    const response = await fetch('/api/joker.php', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'action=use'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        jokerCount = data.joker_count;
+                    } else {
+                        console.error('[JOKER] API Error:', data.error);
+                    }
+                } catch (err) {
+                    console.error('[JOKER] Network Error:', err);
+                    jokerCount--;  // Lokal trotzdem abziehen
+                }
+            } else {
+                // Gast-User: localStorage
+                jokerCount--;
+                localStorage.setItem('foxyJokerCount', jokerCount);
+            }
+            
             updateJokerDisplay();
             
             // Foxy-Toast
