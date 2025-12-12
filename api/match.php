@@ -387,6 +387,8 @@ case 'status':
             'time_per_question' => $match['time_per_question'],
             'sats_pool' => $match['sats_pool'],
             'sats_bet' => $match['sats_bet'],
+            'winner_id' => $match['winner_id'],
+            'winner_team' => $match['winner_team'],
         ],
         'players' => $players,
         'scores' => $scores,

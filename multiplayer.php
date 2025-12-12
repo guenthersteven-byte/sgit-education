@@ -1390,8 +1390,12 @@ $modules = [
             const players = data.players || [];
             const userPlayer = data.user_player;
             
+            console.log('showResult - match:', match);
+            console.log('showResult - winner_id:', match.winner_id, 'userId:', userId);
+            console.log('showResult - players:', players);
+            
             // Gewinner ermitteln
-            const isWinner = match.winner_id == userId;
+            const isWinner = match.winner_id && match.winner_id == userId;
             const isDraw = !match.winner_id && match.status === 'finished';
             
             // Icon & Titel
