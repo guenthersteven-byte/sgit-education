@@ -1,21 +1,21 @@
 <?php
 /**
- * sgiT Education - Zeichnen Canvas v3.0
+ * sgiT Education - Zeichnen Canvas v3.1
  * Hauptzeichenfläche mit Fabric.js
+ * 
+ * NEUERUNGEN v3.1 (11.12.2025):
+ * - Ebenen-System (Layer Manager)
+ * - Ebenen erstellen, löschen, umbenennen
+ * - Sichtbarkeit und Sperren pro Ebene
+ * - Transparenz pro Ebene
+ * - Drag & Drop Neuordnung
  * 
  * NEUERUNGEN v3.0 (11.12.2025):
  * - Erweiterte Brushes: Marker, Kreide, Neon, Aquarell, Airbrush
  * - HSL-Farbkreis mit Pipette
  * - Verbesserte Brush-Auswahl mit Icons
  * 
- * NEUERUNGEN v2.0 (07.12.2025):
- * - Undo/Redo History (bis zu 20 Schritte)
- * - Erweiterte Farbpalette
- * - Bessere Tutorial-Anzeige
- * - Touch-Support für Tablets
- * - Vorlagen/Templates
- * 
- * @version 3.0
+ * @version 3.1
  * @date 11.12.2025
  */
 
@@ -72,6 +72,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="/zeichnen/js/brushes.js"></script>
     <script src="/zeichnen/js/colorpicker.js"></script>
+    <script src="/zeichnen/js/layers.js"></script>
     <style>
         :root {
             --sgit-dark: #1A3503;
@@ -236,22 +237,34 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             box-shadow: 0 0 30px rgba(67, 210, 64, 0.2);
         }
         
-        /* Tutorial Panel */
-        .tutorial-panel {
-            width: 300px;
-            background: #252525;
-            padding: 15px;
-            overflow-y: auto;
+        /* Right Panel (Layers + Tutorial) */
+        .right-panel {
+            width: 280px;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
             border-left: 2px solid #333;
+            overflow-y: auto;
         }
-        .tutorial-panel h3 {
+        .layer-panel {
+            padding: 0;
+            border-bottom: 2px solid #333;
+        }
+        
+        /* Tutorial Section */
+        .tutorial-section {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .tutorial-section h3 {
             color: white;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .tutorial-panel .reward {
+        .tutorial-section .reward {
             background: var(--sgit-orange);
             color: white;
             padding: 3px 10px;
@@ -494,9 +507,16 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             </div>
         </div>
         
-        <?php if ($tutorialData): ?>
-        <!-- Tutorial Panel -->
-        <div class="tutorial-panel">
+        <!-- Right Panel: Layers (immer) + Tutorial (wenn aktiv) -->
+        <div class="right-panel">
+            <!-- Layer Panel -->
+            <div class="layer-panel">
+                <div id="layerContainer"></div>
+            </div>
+            
+            <?php if ($tutorialData): ?>
+            <!-- Tutorial Panel -->
+            <div class="tutorial-section">
             <h3>
                 📚 Anleitung
                 <span class="reward">+<?= $tutorialData['sats_reward'] ?? 10 ?> Sats</span>
@@ -514,8 +534,9 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
                 <button class="prev" onclick="prevStep()" id="prevStepBtn" disabled>← Zurück</button>
                 <button class="next" onclick="nextStep()" id="nextStepBtn">Weiter →</button>
             </div>
+            </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
     </div>
     
     <!-- Save Modal -->
@@ -594,7 +615,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         // =====================================================
         // CANVAS SETUP
         // =====================================================
-        const canvasWidth = Math.min(window.innerWidth - <?= $tutorialData ? 450 : 150 ?>, 900);
+        const canvasWidth = Math.min(window.innerWidth - 380, 900); // 280px right-panel + 70px sidebar + margin
         const canvasHeight = Math.min(window.innerHeight - 180, 600);
         
         const canvas = new fabric.Canvas('drawing-canvas', {
@@ -608,6 +629,35 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.width = 5;
         canvas.freeDrawingBrush.color = '#000000';
+        
+        // =====================================================
+        // LAYER MANAGER v3.0
+        // =====================================================
+        let layerManager = null;
+        
+        function initLayerManager() {
+            layerManager = new SGITLayerManager(canvas, {
+                container: document.getElementById('layerContainer'),
+                maxLayers: 10,
+                onChange: (layers) => {
+                    console.log('Layers changed:', layers.length);
+                },
+                onLayerSelect: (layer) => {
+                    console.log('Layer selected:', layer.name);
+                    // Prüfen ob Ebene zeichenbar ist
+                    if (layer.locked) {
+                        showToast('🔒 Ebene ist gesperrt!');
+                    }
+                }
+            });
+        }
+        
+        // Layer Manager initialisieren wenn DOM bereit
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initLayerManager);
+        } else {
+            initLayerManager();
+        }
         
         // =====================================================
         // STATE
@@ -918,7 +968,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         
         // Responsive
         window.addEventListener('resize', () => {
-            const newWidth = Math.min(window.innerWidth - <?= $tutorialData ? 450 : 150 ?>, 900);
+            const newWidth = Math.min(window.innerWidth - 380, 900);
             const newHeight = Math.min(window.innerHeight - 180, 600);
             canvas.setWidth(newWidth);
             canvas.setHeight(newHeight);
