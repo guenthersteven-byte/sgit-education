@@ -469,7 +469,7 @@ case 'start':
     $count = $match['questions_total'];
     
     $stmt = $questionsDb->prepare("
-        SELECT id, question, answer, option_a, option_b, option_c, option_d
+        SELECT id, question, answer, options
         FROM questions 
         WHERE module = ? AND is_active = 1
         ORDER BY RANDOM() 
@@ -492,16 +492,24 @@ case 'start':
     ");
     
     foreach ($questions as $i => $q) {
+        // Options ist ein JSON-Array, z.B. ["A","B","C","D"]
+        $options = json_decode($q['options'], true) ?? [];
+        
+        // Sicherstellen dass wir 4 Optionen haben
+        while (count($options) < 4) {
+            $options[] = '';
+        }
+        
         $stmt->execute([
             $matchId,
             $i + 1,
             $q['id'],
-            $q['question'],
-            $q['answer'],
-            $q['option_a'],
-            $q['option_b'],
-            $q['option_c'],
-            $q['option_d']
+            $q['question'],      // question statt question_text
+            $q['answer'],        // answer statt correct_answer
+            $options[0] ?? '',
+            $options[1] ?? '',
+            $options[2] ?? '',
+            $options[3] ?? ''
         ]);
     }
     
