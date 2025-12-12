@@ -100,6 +100,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         exit;
     }
     
+    if ($action === 'question' && isset($_GET['question_id'])) {
+        // Einzelne Frage für Edit-Dialog laden
+        $qid = (int)$_GET['question_id'];
+        
+        $stmt = $db->prepare("
+            SELECT id, module, question, answer, options, question_hash, age_min, age_max
+            FROM questions
+            WHERE id = :qid
+        ");
+        $stmt->execute([':qid' => $qid]);
+        $question = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($question) {
+            echo json_encode(['success' => true, 'question' => $question]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Question not found']);
+        }
+        exit;
+    }
+    
     echo json_encode(['success' => false, 'error' => 'Unknown action']);
     exit;
 }
@@ -170,6 +190,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'message' => 'Frage wurde gemeldet. Danke!',
         'flag_id' => $db->lastInsertId()
     ]);
+    exit;
+}
+
+
+// ============================================================================
+// PUT: Frage bearbeiten (Admin)
+// ============================================================================
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $action = $input['action'] ?? '';
+    
+    if ($action === 'edit_question') {
+        $qid = (int)($input['question_id'] ?? 0);
+        $oldHash = $input['old_hash'] ?? '';
+        $question = trim($input['question'] ?? '');
+        $answer = trim($input['answer'] ?? '');
+        $options = $input['options'] ?? [];
+        
+        // Validierung
+        if ($qid <= 0 || empty($question) || empty($answer) || count($options) < 4) {
+            echo json_encode(['success' => false, 'error' => 'Ungültige Eingabedaten']);
+            exit;
+        }
+        
+        // Hash-Funktion (identisch mit generate_module_csv.php)
+        function generateQuestionHash($q, $a, $b, $c, $d) {
+            return md5(strtolower(trim($q)) . '|' . strtolower(trim($a)) . '|' . 
+                       strtolower(trim($b)) . '|' . strtolower(trim($c)) . '|' . strtolower(trim($d)));
+        }
+        
+        // Neuen Hash berechnen
+        $newHash = generateQuestionHash($question, $options[0], $options[1], $options[2], $options[3]);
+        $hashChanged = ($oldHash && $oldHash !== $newHash);
+        
+        try {
+            $db->beginTransaction();
+            
+            // Wenn Hash geändert: Alten Hash als "blocked" speichern
+            // Erstellt einen Ghost-Eintrag mit is_active=0, der nur den Hash enthält
+            if ($hashChanged && $oldHash) {
+                // Prüfen ob alter Hash bereits existiert (als blocked)
+                $check = $db->prepare("SELECT id FROM questions WHERE question_hash = :hash");
+                $check->execute([':hash' => $oldHash]);
+                
+                if (!$check->fetch()) {
+                    // Hole Modul der aktuellen Frage
+                    $modStmt = $db->prepare("SELECT module FROM questions WHERE id = :id");
+                    $modStmt->execute([':id' => $qid]);
+                    $module = $modStmt->fetchColumn();
+                    
+                    // Ghost-Eintrag für alten Hash (verhindert AI-Regenerierung)
+                    $ghost = $db->prepare("
+                        INSERT INTO questions (module, question, answer, options, question_hash, is_active, source, ai_generated)
+                        VALUES (:module, '[BLOCKED - editiert]', '[BLOCKED]', '[]', :hash, 0, 'blocked_edit', 0)
+                    ");
+                    $ghost->execute([':module' => $module, ':hash' => $oldHash]);
+                }
+            }
+            
+            // Frage aktualisieren
+            $update = $db->prepare("
+                UPDATE questions 
+                SET question = :question,
+                    answer = :answer,
+                    options = :options,
+                    question_hash = :hash
+                WHERE id = :id
+            ");
+            $update->execute([
+                ':question' => $question,
+                ':answer' => $answer,
+                ':options' => json_encode($options),
+                ':hash' => $newHash,
+                ':id' => $qid
+            ]);
+            
+            // Flags für diese Frage löschen (wurde korrigiert)
+            $db->prepare("DELETE FROM flagged_questions WHERE question_id = :qid")->execute([':qid' => $qid]);
+            
+            $db->commit();
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Frage aktualisiert',
+                'hash_changed' => $hashChanged,
+                'old_hash' => $oldHash,
+                'new_hash' => $newHash
+            ]);
+            exit;
+            
+        } catch (Exception $e) {
+            $db->rollBack();
+            echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+    
+    echo json_encode(['success' => false, 'error' => 'Invalid action']);
     exit;
 }
 
