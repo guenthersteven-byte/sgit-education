@@ -23,7 +23,8 @@ require_once dirname(dirname(__DIR__)) . '/includes/version.php';
 // WICHTIG: Korrekter Pfad zum bot_logger (eine Ebene höher)
 require_once dirname(__DIR__) . '/bot_logger.php';
 require_once dirname(__DIR__) . '/bot_output_helper.php';
-require_once dirname(dirname(__DIR__)) . '/windows_ai_generator.php';
+// HINWEIS: windows_ai_generator.php wurde entfernt - AIGeneratorBot-Klasse ist deprecated
+// Die Generierung erfolgt jetzt über CSV Generator, Auto-Generator oder Batch Import
 
 class AIGeneratorBot {
     
@@ -58,7 +59,9 @@ class AIGeneratorBot {
     public function __construct($config = []) {
         $this->config = array_merge($this->defaultConfig, $config);
         $this->logger = new BotLogger(BotLogger::CAT_AI);
-        $this->generator = new AIQuestionGeneratorComplete();
+        // DEPRECATED: Die alte AIQuestionGeneratorComplete-Klasse existiert nicht mehr
+        // $this->generator = new AIQuestionGeneratorComplete();
+        $this->generator = null; // Bot ist deprecated - nutze CSV Generator stattdessen
         $this->stopFile = dirname(__DIR__) . '/logs/STOP_AI_BOT';
     }
     
