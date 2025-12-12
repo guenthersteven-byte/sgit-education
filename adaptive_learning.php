@@ -2169,6 +2169,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <div class="module-icon">🍳</div>
             <div>Kochen <span style="font-size: 10px; color: var(--accent);">NEU!</span></div>
         </div>
+        
+        <!-- Multiplayer -->
+        <div class="module-card multiplayer-card" onclick="window.location.href='/multiplayer.php'" style="border: 2px solid #E86F2C; background: linear-gradient(135deg, rgba(232,111,44,0.15), rgba(255,140,66,0.1));">
+            <div class="module-icon">⚔️</div>
+            <div>Multiplayer <span style="font-size: 10px; color: #E86F2C;">PVP!</span></div>
+        </div>
     </div>
     
     <!-- Quiz Modal -->
