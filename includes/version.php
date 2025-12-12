@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.31.0');
+define('SGIT_VERSION', '3.32.0');
 define('SGIT_VERSION_DATE', '12.12.2025');
 
 // Kurzversion für UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.31');
+define('SGIT_VERSION_SHORT', '3.32');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Multiplayer Lobby UI');
+define('SGIT_VERSION_NAME', 'Multiplayer-Quiz COMPLETE');
