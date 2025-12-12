@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.29.1');
+define('SGIT_VERSION', '3.30.0');
 define('SGIT_VERSION_DATE', '12.12.2025');
 
 // Kurzversion für UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.29');
+define('SGIT_VERSION_SHORT', '3.30');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Joker Pro User - API Fixes');
+define('SGIT_VERSION_NAME', 'Multiplayer-Quiz Backend');
