@@ -13,11 +13,31 @@
 
 session_start();
 require_once __DIR__ . '/includes/version.php';
+require_once __DIR__ . '/wallet/SessionManager.php';
 
-// Wallet-User prüfen - WICHTIG: Gleiche Session-Keys wie adaptive_learning.php!
-$walletUserId = $_SESSION['wallet_child_id'] ?? null;
-$walletUserName = $_SESSION['user_name'] ?? 'Gast';
-$walletUserAvatar = '👤'; // Default, wird unten aus DB geladen
+// Wallet-User prüfen über SessionManager (verwendet sgit_child_id)
+$walletUserId = null;
+$walletUserName = 'Gast';
+$walletUserAvatar = '👤';
+
+// Prüfe SessionManager zuerst
+if (SessionManager::isLoggedIn()) {
+    $childData = SessionManager::getChild();
+    if ($childData) {
+        $walletUserId = $childData['id'];
+        $walletUserName = $childData['name'];
+        $walletUserAvatar = $childData['avatar'] ?? '👤';
+        
+        // Sync in Standard-Session für API
+        $_SESSION['wallet_child_id'] = $childData['id'];
+        $_SESSION['user_name'] = $childData['name'];
+    }
+}
+// Fallback: Standard Session-Keys
+elseif (isset($_SESSION['wallet_child_id'])) {
+    $walletUserId = $_SESSION['wallet_child_id'];
+    $walletUserName = $_SESSION['user_name'] ?? 'Gast';
+}
 
 // Datenbank für User-Liste
 $walletDb = new PDO('sqlite:' . __DIR__ . '/wallet/wallet.db');
@@ -933,26 +953,44 @@ $modules = [
         // API Calls
         // ================================================================
         async function apiCall(action, data = {}) {
+            console.log('API Call:', action, data);
             try {
                 const response = await fetch('/api/match.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action, ...data })
                 });
-                return await response.json();
+                console.log('API Response status:', response.status);
+                const text = await response.text();
+                console.log('API Response text:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('JSON parse error:', e, 'Text was:', text);
+                    return { success: false, error: 'JSON Parse Error: ' + text.substring(0, 100) };
+                }
             } catch (err) {
                 console.error('API Error:', err);
-                return { success: false, error: 'Netzwerkfehler' };
+                return { success: false, error: 'Netzwerkfehler: ' + err.message };
             }
         }
         
         async function apiGet(action, params = {}) {
             const query = new URLSearchParams({ action, ...params }).toString();
+            console.log('API GET:', action, params);
             try {
                 const response = await fetch(`/api/match.php?${query}`);
-                return await response.json();
+                console.log('API GET Response status:', response.status);
+                const text = await response.text();
+                console.log('API GET Response text:', text.substring(0, 200));
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    return { success: false, error: 'JSON Parse Error' };
+                }
             } catch (err) {
-                console.error('API Error:', err);
+                console.error('API GET Error:', err);
                 return { success: false, error: 'Netzwerkfehler' };
             }
         }
@@ -969,22 +1007,31 @@ $modules = [
                 sats_bet: parseInt(document.getElementById('satsBet').value)
             };
             
+            console.log('Creating match with data:', data);
             const result = await apiCall('create', data);
-            console.log('Create result:', result); // Debug
+            console.log('Create result:', result);
             
             if (result.success) {
                 currentMatchId = result.match_id;
                 currentMatchCode = result.match_code;
                 isHost = true;
                 
-                // Code sofort anzeigen (bevor Polling läuft)
-                document.getElementById('lobbyCode').textContent = result.match_code;
+                console.log('Match created! Code:', result.match_code, 'ID:', result.match_id);
                 
-                showToast('Match erstellt!', '🎮');
+                // Code sofort anzeigen (bevor Polling läuft)
+                const codeEl = document.getElementById('lobbyCode');
+                console.log('lobbyCode element:', codeEl);
+                if (codeEl) {
+                    codeEl.textContent = result.match_code || 'NO CODE';
+                    console.log('Code set to:', codeEl.textContent);
+                }
+                
+                showToast('Match erstellt! Code: ' + result.match_code, '🎮');
                 showView('lobbyView');
                 startPolling(); // Polling füllt den Rest der Lobby
             } else {
-                showToast(result.error || 'Fehler beim Erstellen', '❌');
+                console.error('Create failed:', result);
+                showToast(result.error || result.message || 'Fehler beim Erstellen', '❌');
             }
         }
         
@@ -1085,9 +1132,16 @@ $modules = [
             if (!currentMatchId) return;
             
             const result = await apiGet('status', { match_id: currentMatchId });
+            console.log('Poll result:', result);
             
             if (!result.success) {
                 console.error('Poll error:', result.error);
+                return;
+            }
+            
+            // Prüfen ob match-Daten vorhanden sind
+            if (!result.match) {
+                console.error('Poll: No match data in response');
                 return;
             }
             
@@ -1117,6 +1171,14 @@ $modules = [
         // Lobby Update
         // ================================================================
         function updateLobby(data) {
+            console.log('updateLobby called with:', data);
+            
+            // Robuste Prüfung
+            if (!data || !data.match) {
+                console.error('updateLobby: Invalid data, no match object');
+                return;
+            }
+            
             const match = data.match;
             const players = data.players || [];
             

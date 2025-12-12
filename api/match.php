@@ -21,6 +21,23 @@
  * @date 2025-12-12
  */
 
+// Bessere Fehlerbehandlung
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+set_exception_handler(function($e) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => 'Server Error: ' . $e->getMessage(),
+        'code' => 'SERVER_ERROR',
+        'file' => basename($e->getFile()),
+        'line' => $e->getLine()
+    ]);
+    exit;
+});
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -31,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 session_start();
+require_once __DIR__ . '/../wallet/SessionManager.php';
 
 // ================================================================
 // Konfiguration
@@ -48,8 +66,23 @@ $config = [
     'elo_k_factor' => 32,
 ];
 
-// Wallet-User prüfen - WICHTIG: Gleiche Session-Keys wie adaptive_learning.php!
-$userId = $_SESSION['wallet_child_id'] ?? null;
+// Wallet-User prüfen über SessionManager
+$userId = null;
+
+// Prüfe SessionManager zuerst (verwendet sgit_child_id)
+if (SessionManager::isLoggedIn()) {
+    $childData = SessionManager::getChild();
+    if ($childData) {
+        $userId = $childData['id'];
+        // Sync in Standard-Session
+        $_SESSION['wallet_child_id'] = $childData['id'];
+    }
+}
+// Fallback: Standard Session-Key
+if (!$userId && isset($_SESSION['wallet_child_id'])) {
+    $userId = $_SESSION['wallet_child_id'];
+}
+
 if (!$userId) {
     jsonResponse(false, 'Nicht eingeloggt', 'NOT_LOGGED_IN');
 }
