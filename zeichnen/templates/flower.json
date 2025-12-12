@@ -1,0 +1,10 @@
+{
+    "id": "flower",
+    "name": "Blume",
+    "icon": "🌸",
+    "difficulty": "leicht",
+    "ageMin": 5,
+    "satsReward": 5,
+    "description": "Male die hübsche Blume bunt!",
+    "svgContent": "<svg viewBox='0 0 400 400'><circle cx='200' cy='180' r='30' fill='none' stroke='#333' stroke-width='3'/><ellipse cx='200' cy='120' rx='25' ry='40' fill='none' stroke='#333' stroke-width='2'/><ellipse cx='250' cy='150' rx='25' ry='40' transform='rotate(60 250 150)' fill='none' stroke='#333' stroke-width='2'/><ellipse cx='250' cy='210' rx='25' ry='40' transform='rotate(120 250 210)' fill='none' stroke='#333' stroke-width='2'/><ellipse cx='200' cy='240' rx='25' ry='40' fill='none' stroke='#333' stroke-width='2'/><ellipse cx='150' cy='210' rx='25' ry='40' transform='rotate(-120 150 210)' fill='none' stroke='#333' stroke-width='2'/><ellipse cx='150' cy='150' rx='25' ry='40' transform='rotate(-60 150 150)' fill='none' stroke='#333' stroke-width='2'/><path d='M200 270 L200 380' stroke='#333' stroke-width='4'/><ellipse cx='160' cy='320' rx='30' ry='15' transform='rotate(-30 160 320)' fill='none' stroke='#333' stroke-width='2'/><ellipse cx='240' cy='340' rx='30' ry='15' transform='rotate(30 240 340)' fill='none' stroke='#333' stroke-width='2'/></svg>"
+}

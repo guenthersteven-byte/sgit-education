@@ -1,21 +1,20 @@
 <?php
 /**
- * sgiT Education - Zeichnen Canvas v3.1
+ * sgiT Education - Zeichnen Canvas v3.2
  * Hauptzeichenfläche mit Fabric.js
+ * 
+ * NEUERUNGEN v3.2 (11.12.2025):
+ * - Text-Tool mit Schriftarten und Stilen
+ * - Galerie: Bilder laden und weiterbearbeiten
+ * - Vorlagen/Ausmalbilder Support
  * 
  * NEUERUNGEN v3.1 (11.12.2025):
  * - Ebenen-System (Layer Manager)
  * - Ebenen erstellen, löschen, umbenennen
  * - Sichtbarkeit und Sperren pro Ebene
  * - Transparenz pro Ebene
- * - Drag & Drop Neuordnung
  * 
- * NEUERUNGEN v3.0 (11.12.2025):
- * - Erweiterte Brushes: Marker, Kreide, Neon, Aquarell, Airbrush
- * - HSL-Farbkreis mit Pipette
- * - Verbesserte Brush-Auswahl mit Icons
- * 
- * @version 3.1
+ * @version 3.2
  * @date 11.12.2025
  */
 
@@ -32,6 +31,27 @@ $userAge = $_SESSION['user_age'] ?? 10;
 
 $mode = $_GET['mode'] ?? 'free';
 $tutorialId = $_GET['tutorial'] ?? null;
+$loadFile = $_GET['load'] ?? null;
+$templateId = $_GET['template'] ?? null;
+
+// Zu ladendes Bild prüfen
+$loadImageUrl = null;
+if ($mode === 'edit' && $loadFile) {
+    $imagePath = '/uploads/drawings/' . $userId . '/' . basename($loadFile);
+    $fullPath = __DIR__ . '/..' . $imagePath;
+    if (file_exists($fullPath)) {
+        $loadImageUrl = $imagePath;
+    }
+}
+
+// Vorlage laden
+$templateData = null;
+if ($mode === 'template' && $templateId) {
+    $templateFile = __DIR__ . "/templates/{$templateId}.json";
+    if (file_exists($templateFile)) {
+        $templateData = json_decode(file_get_contents($templateFile), true);
+    }
+}
 
 // Tutorial-Daten laden
 $tutorialData = null;
@@ -68,7 +88,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎨 <?= $tutorialData ? htmlspecialchars($tutorialData['title']) : 'Freies Zeichnen' ?> - sgiT</title>
+    <title>🎨 <?= $templateData ? htmlspecialchars($templateData['name']) : ($tutorialData ? htmlspecialchars($tutorialData['title']) : 'Freies Zeichnen') ?> - sgiT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="/zeichnen/js/brushes.js"></script>
     <script src="/zeichnen/js/colorpicker.js"></script>
@@ -408,13 +428,13 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>🎨 <?= $tutorialData ? htmlspecialchars($tutorialData['title']) : 'Freies Zeichnen' ?></h1>
+        <h1>🎨 <?= $templateData ? htmlspecialchars($templateData['name']) : ($tutorialData ? htmlspecialchars($tutorialData['title']) : ($mode === 'edit' ? 'Bild bearbeiten' : 'Freies Zeichnen')) ?></h1>
         <div class="header-actions">
             <button class="undo-redo" onclick="undo()" id="undoBtn" disabled title="Rückgängig (Strg+Z)">↩️</button>
             <button class="undo-redo" onclick="redo()" id="redoBtn" disabled title="Wiederholen (Strg+Y)">↪️</button>
             <button onclick="clearCanvas()" title="Alles löschen">🗑️ Löschen</button>
             <button onclick="saveDrawing()" style="background: var(--sgit-orange);">💾 Speichern</button>
-            <a href="index.php">← Zurück</a>
+            <a href="<?= $templateData ? 'templates.php' : 'index.php' ?>">← Zurück</a>
         </div>
     </div>
     
@@ -465,6 +485,9 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             <?php endif; ?>
             <?php if (in_array('triangle', $tools)): ?>
             <button class="tool-btn" onclick="setTool('triangle')" id="tool-triangle" title="Dreieck">🔺</button>
+            <?php endif; ?>
+            <?php if (in_array('text', $tools)): ?>
+            <button class="tool-btn" onclick="setTool('text')" id="tool-text" title="Text">🔤</button>
             <?php endif; ?>
             
             <div class="divider"></div>
@@ -568,6 +591,42 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         <div id="colorPickerContainer"></div>
     </div>
     
+    <!-- Text Input Modal -->
+    <div id="textModal" class="modal">
+        <div class="modal-content text-modal">
+            <h2>🔤 Text hinzufügen</h2>
+            <textarea id="textInput" placeholder="Dein Text..." rows="3" maxlength="200"></textarea>
+            <div class="text-options">
+                <div class="text-option">
+                    <label>Schriftgröße:</label>
+                    <input type="range" id="textSize" min="12" max="72" value="24">
+                    <span id="textSizeVal">24px</span>
+                </div>
+                <div class="text-option">
+                    <label>Schriftart:</label>
+                    <select id="textFont">
+                        <option value="Arial">Arial</option>
+                        <option value="Comic Sans MS">Comic Sans</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Impact">Impact</option>
+                        <option value="Courier New">Courier</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
+                <div class="text-option">
+                    <label>Stil:</label>
+                    <button class="style-btn" id="boldBtn" onclick="toggleTextStyle('bold')"><b>F</b></button>
+                    <button class="style-btn" id="italicBtn" onclick="toggleTextStyle('italic')"><i>K</i></button>
+                    <button class="style-btn" id="underlineBtn" onclick="toggleTextStyle('underline')"><u>U</u></button>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn-secondary" onclick="closeTextModal()">Abbrechen</button>
+                <button class="btn-primary" onclick="addTextToCanvas()">✅ Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+    
     <style>
         /* Color Picker Popup Styles */
         .colorpicker-popup {
@@ -600,16 +659,71 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             cursor: pointer;
         }
         .colorpicker-header .close-btn:hover { color: #fff; }
+        
+        /* Text Modal Styles */
+        .text-modal {
+            max-width: 400px;
+        }
+        .text-modal h2 {
+            color: var(--sgit-dark);
+            margin-bottom: 15px;
+        }
+        .text-modal textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            resize: none;
+            margin-bottom: 15px;
+        }
+        .text-modal textarea:focus {
+            outline: none;
+            border-color: var(--sgit-green);
+        }
+        .text-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .text-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .text-option label {
+            width: 100px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .text-option input[type="range"] {
+            flex: 1;
+            accent-color: var(--sgit-green);
+        }
+        .text-option select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        .style-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .style-btn:hover { background: #f0f0f0; }
+        .style-btn.active {
+            background: var(--sgit-green);
+            border-color: var(--sgit-green);
+            color: white;
+        }
     </style>
-    
-    <!-- Color Picker Popup v3.0 -->
-    <div class="colorpicker-popup" id="colorPickerPopup" style="display:none; position:fixed; top:100px; left:80px; z-index:1000;">
-        <div class="colorpicker-header" style="background:#1A3503; color:white; padding:8px 12px; border-radius:12px 12px 0 0; display:flex; justify-content:space-between; align-items:center; cursor:move;">
-            <span>🎨 Farbkreis</span>
-            <button onclick="toggleColorPicker()" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;">✕</button>
-        </div>
-        <div id="colorPickerContainer"></div>
-    </div>
     
     <script>
         // =====================================================
@@ -658,6 +772,68 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         } else {
             initLayerManager();
         }
+        
+        // =====================================================
+        // BILD LADEN (Edit-Mode) v3.1
+        // =====================================================
+        <?php if ($loadImageUrl): ?>
+        // Gespeichertes Bild laden
+        fabric.Image.fromURL('<?= $loadImageUrl ?>', function(img) {
+            // Bild an Canvas anpassen
+            const scale = Math.min(
+                canvasWidth / img.width,
+                canvasHeight / img.height,
+                1 // Nicht vergrößern
+            );
+            
+            img.set({
+                left: (canvasWidth - img.width * scale) / 2,
+                top: (canvasHeight - img.height * scale) / 2,
+                scaleX: scale,
+                scaleY: scale,
+                selectable: false,
+                evented: false
+            });
+            
+            canvas.add(img);
+            canvas.renderAll();
+            showToast('🖼️ Bild geladen - Du kannst es jetzt bearbeiten!');
+        }, { crossOrigin: 'anonymous' });
+        <?php endif; ?>
+        
+        // =====================================================
+        // VORLAGE LADEN (Template-Mode) v3.2
+        // =====================================================
+        <?php if ($templateData): ?>
+        // SVG-Vorlage als Hintergrund laden
+        const svgString = `<?= addslashes($templateData['svgContent']) ?>`;
+        fabric.loadSVGFromString(svgString, function(objects, options) {
+            const svg = fabric.util.groupSVGElements(objects, options);
+            
+            // SVG an Canvas anpassen
+            const scale = Math.min(
+                (canvasWidth - 40) / svg.width,
+                (canvasHeight - 40) / svg.height
+            );
+            
+            svg.set({
+                left: canvasWidth / 2,
+                top: canvasHeight / 2,
+                originX: 'center',
+                originY: 'center',
+                scaleX: scale,
+                scaleY: scale,
+                selectable: false,
+                evented: false,
+                _isTemplate: true
+            });
+            
+            canvas.add(svg);
+            canvas.sendToBack(svg);
+            canvas.renderAll();
+            showToast('🖼️ <?= addslashes($templateData['name']) ?> geladen - Viel Spaß beim Ausmalen!');
+        });
+        <?php endif; ?>
         
         // =====================================================
         // STATE
@@ -760,10 +936,83 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
                 canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                 canvas.freeDrawingBrush.width = brushSize * 3;
                 canvas.freeDrawingBrush.color = '#FFFFFF';
+            } else if (tool === 'text') {
+                canvas.isDrawingMode = false;
+                showToast('📍 Klicke auf den Canvas um Text zu platzieren');
             } else {
                 canvas.isDrawingMode = false;
             }
         }
+        
+        // =====================================================
+        // TEXT TOOL v3.1
+        // =====================================================
+        let textPosition = { x: 100, y: 100 };
+        let textStyles = { bold: false, italic: false, underline: false };
+        
+        // Canvas-Klick für Text-Platzierung
+        canvas.on('mouse:down', function(opt) {
+            if (currentTool === 'text') {
+                const pointer = canvas.getPointer(opt.e);
+                textPosition = { x: pointer.x, y: pointer.y };
+                openTextModal();
+            }
+        });
+        
+        function openTextModal() {
+            document.getElementById('textModal').classList.add('show');
+            document.getElementById('textInput').value = '';
+            document.getElementById('textInput').focus();
+            
+            // Styles zurücksetzen
+            textStyles = { bold: false, italic: false, underline: false };
+            document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+        }
+        
+        function closeTextModal() {
+            document.getElementById('textModal').classList.remove('show');
+        }
+        
+        function toggleTextStyle(style) {
+            textStyles[style] = !textStyles[style];
+            document.getElementById(style + 'Btn').classList.toggle('active', textStyles[style]);
+        }
+        
+        function addTextToCanvas() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                showToast('⚠️ Bitte Text eingeben!');
+                return;
+            }
+            
+            const fontSize = parseInt(document.getElementById('textSize').value);
+            const fontFamily = document.getElementById('textFont').value;
+            
+            const textObj = new fabric.IText(text, {
+                left: textPosition.x,
+                top: textPosition.y,
+                fontFamily: fontFamily,
+                fontSize: fontSize,
+                fill: currentColor,
+                fontWeight: textStyles.bold ? 'bold' : 'normal',
+                fontStyle: textStyles.italic ? 'italic' : 'normal',
+                underline: textStyles.underline,
+                selectable: true,
+                editable: true
+            });
+            
+            canvas.add(textObj);
+            canvas.setActiveObject(textObj);
+            canvas.renderAll();
+            
+            closeTextModal();
+            showToast('✅ Text hinzugefügt - Doppelklick zum Bearbeiten');
+        }
+        
+        // Text-Größe Live-Anzeige
+        document.getElementById('textSize')?.addEventListener('input', function() {
+            document.getElementById('textSizeVal').textContent = this.value + 'px';
+        });
         
         function setColor(color) {
             currentColor = color;

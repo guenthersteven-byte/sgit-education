@@ -1,0 +1,10 @@
+{
+    "id": "car",
+    "name": "Auto",
+    "icon": "🚗",
+    "difficulty": "mittel",
+    "ageMin": 6,
+    "satsReward": 8,
+    "description": "Male das coole Auto bunt an!",
+    "svgContent": "<svg viewBox='0 0 400 300'><path d='M50 180 L80 180 L100 130 L300 130 L320 180 L350 180 L350 220 L50 220 Z' fill='none' stroke='#333' stroke-width='3'/><rect x='120' y='145' width='60' height='40' fill='none' stroke='#333' stroke-width='2'/><rect x='220' y='145' width='60' height='40' fill='none' stroke='#333' stroke-width='2'/><circle cx='110' cy='220' r='30' fill='none' stroke='#333' stroke-width='3'/><circle cx='290' cy='220' r='30' fill='none' stroke='#333' stroke-width='3'/><circle cx='110' cy='220' r='15' fill='none' stroke='#333' stroke-width='2'/><circle cx='290' cy='220' r='15' fill='none' stroke='#333' stroke-width='2'/></svg>"
+}

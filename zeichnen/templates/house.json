@@ -1,0 +1,10 @@
+{
+    "id": "house",
+    "name": "Haus ausmalen",
+    "icon": "🏠",
+    "difficulty": "leicht",
+    "ageMin": 5,
+    "satsReward": 5,
+    "description": "Male das Haus bunt an!",
+    "svgContent": "<svg viewBox='0 0 400 400'><rect x='100' y='180' width='200' height='170' fill='none' stroke='#333' stroke-width='3'/><polygon points='200,50 50,180 350,180' fill='none' stroke='#333' stroke-width='3'/><rect x='160' y='250' width='80' height='100' fill='none' stroke='#333' stroke-width='3'/><rect x='130' y='210' width='50' height='50' fill='none' stroke='#333' stroke-width='2'/><rect x='220' y='210' width='50' height='50' fill='none' stroke='#333' stroke-width='2'/><circle cx='300' cy='100' r='30' fill='none' stroke='#333' stroke-width='2'/></svg>"
+}
