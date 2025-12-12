@@ -970,15 +970,19 @@ $modules = [
             };
             
             const result = await apiCall('create', data);
+            console.log('Create result:', result); // Debug
             
             if (result.success) {
                 currentMatchId = result.match_id;
                 currentMatchCode = result.match_code;
                 isHost = true;
+                
+                // Code sofort anzeigen (bevor Polling läuft)
+                document.getElementById('lobbyCode').textContent = result.match_code;
+                
                 showToast('Match erstellt!', '🎮');
                 showView('lobbyView');
-                updateLobby(result);
-                startPolling();
+                startPolling(); // Polling füllt den Rest der Lobby
             } else {
                 showToast(result.error || 'Fehler beim Erstellen', '❌');
             }
