@@ -240,9 +240,12 @@ if (isset($_GET['logout'])) {
 $needsLogin = !isset($_SESSION['user_name']) || !isset($_SESSION['user_age']);
 
 if (!$needsLogin) {
-    // User ID
+    // User ID - KONSISTENT basierend auf Name+Alter (geräteübergreifend!)
+    // Damit bleiben Zeichnungen und Fortschritt erhalten
     if (!isset($_SESSION['user_id'])) {
-        $_SESSION['user_id'] = 'user_' . uniqid();
+        $userName = strtolower(trim($_SESSION['user_name']));
+        $userAge = intval($_SESSION['user_age']);
+        $_SESSION['user_id'] = 'user_' . substr(md5($userName . '_' . $userAge), 0, 12);
     }
 
     // Module Scores (Score bleibt, Session-Counter resetet)
@@ -303,7 +306,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'login') {
         // Einfacher Login für nicht-registrierte User
         $_SESSION['user_name'] = $name;
         $_SESSION['user_age'] = $age;
-        $_SESSION['user_id'] = 'user_' . uniqid();
+        // KONSISTENTE user_id basierend auf Name+Alter (geräteübergreifend!)
+        $_SESSION['user_id'] = 'user_' . substr(md5(strtolower(trim($name)) . '_' . intval($age)), 0, 12);
         $_SESSION['module_scores'] = [];
         $_SESSION['total_score'] = 0;
         $_SESSION['user_level'] = [
