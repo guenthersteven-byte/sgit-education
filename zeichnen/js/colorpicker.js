@@ -1,10 +1,10 @@
 /**
- * sgiT Education - HSL Color Picker mit Pipette
+ * sgiT Education - HSL Color Picker
  * 
  * Features:
- * - HSL-Farbkreis (Hue Ring)
+ * - Farbkreis (Hue Ring)
  * - Sättigung/Helligkeit Quadrat
- * - Pipette (Eyedropper) Tool
+ * - Pipette-Tool (Eyedropper)
  * - Zuletzt verwendete Farben
  * - Hex/RGB Input
  * 
@@ -15,368 +15,474 @@
 class SGITColorPicker {
     
     constructor(options = {}) {
-        this.container = null;
-        this.currentColor = options.initialColor || '#43D240';
-        this.recentColors = options.recentColors || [];
-        this.maxRecent = options.maxRecent || 12;
+        this.container = options.container || document.body;
         this.onChange = options.onChange || (() => {});
-        this.onPipetteStart = options.onPipetteStart || (() => {});
-        this.onPipetteEnd = options.onPipetteEnd || (() => {});
+        this.currentColor = options.initialColor || '#43D240';
+        this.recentColors = [];
+        this.maxRecent = 8;
+        this.pipetteActive = false;
         
-        // HSL values
         this.hue = 0;
         this.saturation = 100;
         this.lightness = 50;
         
-        // Parse initial color
         this._parseColor(this.currentColor);
-        
-        // Canvas refs
-        this.hueCanvas = null;
-        this.slCanvas = null;
-        
-        // State
-        this.isDraggingHue = false;
-        this.isDraggingSL = false;
-        this.pipetteActive = false;
-    }
-    
-    // =========================================
-    // PUBLIC API
-    // =========================================
-    
-    render(containerId) {
-        this.container = document.getElementById(containerId);
-        if (!this.container) {
-            console.error('ColorPicker container not found:', containerId);
-            return;
-        }
-        
-        this.container.innerHTML = this._getHTML();
-        this._initCanvases();
+        this._createUI();
         this._bindEvents();
-        this._updateDisplay();
     }
     
-    setColor(color) {
-        this._parseColor(color);
-        this._updateDisplay();
-    }
-    
-    getColor() {
-        return this.currentColor;
-    }
-    
-    addRecentColor(color) {
-        if (!this.recentColors.includes(color)) {
-            this.recentColors.unshift(color);
-            if (this.recentColors.length > this.maxRecent) {
-                this.recentColors.pop();
-            }
-            this._renderRecentColors();
-        }
-    }
-    
-    startPipette() {
-        this.pipetteActive = true;
-        document.body.style.cursor = 'crosshair';
-        this.onPipetteStart();
-    }
-    
-    stopPipette() {
-        this.pipetteActive = false;
-        document.body.style.cursor = 'default';
-        this.onPipetteEnd();
-    }
-    
-    // =========================================
-    // HTML TEMPLATE
-    // =========================================
-    
-    _getHTML() {
-        return `
-            <div class="sgit-colorpicker">
-                <div class="cp-main">
-                    <!-- Hue Ring -->
-                    <div class="cp-hue-container">
-                        <canvas class="cp-hue-ring" width="200" height="200"></canvas>
-                        <div class="cp-hue-pointer"></div>
-                        
-                        <!-- SL Square inside ring -->
-                        <div class="cp-sl-container">
-                            <canvas class="cp-sl-square" width="100" height="100"></canvas>
-                            <div class="cp-sl-pointer"></div>
-                        </div>
+    // =====================================================
+    // UI CREATION
+    // =====================================================
+    _createUI() {
+        this.element = document.createElement('div');
+        this.element.className = 'sgit-colorpicker';
+        this.element.innerHTML = `
+            <div class="cp-main">
+                <!-- Hue Ring -->
+                <div class="cp-hue-container">
+                    <canvas class="cp-hue-ring" width="200" height="200"></canvas>
+                    <canvas class="cp-sat-square" width="120" height="120"></canvas>
+                    <div class="cp-hue-cursor"></div>
+                    <div class="cp-sat-cursor"></div>
+                </div>
+                
+                <!-- Preview -->
+                <div class="cp-preview-row">
+                    <div class="cp-preview" title="Aktuelle Farbe">
+                        <div class="cp-preview-new"></div>
+                        <div class="cp-preview-old"></div>
+                    </div>
+                    <div class="cp-values">
+                        <input type="text" class="cp-hex-input" maxlength="7" placeholder="#RRGGBB">
+                        <button class="cp-pipette" title="Pipette (Farbe aufnehmen)">💉</button>
                     </div>
                 </div>
                 
-                <!-- Controls -->
-                <div class="cp-controls">
-                    <!-- Preview & Pipette -->
-                    <div class="cp-preview-row">
-                        <div class="cp-preview" title="Aktuelle Farbe"></div>
-                        <button class="cp-pipette-btn" title="Pipette (Farbe aufnehmen)">
-                            <span>🎯</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Hex Input -->
-                    <div class="cp-input-row">
-                        <label>HEX</label>
-                        <input type="text" class="cp-hex-input" maxlength="7" placeholder="#43D240">
-                    </div>
-                    
-                    <!-- RGB Sliders -->
+                <!-- Sliders -->
+                <div class="cp-sliders">
                     <div class="cp-slider-row">
                         <label>H</label>
                         <input type="range" class="cp-slider cp-hue-slider" min="0" max="360" value="0">
-                        <span class="cp-value cp-hue-value">0°</span>
+                        <span class="cp-slider-val">0°</span>
                     </div>
                     <div class="cp-slider-row">
                         <label>S</label>
                         <input type="range" class="cp-slider cp-sat-slider" min="0" max="100" value="100">
-                        <span class="cp-value cp-sat-value">100%</span>
+                        <span class="cp-slider-val">100%</span>
                     </div>
                     <div class="cp-slider-row">
                         <label>L</label>
                         <input type="range" class="cp-slider cp-light-slider" min="0" max="100" value="50">
-                        <span class="cp-value cp-light-value">50%</span>
+                        <span class="cp-slider-val">50%</span>
                     </div>
                 </div>
                 
                 <!-- Recent Colors -->
                 <div class="cp-recent">
-                    <label>Zuletzt verwendet:</label>
+                    <span class="cp-recent-label">Zuletzt:</span>
                     <div class="cp-recent-colors"></div>
                 </div>
                 
                 <!-- Quick Colors -->
                 <div class="cp-quick">
-                    <label>sgiT Farben:</label>
-                    <div class="cp-quick-colors">
-                        <button class="cp-quick-color" data-color="#1A3503" style="background:#1A3503" title="sgiT Dunkelgrün"></button>
-                        <button class="cp-quick-color" data-color="#43D240" style="background:#43D240" title="sgiT Neon-Grün"></button>
-                        <button class="cp-quick-color" data-color="#E86F2C" style="background:#E86F2C" title="sgiT Orange"></button>
-                        <button class="cp-quick-color" data-color="#FFFFFF" style="background:#FFFFFF;border:1px solid #444" title="Weiß"></button>
-                        <button class="cp-quick-color" data-color="#000000" style="background:#000000" title="Schwarz"></button>
-                    </div>
+                    <div class="cp-quick-color" style="background:#000000" data-color="#000000"></div>
+                    <div class="cp-quick-color" style="background:#FFFFFF" data-color="#FFFFFF"></div>
+                    <div class="cp-quick-color" style="background:#FF0000" data-color="#FF0000"></div>
+                    <div class="cp-quick-color" style="background:#00FF00" data-color="#00FF00"></div>
+                    <div class="cp-quick-color" style="background:#0000FF" data-color="#0000FF"></div>
+                    <div class="cp-quick-color" style="background:#FFFF00" data-color="#FFFF00"></div>
+                    <div class="cp-quick-color" style="background:#FF00FF" data-color="#FF00FF"></div>
+                    <div class="cp-quick-color" style="background:#00FFFF" data-color="#00FFFF"></div>
+                    <div class="cp-quick-color sgit" style="background:#1A3503" data-color="#1A3503"></div>
+                    <div class="cp-quick-color sgit" style="background:#43D240" data-color="#43D240"></div>
+                    <div class="cp-quick-color sgit" style="background:#E86F2C" data-color="#E86F2C"></div>
                 </div>
             </div>
         `;
-    }
-    
-    // =========================================
-    // CANVAS RENDERING
-    // =========================================
-    
-    _initCanvases() {
-        // Hue Ring Canvas
-        this.hueCanvas = this.container.querySelector('.cp-hue-ring');
+        
+        this._addStyles();
+        this.container.appendChild(this.element);
+        
+        // Canvas Setup
+        this.hueCanvas = this.element.querySelector('.cp-hue-ring');
+        this.satCanvas = this.element.querySelector('.cp-sat-square');
+        this.hueCtx = this.hueCanvas.getContext('2d');
+        this.satCtx = this.satCanvas.getContext('2d');
+        
         this._drawHueRing();
-        
-        // SL Square Canvas
-        this.slCanvas = this.container.querySelector('.cp-sl-square');
-        this._drawSLSquare();
+        this._drawSatSquare();
+        this._updateUI();
     }
     
+    _addStyles() {
+        if (document.getElementById('sgit-colorpicker-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'sgit-colorpicker-styles';
+        style.textContent = `
+            .sgit-colorpicker {
+                position: relative;
+                background: #2a2a2a;
+                border-radius: 0 0 10px 10px;
+                padding: 0;
+                z-index: 10000;
+                font-family: 'Segoe UI', sans-serif;
+                min-width: 280px;
+            }
+            .sgit-colorpicker.visible { display: block; }
+            
+            .cp-header {
+                background: #1A3503;
+                padding: 12px 15px;
+                border-radius: 14px 14px 0 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .cp-title { color: #43D240; font-weight: bold; }
+            .cp-close {
+                background: none;
+                border: none;
+                color: #888;
+                font-size: 1.2em;
+                cursor: pointer;
+                padding: 0 5px;
+            }
+            .cp-close:hover { color: #fff; }
+            
+            .cp-main { padding: 15px; }
+            
+            .cp-hue-container {
+                position: relative;
+                width: 200px;
+                height: 200px;
+                margin: 0 auto 15px;
+            }
+            .cp-hue-ring, .cp-sat-square {
+                position: absolute;
+                cursor: crosshair;
+            }
+            .cp-hue-ring {
+                top: 0; left: 0;
+            }
+            .cp-sat-square {
+                top: 40px;
+                left: 40px;
+                border-radius: 4px;
+            }
+            .cp-hue-cursor {
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                border: 3px solid white;
+                border-radius: 50%;
+                box-shadow: 0 0 5px rgba(0,0,0,0.5);
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+            }
+            .cp-sat-cursor {
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                border: 3px solid white;
+                border-radius: 50%;
+                box-shadow: 0 0 5px rgba(0,0,0,0.5), inset 0 0 3px rgba(0,0,0,0.3);
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+            }
+            
+            .cp-preview-row {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+            .cp-preview {
+                width: 60px;
+                height: 40px;
+                border-radius: 8px;
+                overflow: hidden;
+                border: 2px solid #444;
+                display: flex;
+            }
+            .cp-preview-new, .cp-preview-old {
+                flex: 1;
+            }
+            .cp-values {
+                flex: 1;
+                display: flex;
+                gap: 8px;
+            }
+            .cp-hex-input {
+                flex: 1;
+                background: #333;
+                border: 1px solid #555;
+                color: #fff;
+                padding: 8px 10px;
+                border-radius: 6px;
+                font-family: monospace;
+                font-size: 1em;
+            }
+            .cp-hex-input:focus {
+                outline: none;
+                border-color: #43D240;
+            }
+            .cp-pipette {
+                background: #333;
+                border: 1px solid #555;
+                border-radius: 6px;
+                padding: 8px 12px;
+                cursor: pointer;
+                font-size: 1.1em;
+            }
+            .cp-pipette:hover { background: #444; }
+            .cp-pipette.active { background: #43D240; }
+            
+            .cp-sliders { margin-bottom: 12px; }
+            .cp-slider-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 6px;
+            }
+            .cp-slider-row label {
+                color: #888;
+                width: 15px;
+                font-size: 0.85em;
+            }
+            .cp-slider {
+                flex: 1;
+                height: 8px;
+                -webkit-appearance: none;
+                background: #444;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .cp-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 16px;
+                height: 16px;
+                background: #43D240;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+            .cp-hue-slider { background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); }
+            .cp-slider-val {
+                color: #aaa;
+                font-size: 0.8em;
+                width: 40px;
+                text-align: right;
+            }
+            
+            .cp-recent {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+            .cp-recent-label {
+                color: #888;
+                font-size: 0.85em;
+            }
+            .cp-recent-colors {
+                display: flex;
+                gap: 4px;
+                flex: 1;
+            }
+            .cp-recent-color {
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;
+                cursor: pointer;
+                border: 2px solid #444;
+            }
+            .cp-recent-color:hover { border-color: #fff; transform: scale(1.1); }
+            
+            .cp-quick {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .cp-quick-color {
+                width: 22px;
+                height: 22px;
+                border-radius: 4px;
+                cursor: pointer;
+                border: 2px solid #444;
+                transition: transform 0.1s;
+            }
+            .cp-quick-color:hover { transform: scale(1.15); border-color: #fff; }
+            .cp-quick-color.sgit { border-color: #43D240; }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // =====================================================
+    // DRAWING
+    // =====================================================
     _drawHueRing() {
-        const ctx = this.hueCanvas.getContext('2d');
-        const w = this.hueCanvas.width;
-        const h = this.hueCanvas.height;
-        const cx = w / 2;
-        const cy = h / 2;
-        const outerRadius = 95;
-        const innerRadius = 70;
+        const ctx = this.hueCtx;
+        const cx = 100, cy = 100;
+        const outerR = 98, innerR = 75;
         
-        ctx.clearRect(0, 0, w, h);
+        ctx.clearRect(0, 0, 200, 200);
         
-        // Draw hue ring
         for (let angle = 0; angle < 360; angle++) {
             const startAngle = (angle - 1) * Math.PI / 180;
             const endAngle = (angle + 1) * Math.PI / 180;
             
             ctx.beginPath();
-            ctx.arc(cx, cy, outerRadius, startAngle, endAngle);
-            ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
+            ctx.arc(cx, cy, outerR, startAngle, endAngle);
+            ctx.arc(cx, cy, innerR, endAngle, startAngle, true);
             ctx.closePath();
-            
             ctx.fillStyle = `hsl(${angle}, 100%, 50%)`;
             ctx.fill();
         }
+        
+        // Inner circle (transparent area)
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR - 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
     }
     
-    _drawSLSquare() {
-        const ctx = this.slCanvas.getContext('2d');
-        const w = this.slCanvas.width;
-        const h = this.slCanvas.height;
+    _drawSatSquare() {
+        const ctx = this.satCtx;
+        const size = 120;
         
-        // Create gradient for saturation (left to right)
-        const satGradient = ctx.createLinearGradient(0, 0, w, 0);
-        satGradient.addColorStop(0, `hsl(${this.hue}, 0%, 50%)`);
-        satGradient.addColorStop(1, `hsl(${this.hue}, 100%, 50%)`);
+        // Gradient für Sättigung (links->rechts: weiß->Farbe)
+        const gradH = ctx.createLinearGradient(0, 0, size, 0);
+        gradH.addColorStop(0, '#FFFFFF');
+        gradH.addColorStop(1, `hsl(${this.hue}, 100%, 50%)`);
+        ctx.fillStyle = gradH;
+        ctx.fillRect(0, 0, size, size);
         
-        ctx.fillStyle = satGradient;
-        ctx.fillRect(0, 0, w, h);
-        
-        // Create gradient for lightness (top to bottom)
-        const lightGradient = ctx.createLinearGradient(0, 0, 0, h);
-        lightGradient.addColorStop(0, 'rgba(255,255,255,1)');
-        lightGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
-        lightGradient.addColorStop(0.5, 'rgba(0,0,0,0)');
-        lightGradient.addColorStop(1, 'rgba(0,0,0,1)');
-        
-        ctx.fillStyle = lightGradient;
-        ctx.fillRect(0, 0, w, h);
+        // Gradient für Helligkeit (oben->unten: transparent->schwarz)
+        const gradV = ctx.createLinearGradient(0, 0, 0, size);
+        gradV.addColorStop(0, 'rgba(0,0,0,0)');
+        gradV.addColorStop(1, 'rgba(0,0,0,1)');
+        ctx.fillStyle = gradV;
+        ctx.fillRect(0, 0, size, size);
     }
-
-    // =========================================
-    // EVENT BINDING
-    // =========================================
     
+    // =====================================================
+    // EVENTS
+    // =====================================================
     _bindEvents() {
-        // Hue Ring Events
-        const hueContainer = this.container.querySelector('.cp-hue-container');
-        hueContainer.addEventListener('mousedown', (e) => this._onHueMouseDown(e));
-        document.addEventListener('mousemove', (e) => this._onHueMouseMove(e));
-        document.addEventListener('mouseup', () => this._onHueMouseUp());
+        // Hue ring click
+        this.hueCanvas.addEventListener('mousedown', (e) => this._handleHueClick(e));
+        this.hueCanvas.addEventListener('mousemove', (e) => {
+            if (e.buttons === 1) this._handleHueClick(e);
+        });
         
-        // SL Square Events
-        const slContainer = this.container.querySelector('.cp-sl-container');
-        slContainer.addEventListener('mousedown', (e) => this._onSLMouseDown(e));
-        document.addEventListener('mousemove', (e) => this._onSLMouseMove(e));
-        document.addEventListener('mouseup', () => this._onSLMouseUp());
+        // Saturation square click
+        this.satCanvas.addEventListener('mousedown', (e) => this._handleSatClick(e));
+        this.satCanvas.addEventListener('mousemove', (e) => {
+            if (e.buttons === 1) this._handleSatClick(e);
+        });
         
         // Sliders
-        this.container.querySelector('.cp-hue-slider').addEventListener('input', (e) => {
+        this.element.querySelector('.cp-hue-slider').addEventListener('input', (e) => {
             this.hue = parseInt(e.target.value);
-            this._updateFromHSL();
+            this._drawSatSquare();
+            this._updateColor();
         });
-        this.container.querySelector('.cp-sat-slider').addEventListener('input', (e) => {
+        this.element.querySelector('.cp-sat-slider').addEventListener('input', (e) => {
             this.saturation = parseInt(e.target.value);
-            this._updateFromHSL();
+            this._updateColor();
         });
-        this.container.querySelector('.cp-light-slider').addEventListener('input', (e) => {
+        this.element.querySelector('.cp-light-slider').addEventListener('input', (e) => {
             this.lightness = parseInt(e.target.value);
-            this._updateFromHSL();
+            this._updateColor();
         });
         
-        // Hex Input
-        this.container.querySelector('.cp-hex-input').addEventListener('change', (e) => {
+        // Hex input
+        this.element.querySelector('.cp-hex-input').addEventListener('change', (e) => {
             const hex = e.target.value;
             if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
                 this._parseColor(hex);
-                this._updateDisplay();
-                this.onChange(this.currentColor);
+                this._drawSatSquare();
+                this._updateUI();
             }
         });
         
-        // Pipette Button
-        this.container.querySelector('.cp-pipette-btn').addEventListener('click', () => {
-            this.startPipette();
-        });
-        
-        // Quick Colors
-        this.container.querySelectorAll('.cp-quick-color').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const color = btn.dataset.color;
-                this._parseColor(color);
-                this._updateDisplay();
-                this.onChange(this.currentColor);
+        // Quick colors
+        this.element.querySelectorAll('.cp-quick-color').forEach(el => {
+            el.addEventListener('click', () => {
+                this._parseColor(el.dataset.color);
+                this._drawSatSquare();
+                this._updateUI();
+                this._triggerChange();
             });
         });
+        
+        // Pipette
+        this.element.querySelector('.cp-pipette').addEventListener('click', () => {
+            this._activatePipette();
+        });
     }
     
-    _onHueMouseDown(e) {
+    _handleHueClick(e) {
         const rect = this.hueCanvas.getBoundingClientRect();
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        const x = e.clientX - rect.left - cx;
-        const y = e.clientY - rect.top - cy;
+        const x = e.clientX - rect.left - 100;
+        const y = e.clientY - rect.top - 100;
         const dist = Math.sqrt(x * x + y * y);
         
-        // Check if click is on the ring (between inner and outer radius)
-        if (dist > 60 && dist < 100) {
-            this.isDraggingHue = true;
-            this._updateHueFromMouse(e);
+        if (dist > 70 && dist < 100) {
+            this.hue = Math.round(Math.atan2(y, x) * 180 / Math.PI + 180);
+            this._drawSatSquare();
+            this._updateColor();
         }
     }
     
-    _onHueMouseMove(e) {
-        if (this.isDraggingHue) {
-            this._updateHueFromMouse(e);
+    _handleSatClick(e) {
+        const rect = this.satCanvas.getBoundingClientRect();
+        const x = Math.max(0, Math.min(120, e.clientX - rect.left));
+        const y = Math.max(0, Math.min(120, e.clientY - rect.top));
+        
+        this.saturation = Math.round(x / 120 * 100);
+        this.lightness = Math.round(100 - y / 120 * 100);
+        this._updateColor();
+    }
+    
+    _activatePipette() {
+        const btn = this.element.querySelector('.cp-pipette');
+        btn.classList.add('active');
+        
+        if ('EyeDropper' in window) {
+            const eyeDropper = new EyeDropper();
+            eyeDropper.open().then(result => {
+                this._parseColor(result.sRGBHex);
+                this._drawSatSquare();
+                this._updateUI();
+                this._triggerChange();
+            }).catch(() => {}).finally(() => {
+                btn.classList.remove('active');
+            });
+        } else {
+            alert('Pipette wird von diesem Browser nicht unterstützt.');
+            btn.classList.remove('active');
         }
     }
     
-    _onHueMouseUp() {
-        this.isDraggingHue = false;
-    }
-    
-    _updateHueFromMouse(e) {
-        const rect = this.hueCanvas.getBoundingClientRect();
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        const x = e.clientX - rect.left - cx;
-        const y = e.clientY - rect.top - cy;
-        
-        let angle = Math.atan2(y, x) * 180 / Math.PI;
-        angle = (angle + 360) % 360;
-        
-        this.hue = Math.round(angle);
-        this._updateFromHSL();
-    }
-    
-    _onSLMouseDown(e) {
-        this.isDraggingSL = true;
-        this._updateSLFromMouse(e);
-    }
-    
-    _onSLMouseMove(e) {
-        if (this.isDraggingSL) {
-            this._updateSLFromMouse(e);
-        }
-    }
-    
-    _onSLMouseUp() {
-        this.isDraggingSL = false;
-    }
-    
-    _updateSLFromMouse(e) {
-        const rect = this.slCanvas.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
-        
-        // Clamp to bounds
-        x = Math.max(0, Math.min(rect.width, x));
-        y = Math.max(0, Math.min(rect.height, y));
-        
-        this.saturation = Math.round((x / rect.width) * 100);
-        this.lightness = Math.round(100 - (y / rect.height) * 100);
-        
-        this._updateFromHSL();
-    }
-    
-    // =========================================
+    // =====================================================
     // COLOR CONVERSION
-    // =========================================
-    
+    // =====================================================
     _parseColor(hex) {
-        // Convert hex to HSL
         const r = parseInt(hex.slice(1, 3), 16) / 255;
         const g = parseInt(hex.slice(3, 5), 16) / 255;
         const b = parseInt(hex.slice(5, 7), 16) / 255;
         
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const l = (max + min) / 2;
-        
-        let h, s;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
         
         if (max === min) {
             h = s = 0;
         } else {
             const d = max - min;
             s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            
             switch (max) {
                 case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
                 case g: h = ((b - r) / d + 2) / 6; break;
@@ -390,291 +496,135 @@ class SGITColorPicker {
         this.currentColor = hex;
     }
     
-    _hslToHex(h, s, l) {
-        s /= 100;
-        l /= 100;
-        
-        const c = (1 - Math.abs(2 * l - 1)) * s;
-        const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-        const m = l - c / 2;
+    _hslToHex() {
+        const h = this.hue / 360;
+        const s = this.saturation / 100;
+        const l = this.lightness / 100;
         
         let r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
         
-        if (h < 60) { r = c; g = x; b = 0; }
-        else if (h < 120) { r = x; g = c; b = 0; }
-        else if (h < 180) { r = 0; g = c; b = x; }
-        else if (h < 240) { r = 0; g = x; b = c; }
-        else if (h < 300) { r = x; g = 0; b = c; }
-        else { r = c; g = 0; b = x; }
+        const toHex = x => {
+            const hex = Math.round(x * 255).toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
         
-        r = Math.round((r + m) * 255);
-        g = Math.round((g + m) * 255);
-        b = Math.round((b + m) * 255);
-        
-        return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
     }
     
-    _updateFromHSL() {
-        this.currentColor = this._hslToHex(this.hue, this.saturation, this.lightness);
-        this._drawSLSquare();
-        this._updateDisplay();
+    // =====================================================
+    // UI UPDATE
+    // =====================================================
+    _updateColor() {
+        this.currentColor = this._hslToHex();
+        this._updateUI();
+        this._triggerChange();
+    }
+    
+    _updateUI() {
+        // Preview
+        this.element.querySelector('.cp-preview-new').style.background = this.currentColor;
+        
+        // Hex input
+        this.element.querySelector('.cp-hex-input').value = this.currentColor;
+        
+        // Sliders
+        this.element.querySelector('.cp-hue-slider').value = this.hue;
+        this.element.querySelector('.cp-sat-slider').value = this.saturation;
+        this.element.querySelector('.cp-light-slider').value = this.lightness;
+        
+        // Slider values
+        const vals = this.element.querySelectorAll('.cp-slider-val');
+        vals[0].textContent = this.hue + '°';
+        vals[1].textContent = this.saturation + '%';
+        vals[2].textContent = this.lightness + '%';
+        
+        // Cursors
+        const hueAngle = (this.hue - 180) * Math.PI / 180;
+        const hueCursor = this.element.querySelector('.cp-hue-cursor');
+        hueCursor.style.left = (100 + Math.cos(hueAngle) * 86) + 'px';
+        hueCursor.style.top = (100 + Math.sin(hueAngle) * 86) + 'px';
+        hueCursor.style.background = `hsl(${this.hue}, 100%, 50%)`;
+        
+        const satCursor = this.element.querySelector('.cp-sat-cursor');
+        satCursor.style.left = (40 + this.saturation / 100 * 120) + 'px';
+        satCursor.style.top = (40 + (100 - this.lightness) / 100 * 120) + 'px';
+        satCursor.style.background = this.currentColor;
+    }
+    
+    _triggerChange() {
         this.onChange(this.currentColor);
     }
     
-    // =========================================
-    // DISPLAY UPDATE
-    // =========================================
-    
-    _updateDisplay() {
-        // Update preview
-        this.container.querySelector('.cp-preview').style.background = this.currentColor;
-        
-        // Update hex input
-        this.container.querySelector('.cp-hex-input').value = this.currentColor;
-        
-        // Update sliders
-        this.container.querySelector('.cp-hue-slider').value = this.hue;
-        this.container.querySelector('.cp-sat-slider').value = this.saturation;
-        this.container.querySelector('.cp-light-slider').value = this.lightness;
-        
-        // Update slider values
-        this.container.querySelector('.cp-hue-value').textContent = this.hue + '°';
-        this.container.querySelector('.cp-sat-value').textContent = this.saturation + '%';
-        this.container.querySelector('.cp-light-value').textContent = this.lightness + '%';
-        
-        // Update hue pointer position
-        const huePointer = this.container.querySelector('.cp-hue-pointer');
-        const angle = this.hue * Math.PI / 180;
-        const radius = 82;
-        const cx = 100, cy = 100;
-        huePointer.style.left = (cx + Math.cos(angle) * radius - 6) + 'px';
-        huePointer.style.top = (cy + Math.sin(angle) * radius - 6) + 'px';
-        
-        // Update SL pointer position
-        const slPointer = this.container.querySelector('.cp-sl-pointer');
-        slPointer.style.left = (this.saturation - 5) + '%';
-        slPointer.style.top = (100 - this.lightness - 5) + '%';
+    _addToRecent(color) {
+        if (!this.recentColors.includes(color)) {
+            this.recentColors.unshift(color);
+            if (this.recentColors.length > this.maxRecent) {
+                this.recentColors.pop();
+            }
+            this._renderRecent();
+        }
     }
     
-    _renderRecentColors() {
-        const container = this.container.querySelector('.cp-recent-colors');
-        container.innerHTML = this.recentColors.map(color => `
-            <button class="cp-recent-color" data-color="${color}" style="background:${color}" title="${color}"></button>
-        `).join('');
+    _renderRecent() {
+        const container = this.element.querySelector('.cp-recent-colors');
+        container.innerHTML = this.recentColors.map(c => 
+            `<div class="cp-recent-color" style="background:${c}" data-color="${c}"></div>`
+        ).join('');
         
-        container.querySelectorAll('.cp-recent-color').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const color = btn.dataset.color;
-                this._parseColor(color);
-                this._updateDisplay();
-                this.onChange(this.currentColor);
+        container.querySelectorAll('.cp-recent-color').forEach(el => {
+            el.addEventListener('click', () => {
+                this._parseColor(el.dataset.color);
+                this._drawSatSquare();
+                this._updateUI();
+                this._triggerChange();
             });
         });
     }
+    
+    // =====================================================
+    // PUBLIC API
+    // =====================================================
+    show(initialColor) {
+        if (initialColor) {
+            this.element.querySelector('.cp-preview-old').style.background = initialColor;
+            this._parseColor(initialColor);
+            this._drawSatSquare();
+            this._updateUI();
+        }
+        this.element.classList.add('visible');
+    }
+    
+    hide() {
+        this._addToRecent(this.currentColor);
+        this.element.classList.remove('visible');
+    }
+    
+    getColor() {
+        return this.currentColor;
+    }
+    
+    setColor(hex) {
+        this._parseColor(hex);
+        this._drawSatSquare();
+        this._updateUI();
+    }
 }
 
-// =========================================
-// CSS STYLES (injected)
-// =========================================
-const colorPickerStyles = `
-.sgit-colorpicker {
-    background: #252525;
-    border-radius: 12px;
-    padding: 15px;
-    width: 240px;
-    font-family: 'Segoe UI', sans-serif;
-    color: #fff;
-}
-
-.cp-main {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-
-.cp-hue-container {
-    position: relative;
-    width: 200px;
-    height: 200px;
-}
-
-.cp-hue-ring {
-    cursor: crosshair;
-}
-
-.cp-hue-pointer {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border: 2px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 3px rgba(0,0,0,0.5);
-    pointer-events: none;
-}
-
-.cp-sl-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.cp-sl-square {
-    cursor: crosshair;
-    border-radius: 4px;
-}
-
-.cp-sl-pointer {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border: 2px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 3px rgba(0,0,0,0.5);
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-}
-
-.cp-controls {
-    border-top: 1px solid #333;
-    padding-top: 12px;
-}
-
-.cp-preview-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.cp-preview {
-    flex: 1;
-    height: 36px;
-    border-radius: 6px;
-    border: 2px solid #444;
-}
-
-.cp-pipette-btn {
-    width: 36px;
-    height: 36px;
-    background: #333;
-    border: 2px solid #444;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s;
-}
-
-.cp-pipette-btn:hover {
-    background: #43D240;
-    border-color: #43D240;
-}
-
-.cp-input-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.cp-input-row label {
-    width: 30px;
-    font-size: 11px;
-    color: #888;
-}
-
-.cp-hex-input {
-    flex: 1;
-    background: #333;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 6px 10px;
-    color: #fff;
-    font-family: monospace;
-    font-size: 13px;
-}
-
-.cp-slider-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-
-.cp-slider-row label {
-    width: 15px;
-    font-size: 11px;
-    color: #888;
-}
-
-.cp-slider {
-    flex: 1;
-    height: 6px;
-    -webkit-appearance: none;
-    background: #333;
-    border-radius: 3px;
-    outline: none;
-}
-
-.cp-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    background: #43D240;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.cp-value {
-    width: 35px;
-    font-size: 11px;
-    color: #888;
-    text-align: right;
-}
-
-.cp-recent, .cp-quick {
-    border-top: 1px solid #333;
-    padding-top: 10px;
-    margin-top: 10px;
-}
-
-.cp-recent label, .cp-quick label {
-    display: block;
-    font-size: 11px;
-    color: #888;
-    margin-bottom: 8px;
-}
-
-.cp-recent-colors, .cp-quick-colors {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.cp-recent-color, .cp-quick-color {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #444;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
-
-.cp-recent-color:hover, .cp-quick-color:hover {
-    transform: scale(1.15);
-    border-color: #fff;
-}
-`;
-
-// Inject styles
-if (!document.getElementById('sgit-colorpicker-styles')) {
-    const styleSheet = document.createElement('style');
-    styleSheet.id = 'sgit-colorpicker-styles';
-    styleSheet.textContent = colorPickerStyles;
-    document.head.appendChild(styleSheet);
-}
-
-console.log('🎨 sgiT ColorPicker loaded!');
+console.log('🎨 sgiT Color Picker loaded!');

@@ -538,6 +538,49 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         <kbd>Strg</kbd>+<kbd>S</kbd> Speichern
     </div>
     
+    <!-- Color Picker Popup Container -->
+    <div id="colorPickerPopup" class="colorpicker-popup" style="display:none;">
+        <div class="colorpicker-header">
+            <span>🎨 Farbwähler</span>
+            <button onclick="toggleColorPicker()" class="close-btn">✕</button>
+        </div>
+        <div id="colorPickerContainer"></div>
+    </div>
+    
+    <style>
+        /* Color Picker Popup Styles */
+        .colorpicker-popup {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: #2a2a2a;
+            border: 2px solid var(--sgit-green);
+            border-radius: 12px;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            min-width: 300px;
+        }
+        .colorpicker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--sgit-dark);
+            border-radius: 10px 10px 0 0;
+            cursor: move;
+            color: var(--sgit-green);
+            font-weight: bold;
+        }
+        .colorpicker-header .close-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        .colorpicker-header .close-btn:hover { color: #fff; }
+    </style>
+    
     <!-- Color Picker Popup v3.0 -->
     <div class="colorpicker-popup" id="colorPickerPopup" style="display:none; position:fixed; top:100px; left:80px; z-index:1000;">
         <div class="colorpicker-header" style="background:#1A3503; color:white; padding:8px 12px; border-radius:12px 12px 0 0; display:flex; justify-content:space-between; align-items:center; cursor:move;">
@@ -890,23 +933,12 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         
         function initColorPicker() {
             colorPicker = new SGITColorPicker({
+                container: document.getElementById('colorPickerContainer'),
                 initialColor: currentColor,
                 onChange: (color) => {
                     setColor(color);
-                    colorPicker.addRecentColor(color);
-                },
-                onPipetteStart: () => {
-                    canvas.isDrawingMode = false;
-                    document.body.style.cursor = 'crosshair';
-                },
-                onPipetteEnd: () => {
-                    setTool(currentTool);
                 }
             });
-            colorPicker.render('colorPickerContainer');
-            
-            // Draggable machen
-            makeDraggable(document.getElementById('colorPickerPopup'));
         }
         
         function toggleColorPicker() {
@@ -914,8 +946,13 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             colorPickerVisible = !colorPickerVisible;
             popup.style.display = colorPickerVisible ? 'block' : 'none';
             
-            if (colorPickerVisible && !colorPicker) {
-                initColorPicker();
+            if (colorPickerVisible) {
+                if (!colorPicker) {
+                    initColorPicker();
+                }
+                colorPicker.show(currentColor);
+            } else if (colorPicker) {
+                colorPicker.hide();
             }
             
             // Button-Status aktualisieren
@@ -925,6 +962,8 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         // Draggable Helper
         function makeDraggable(element) {
             const header = element.querySelector('.colorpicker-header');
+            if (!header) return;
+            
             let isDragging = false;
             let offsetX, offsetY;
             
@@ -932,6 +971,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
                 isDragging = true;
                 offsetX = e.clientX - element.offsetLeft;
                 offsetY = e.clientY - element.offsetTop;
+                element.style.cursor = 'grabbing';
             });
             
             document.addEventListener('mousemove', (e) => {
@@ -943,19 +983,24 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
             
             document.addEventListener('mouseup', () => {
                 isDragging = false;
+                element.style.cursor = '';
             });
         }
+        
+        // Draggable beim Laden initialisieren
+        document.addEventListener('DOMContentLoaded', () => {
+            makeDraggable(document.getElementById('colorPickerPopup'));
+        });
         
         // Pipette-Funktionalität für Canvas
         canvas.on('mouse:down', function(opt) {
             if (colorPicker && colorPicker.pipetteActive) {
                 const pointer = canvas.getPointer(opt.e);
                 const ctx = canvas.getContext();
-                const pixel = ctx.getImageData(pointer.x, pointer.y, 1, 1).data;
+                const pixel = ctx.getImageData(Math.round(pointer.x), Math.round(pointer.y), 1, 1).data;
                 const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
                 
                 colorPicker.setColor(hex);
-                colorPicker.stopPipette();
                 setColor(hex);
             }
         });
