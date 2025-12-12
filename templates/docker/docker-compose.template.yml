@@ -1,14 +1,16 @@
 # ============================================================================
-# sgiT Education Platform - Docker Compose
+# sgiT ${PROJECT_NAME} - Docker Compose Template
 # ============================================================================
 #
-# PROJEKT-NAME: sgit-education
+# PROJEKT-NAME: sgit-${PROJECT_NAME_LOWER}
 # Schema: sgit-%projectname% (z.B. sgit-education, sgit-wearpart, sgit-api)
 #
-# Startet die komplette Entwicklungsumgebung:
-# - nginx (Webserver)
-# - PHP-FPM 8.3 (Application)
-# - Ollama (AI/LLM) - Optional
+# ANLEITUNG:
+#   1. Kopiere diesen Ordner in dein neues Projekt
+#   2. Ersetze ${PROJECT_NAME} mit deinem Projektnamen (z.B. "My App")
+#   3. Ersetze ${PROJECT_NAME_LOWER} mit kleingeschrieben (z.B. "myapp")
+#   4. Passe Ports an falls Konflikte (8080, 11434)
+#   5. docker-compose up -d
 #
 # USAGE:
 #   docker-compose up -d          # Starten
@@ -16,12 +18,13 @@
 #   docker-compose logs -f        # Logs
 #   docker-compose up -d --build  # Neu bauen
 #
-# @version 1.2
+# @version 1.0
 # @date 12.12.2025
+# @author sgiT Solution Engineering & IT Services
 # ============================================================================
 
-# Projektname für Docker Desktop (statt Ordnername "docker")
-name: sgit-education
+# Projektname für Docker Desktop (statt Ordnername)
+name: sgit-${PROJECT_NAME_LOWER}
 
 services:
   # ==========================================================================
@@ -29,7 +32,7 @@ services:
   # ==========================================================================
   nginx:
     image: nginx:alpine
-    container_name: sgit-education-nginx
+    container_name: sgit-${PROJECT_NAME_LOWER}-nginx
     ports:
       - "8080:80"          # http://localhost:8080
       # - "443:443"        # HTTPS (Production)
@@ -40,7 +43,7 @@ services:
     depends_on:
       - php
     networks:
-      - sgit-education-network
+      - sgit-${PROJECT_NAME_LOWER}-network
     restart: unless-stopped
 
   # ==========================================================================
@@ -50,35 +53,31 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: sgit-education-php
+    container_name: sgit-${PROJECT_NAME_LOWER}-php
     volumes:
       - ../:/var/www/html                              # App Code (read-write)
       - ./php/php.ini:/usr/local/etc/php/php.ini:ro    # PHP Config
-      # SQLite DBs direkt aus dem Projekt-Ordner (kein separates Volume)
-      # Damit bleiben die bestehenden Daten erhalten!
-      # OneDrive Backup-Verzeichnis (Windows -> Container)
-      - /c/Users/SG/OneDrive/sgiT/sgiT/WebsiteSourcefiles_sgitspace/backups:/mnt/onedrive-backup
     environment:
       - APP_ENV=development
       - APP_DEBUG=true
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
-      - OLLAMA_MODEL=llama3.2:latest
+      - OLLAMA_MODEL=gemma2:2b
     networks:
-      - sgit-education-network
+      - sgit-${PROJECT_NAME_LOWER}-network
     restart: unless-stopped
 
   # ==========================================================================
   # OLLAMA - AI/LLM Server (Optional)
   # ==========================================================================
-  # Auskommentieren wenn Ollama auf dem Host läuft
+  # Entfernen oder auskommentieren wenn keine AI benötigt
   ollama:
     image: ollama/ollama:latest
-    container_name: sgit-education-ollama
+    container_name: sgit-${PROJECT_NAME_LOWER}-ollama
     ports:
       - "11434:11434"
     volumes:
-      - sgit-education-ollama:/root/.ollama                      # Models persistent
+      - sgit-${PROJECT_NAME_LOWER}-ollama:/root/.ollama
     # GPU Support (NVIDIA) - auskommentieren wenn keine GPU
     # deploy:
     #   resources:
@@ -88,19 +87,19 @@ services:
     #           count: 1
     #           capabilities: [gpu]
     networks:
-      - sgit-education-network
+      - sgit-${PROJECT_NAME_LOWER}-network
     restart: unless-stopped
 
 # ============================================================================
 # NETWORKS
 # ============================================================================
 networks:
-  sgit-education-network:
+  sgit-${PROJECT_NAME_LOWER}-network:
     driver: bridge
 
 # ============================================================================
 # VOLUMES - Persistente Daten
 # ============================================================================
 volumes:
-  sgit-education-ollama:
-    name: sgit-education-ollama-models
+  sgit-${PROJECT_NAME_LOWER}-ollama:
+    name: sgit-${PROJECT_NAME_LOWER}-ollama-models

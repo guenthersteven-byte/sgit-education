@@ -11,10 +11,10 @@
  * */5 * * * * php /var/www/html/bots/scheduler/scheduler_cron.php
  * 
  * DOCKER-CRON:
- * docker exec sgit_php php /var/www/html/bots/scheduler/scheduler_cron.php
+ * docker exec sgit-education-php php /var/www/html/bots/scheduler/scheduler_cron.php
  * 
  * WINDOWS TASK SCHEDULER:
- * cd C:\xampp\htdocs\Education\docker && docker exec sgit_php php /var/www/html/bots/scheduler/scheduler_cron.php
+ * cd C:\xampp\htdocs\Education\docker && docker exec sgit-education-php php /var/www/html/bots/scheduler/scheduler_cron.php
  * 
  * @author sgiT Solution Engineering & IT Services
  * @version 1.0

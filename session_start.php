@@ -51,7 +51,7 @@ echo "<h2>🔗 Wichtige Links:</h2>";
 echo "<ul>";
 echo "<li><a href='sgit_education_status_report.md'>📋 Status-Report (ZUERST LESEN!)</a></li>";
 echo "<li><a href='adaptive_learning.php'>🎯 Adaptive Learning (FUNKTIONIERT!)</a></li>";
-echo "<li><a href='windows_ai_generator.php'>🤖 KI-Generator (MUSS GEFIXT WERDEN!)</a></li>";
+echo "<li><a href='bots/tests/AIGeneratorBot.php'>🤖 AI Generator Bot</a></li>";
 echo "<li><a href='check_module_consistency.php'>🔍 Module-Check</a></li>";
 echo "</ul>";
 

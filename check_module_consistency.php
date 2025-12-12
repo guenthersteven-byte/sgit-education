@@ -54,7 +54,7 @@ if (count($missing) > 0) {
         echo "<li><strong>$mod</strong></li>";
     }
     echo "</ul>";
-    echo "<p><a href='windows_ai_generator.php'>→ Generiere Fragen für diese Module!</a></p>";
+    echo "<p><a href='bots/tests/AIGeneratorBot.php'>→ Generiere Fragen für diese Module!</a></p>";
     echo "</div>";
 } else {
     echo "<div style='background: #d4edda; border: 2px solid #28a745; padding: 20px; border-radius: 10px; margin: 20px 0;'>";
@@ -65,5 +65,5 @@ if (count($missing) > 0) {
 
 echo "<hr>";
 echo "<p><a href='adaptive_learning.php'>→ Zurück zu Adaptive Learning</a></p>";
-echo "<p><a href='windows_ai_generator.php'>→ Zu KI-Generator</a></p>";
+echo "<p><a href='bots/tests/AIGeneratorBot.php'>→ Zu AI Generator Bot</a></p>";
 ?>

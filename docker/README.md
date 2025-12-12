@@ -31,18 +31,20 @@ docker-compose up -d
 
 | Container | Port | Beschreibung |
 |-----------|------|--------------|
-| `sgit_nginx` | 8080 | Webserver |
-| `sgit_php` | 9000 | PHP-FPM (intern) |
-| `sgit_ollama` | 11434 | AI/LLM Server |
+| `sgit-education-nginx` | 8080 | Webserver |
+| `sgit-education-php` | 9000 | PHP-FPM (intern) |
+| `sgit-education-ollama` | 11434 | AI/LLM Server |
+
+**Namensschema:** `sgit-%projectname%-%service%` (z.B. sgit-education-php, sgit-wearpart-nginx)
 
 ## Volumes
 
 | Volume | Pfad | Beschreibung |
 |--------|------|--------------|
-| `sgit_education_sqlite` | `/var/www/html/AI/data` | Fragen-DB |
-| `sgit_education_wallet` | `/var/www/html/wallet` | Wallet-DB |
-| `sgit_education_backups` | `/var/www/html/backups` | Backups |
-| `sgit_ollama_models` | `/root/.ollama` | AI Models |
+| `sgit-education-sqlite` | `/var/www/html/AI/data` | Fragen-DB |
+| `sgit-education-wallet` | `/var/www/html/wallet` | Wallet-DB |
+| `sgit-education-backups` | `/var/www/html/backups` | Backups |
+| `sgit-education-ollama-models` | `/root/.ollama` | AI Models |
 
 ## Ollama Model laden
 
@@ -94,5 +96,5 @@ docker/
 
 ---
 
-**Version:** 1.0  
-**Datum:** 05.12.2025
+**Version:** 1.2  
+**Datum:** 12.12.2025

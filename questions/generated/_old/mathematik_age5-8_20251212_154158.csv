@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Steine hat ein Baum?;2;4;6;8;B;1;5;8;Ein Baum hat 4 Stock oder Baumstämme;ai_generated
+Wie viel Brotscheiben sind in einer Packung?;7;9;5;3;C;1;5;8;Eine Packung Brotscheiben hat 5 Scheiben. ;ai_generated
+Wie viel Prozent sind in einem Apfel?;20;50;100;75;C;1;5;8;Ein Apfel hat 100% an Frucht.;ai_generated
+Wie viele Fäden braucht ein Vogel, um einen Baum zu bauen?;6;4;8;2;D;1;5;8;Ein Vogel hat 2 Fäden um einen Baum zu bauen.;ai_generated
+Welche Zahl passt dazu: 3 + 3 = ?;5;6;4;7;B;1;5;8;3 + 3 = 6, da wir die Anzahl der Zahlen addieren.;ai_generated
