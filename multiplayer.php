@@ -14,10 +14,10 @@
 session_start();
 require_once __DIR__ . '/includes/version.php';
 
-// Wallet-User prüfen
-$walletUserId = $_SESSION['wallet_user_id'] ?? null;
-$walletUserName = $_SESSION['wallet_user_name'] ?? 'Gast';
-$walletUserAvatar = $_SESSION['wallet_user_avatar'] ?? '👤';
+// Wallet-User prüfen - WICHTIG: Gleiche Session-Keys wie adaptive_learning.php!
+$walletUserId = $_SESSION['wallet_child_id'] ?? null;
+$walletUserName = $_SESSION['user_name'] ?? 'Gast';
+$walletUserAvatar = '👤'; // Default, wird unten aus DB geladen
 
 // Datenbank für User-Liste
 $walletDb = new PDO('sqlite:' . __DIR__ . '/wallet/wallet.db');
@@ -32,6 +32,11 @@ if ($walletUserId) {
     $stmt = $walletDb->prepare("SELECT * FROM child_wallets WHERE id = ?");
     $stmt->execute([$walletUserId]);
     $userStats = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Avatar aus DB holen
+    if ($userStats) {
+        $walletUserAvatar = $userStats['avatar'] ?? '👤';
+    }
 }
 
 // Module für Auswahl

@@ -21,8 +21,8 @@ header('Content-Type: application/json');
 // Session für User-ID
 session_start();
 
-// Wallet-User ID aus Session holen
-$walletUserId = $_SESSION['wallet_user_id'] ?? null;
+// Wallet-User ID aus Session holen - WICHTIG: Gleiche Session-Keys wie adaptive_learning.php!
+$walletUserId = $_SESSION['wallet_child_id'] ?? null;
 
 if (!$walletUserId) {
     echo json_encode([

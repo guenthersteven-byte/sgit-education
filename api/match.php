@@ -48,8 +48,8 @@ $config = [
     'elo_k_factor' => 32,
 ];
 
-// Wallet-User prüfen
-$userId = $_SESSION['wallet_user_id'] ?? null;
+// Wallet-User prüfen - WICHTIG: Gleiche Session-Keys wie adaptive_learning.php!
+$userId = $_SESSION['wallet_child_id'] ?? null;
 if (!$userId) {
     jsonResponse(false, 'Nicht eingeloggt', 'NOT_LOGGED_IN');
 }
