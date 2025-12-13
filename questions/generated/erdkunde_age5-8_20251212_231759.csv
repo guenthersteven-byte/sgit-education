@@ -1,0 +1,6 @@
+frage;antwort_a;antwort_b;antwort_c;antwort_d;richtig;schwierigkeit;min_alter;max_alter;erklaerung;typ
+Wie viele Kontinente gibt es auf der Erde?;4;7;9;6;B;1;5;8;Die Erde hat 7 Kontinente: Europa, Asien, Afrika, Südamerika, Nordamerika, Australien und Ozeanien.;ai_generated
+Welches Land ist bekannt für die Pyramiden?;Brasilien;Ägypten;Italien;China;B;1;5;8;In Ägypten sind die berühmten Pyramiden aus der Antike gebaut worden.;ai_generated
+Was ist die Hauptstadt von Deutschland?;Hamburg;Berlin;Köln;München;B;1;5;8;Berlin ist die Hauptstadt Deutschlands und bietet viele Sehenswürdigkeiten.;ai_generated
+Welches Land hat das schönste Klima?;Hawaii;Mexiko;Italien;Deutschland;B;1;5;8;Mexiko genießt ein warm und tropisches Klima mit vielen Stränden.;ai_generated
+Wie heißt der Ozean, in dem Europa liegt?;Aral-Ozean;Indischer Ozean;Atlantischer Ozean;Pazifischer Ozean;C;1;5;8;Der Atlantische Ozean ist der größte und am weitesten entfernte Ozean von Europa.;ai_generated

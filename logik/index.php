@@ -47,6 +47,13 @@ $puzzleTypes = [
         'description' => 'Fülle das Gitter mit Zahlen!',
         'min_age' => 8, 'max_age' => 99,
         'sats' => '15-75'
+    ],
+    'schach' => [
+        'name' => 'Schach Puzzles',
+        'icon' => '♟️',
+        'description' => 'Finde den Gewinnzug und setze Matt!',
+        'min_age' => 8, 'max_age' => 99,
+        'sats' => '20-80'
     ]
 ];
 
@@ -159,7 +166,7 @@ $availablePuzzles = array_filter($puzzleTypes, function($p) use ($userAge) {
         
         <div class="puzzle-grid">
             <?php 
-            $implemented = ['muster', 'ausreisser', 'zahlenreihe'];
+            $implemented = ['muster', 'ausreisser', 'zahlenreihe', 'sudoku', 'schach'];
             foreach ($puzzleTypes as $key => $puzzle): 
                 $available = $userAge >= $puzzle['min_age'] && $userAge <= $puzzle['max_age'];
                 $ready = in_array($key, $implemented);
