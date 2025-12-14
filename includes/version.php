@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.46.0');
+define('SGIT_VERSION', '3.46.1');
 define('SGIT_VERSION_DATE', '14.12.2025');
 
 // Kurzversion für UI (ohne Patch)
 define('SGIT_VERSION_SHORT', '3.46');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'MADN Kreuz-Layout');
+define('SGIT_VERSION_NAME', 'Backup Manager Fixes');

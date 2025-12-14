@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.46.0 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
+**Version:** 3.46.1 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
 
 ---
 
@@ -156,27 +156,27 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Datei** | `/bots/bot_summary.php` |
 | **Aufwand** | ~30min |
 
-### 🔴 BUG-059: Backup Manager - "NaN undefined" bei Quellcode-Größe - OFFEN
+### ✅ BUG-059: Backup Manager - "NaN undefined" bei Quellcode-Größe - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | MITTEL |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
-| **Symptom** | Quellcode-Statistik zeigt "NaN undefined" statt Größenangabe |
+| **Behoben** | 14.12.2025 ✅ |
+| **Symptom** | Quellcode-Statistik zeigte "NaN undefined" statt Größenangabe |
 | **Datei** | `/backup_manager.php` |
-| **Ursache** | JavaScript-Fehler bei Größenberechnung |
-| **Aufwand** | ~30min |
+| **Fix** | `formatBytes()` robuster gemacht - prüft auf null/undefined/NaN |
+| **Aufwand** | ~10min |
 
-### 🔴 BUG-060: Backup Manager - Dateinamen schlecht lesbar - OFFEN
+### ✅ BUG-060: Backup Manager - Dateinamen schlecht lesbar - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | NIEDRIG |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
+| **Behoben** | 14.12.2025 ✅ |
 | **Symptom** | Backup-Dateinamen zu dunkel, kaum lesbar |
 | **Datei** | `/backup_manager.php` |
-| **Fix** | CSS Textfarbe heller machen |
-| **Aufwand** | ~15min |
+| **Fix** | CSS Textfarben auf `var(--text)` und `var(--text-muted)` geändert |
+| **Aufwand** | ~5min |
 
 ### 🟡 FEATURE-001: Auto-Generator - Level-Auswahl - OFFEN
 | Info | Details |

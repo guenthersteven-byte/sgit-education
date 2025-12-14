@@ -732,7 +732,7 @@ if (isset($_GET['action']) && $authenticated) {
         
         .storage-card.onedrive { border-left-color: #0078d4; }
         .storage-card h4 { color: var(--primary); margin-bottom: 10px; }
-        .storage-card .path { font-family: monospace; font-size: 0.85em; color: #666; word-break: break-all; }
+        .storage-card .path { font-family: monospace; font-size: 0.85em; color: var(--text-muted, #aaa); word-break: break-all; }
         .storage-status { margin-top: 10px; font-weight: 600; }
         .storage-status.ok { color: var(--success); }
         .storage-status.error { color: var(--danger); }
@@ -865,8 +865,9 @@ if (isset($_GET['action']) && $authenticated) {
         }
         
         .backup-info { flex: 1; }
-        .backup-name { font-weight: 600; color: var(--primary); margin-bottom: 4px; }
-        .backup-meta { font-size: 0.85em; color: #666; display: flex; gap: 20px; }
+        /* BUG-060 FIX: Hellere Farben für bessere Lesbarkeit */
+        .backup-name { font-weight: 600; color: var(--text, #e0e0e0); margin-bottom: 4px; }
+        .backup-meta { font-size: 0.85em; color: var(--text-muted, #aaa); display: flex; gap: 20px; }
         .backup-actions { display: flex; gap: 10px; }
         
         .empty-state {
@@ -1241,6 +1242,8 @@ if (isset($_GET['action']) && $authenticated) {
         }
         
         function formatBytes(bytes) {
+            // BUG-059 FIX: Robustere Prüfung auf ungültige Werte
+            if (bytes === null || bytes === undefined || isNaN(bytes) || bytes < 0) return '-- MB';
             if (bytes === 0) return '0 B';
             const k = 1024;
             const sizes = ['B', 'KB', 'MB', 'GB'];
