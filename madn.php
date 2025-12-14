@@ -13,11 +13,31 @@
 
 session_start();
 require_once 'includes/version.php';
+require_once __DIR__ . '/wallet/SessionManager.php';
 
-$userName = $_SESSION['child_name'] ?? '';
-$userAge = $_SESSION['user_age'] ?? 10;
-$walletChildId = $_SESSION['wallet_child_id'] ?? 0;
-$userAvatar = $_SESSION['avatar'] ?? '😀';
+// User-Daten aus SessionManager (wie multiplayer.php)
+$userName = '';
+$userAge = 10;
+$walletChildId = 0;
+$userAvatar = '😀';
+
+// SessionManager prüfen (primäre Quelle)
+if (SessionManager::isLoggedIn()) {
+    $childData = SessionManager::getChild();
+    if ($childData) {
+        $walletChildId = $childData['id'];
+        $userName = $childData['name'];
+        $userAvatar = $childData['avatar'] ?? '😀';
+        $userAge = $childData['age'] ?? 10;
+    }
+}
+// Fallback: Standard Session-Keys
+elseif (isset($_SESSION['wallet_child_id'])) {
+    $walletChildId = $_SESSION['wallet_child_id'];
+    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
+    $userAvatar = $_SESSION['avatar'] ?? '😀';
+    $userAge = $_SESSION['user_age'] ?? 10;
+}
 
 $colors = ['red' => '🔴', 'blue' => '🔵', 'green' => '🟢', 'yellow' => '🟡'];
 $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' => 'Gelb'];

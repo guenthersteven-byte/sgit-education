@@ -16,12 +16,31 @@
 
 session_start();
 require_once 'includes/version.php';
+require_once __DIR__ . '/wallet/SessionManager.php';
 
-// User-Daten aus Session
-$userName = $_SESSION['child_name'] ?? '';
-$userAge = $_SESSION['user_age'] ?? 10;
-$walletChildId = $_SESSION['wallet_child_id'] ?? 0;
-$userAvatar = $_SESSION['avatar'] ?? '😀';
+// User-Daten aus SessionManager (wie multiplayer.php)
+$userName = '';
+$userAge = 10;
+$walletChildId = 0;
+$userAvatar = '😀';
+
+// SessionManager prüfen (primäre Quelle)
+if (SessionManager::isLoggedIn()) {
+    $childData = SessionManager::getChild();
+    if ($childData) {
+        $walletChildId = $childData['id'];
+        $userName = $childData['name'];
+        $userAvatar = $childData['avatar'] ?? '😀';
+        $userAge = $childData['age'] ?? 10;
+    }
+}
+// Fallback: Standard Session-Keys
+elseif (isset($_SESSION['wallet_child_id'])) {
+    $walletChildId = $_SESSION['wallet_child_id'];
+    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
+    $userAvatar = $_SESSION['avatar'] ?? '😀';
+    $userAge = $_SESSION['user_age'] ?? 10;
+}
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -479,7 +498,7 @@ $userAvatar = $_SESSION['avatar'] ?? '😀';
         <!-- Header -->
         <div class="header">
             <div>
-                <a href="adaptive_learning.php" class="back-link">← Zurück</a>
+                <a href="multiplayer.php" class="back-link">← Multiplayer</a>
                 <h1>🎨 <span>Montagsmaler</span></h1>
             </div>
             <div class="header-info">
