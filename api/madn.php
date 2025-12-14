@@ -386,16 +386,20 @@ function rollDice($db, $input) {
 function canPlayerMove($pieces, $roll, $playerOrder) {
     $startField = $playerOrder * 10; // 0, 10, 20, 30
     
-    foreach ($pieces as $pos) {
+    foreach ($pieces as $i => $pos) {
         // Figur im Startbereich und 6 gewürfelt
         if ($pos < 0 && $roll == 6) {
-            return true;
+            // Prüfen ob Startfeld frei ist (keine eigene Figur)
+            if (!in_array($startField, $pieces)) {
+                return true;
+            }
         }
         
         // Figur auf dem Brett
         if ($pos >= 0 && $pos < 40) {
             $newPos = calculateNewPosition($pos, $roll, $playerOrder);
-            if ($newPos !== false) {
+            // Prüfen ob Zielfeld nicht von eigener Figur besetzt
+            if ($newPos !== false && !in_array($newPos, $pieces)) {
                 return true;
             }
         }
@@ -403,7 +407,8 @@ function canPlayerMove($pieces, $roll, $playerOrder) {
         // Figur im Zielbereich - kann evtl. weiter
         if ($pos >= 40 && $pos < 44) {
             $newPos = $pos + $roll;
-            if ($newPos <= 43) {
+            // Prüfen ob Zielfeld frei und gültig
+            if ($newPos <= 43 && !in_array($newPos, $pieces)) {
                 return true;
             }
         }
@@ -481,6 +486,13 @@ function movePiece($db, $input) {
     
     if ($newPos === null || $newPos === false) {
         return ['success' => false, 'error' => 'Ungültiger Zug'];
+    }
+    
+    // BUG-FIX: Prüfen ob Zielfeld von eigener Figur besetzt
+    foreach ($pieces as $i => $pos) {
+        if ($i !== $pieceIndex && $pos === $newPos) {
+            return ['success' => false, 'error' => 'Feld von eigener Figur besetzt'];
+        }
     }
     
     // Schlagen prüfen (nur auf Brett, nicht im Ziel)
