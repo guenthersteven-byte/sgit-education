@@ -158,8 +158,8 @@ function createGame($db, $input) {
     
     $gameId = $db->lastInsertRowID();
     
-    // Host als ersten Spieler (Rot)
-    $stmt = $db->prepare("INSERT INTO players (game_id, wallet_child_id, player_name, avatar, color, player_order, is_host) VALUES (?, ?, ?, ?, 'red', 0, 1)");
+    // Host als ersten Spieler (Rot) - EXPLIZIT pieces setzen!
+    $stmt = $db->prepare("INSERT INTO players (game_id, wallet_child_id, player_name, avatar, color, player_order, is_host, pieces) VALUES (?, ?, ?, ?, 'red', 0, 1, '[-1,-2,-3,-4]')");
     $stmt->bindValue(1, $gameId);
     $stmt->bindValue(2, $walletChildId);
     $stmt->bindValue(3, $playerName);
@@ -224,8 +224,8 @@ function joinGame($db, $input) {
         }
     }
     
-    // Spieler hinzufügen
-    $stmt = $db->prepare("INSERT INTO players (game_id, wallet_child_id, player_name, avatar, color, player_order) VALUES (?, ?, ?, ?, ?, ?)");
+    // Spieler hinzufügen - EXPLIZIT pieces setzen!
+    $stmt = $db->prepare("INSERT INTO players (game_id, wallet_child_id, player_name, avatar, color, player_order, pieces) VALUES (?, ?, ?, ?, ?, ?, '[-1,-2,-3,-4]')");
     $stmt->bindValue(1, $game['id']);
     $stmt->bindValue(2, $walletChildId);
     $stmt->bindValue(3, $playerName);

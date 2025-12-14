@@ -1,13 +1,16 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Mensch ärgere dich nicht v1.0
+ * sgiT Education - Mensch ärgere dich nicht v2.0
  * ============================================================================
+ * 
+ * BUG-052 FIX: Komplettes Redesign mit klassischem Kreuz-Layout
  * 
  * Klassisches Brettspiel für 2-4 Spieler
  *
  * @author sgiT Solution Engineering & IT Services
- * @version 1.0
+ * @version 2.0
+ * @date 14.12.2025
  * ============================================================================
  */
 
@@ -52,14 +55,8 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
         /* ===========================================
-           MADN-Spezifische Styles
+           BUG-052 FIX: MADN Kreuz-Layout v2.0
            =========================================== */
-        
-        /* Lokale Variablen für MADN (erben von multiplayer-theme) */
-        :root {
-            --field-bg: #f5f5dc;
-            --field-border: #333;
-        }
         
         /* Player Colors */
         .player-slot.red { border-color: var(--mp-player-red); }
@@ -110,92 +107,160 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             align-items: center;
         }
         
-        /* Spielbrett - BUG-052 FIX: Klassisches Kreuz-Layout */
+        /* =========================================
+           SPIELBRETT - Kreuz-Layout
+           11x11 Grid: 11*32 + 10*6 + 2*12 = 436px
+           ========================================= */
         .board {
-            display: grid;
-            grid-template-columns: repeat(11, 36px);
-            grid-template-rows: repeat(11, 36px);
-            gap: 2px;
+            position: relative;
+            width: 436px;
+            height: 436px;
             background: #2d4a1c;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 0;
             border: 4px solid #1a3503;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+            box-shadow: 
+                inset 0 0 30px rgba(0,0,0,0.3),
+                0 8px 32px rgba(0,0,0,0.4);
         }
         
+        /* Alle Spielfelder absolut positioniert */
         .cell {
-            width: 36px;
-            height: 36px;
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            transition: var(--mp-transition);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 1;
         }
         
-        /* Leere Zellen (transparent) */
-        .cell.empty {
-            background: transparent;
+        /* Wegfelder (beige/weiß) */
+        .cell.path {
+            background: linear-gradient(135deg, #f5f5dc, #e8e8c8);
+            border: 2px solid #666;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);
         }
         
-        /* Spielfelder (Laufweg) */
-        .cell.field {
-            background: var(--field-bg);
-            border: 2px solid var(--field-border);
-            cursor: pointer;
+        .cell.path:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(67, 210, 64, 0.5);
         }
-        .cell.field:hover { transform: scale(1.08); }
         
-        /* Startfelder (4 Ecken) */
-        .cell.start { cursor: pointer; }
-        .cell.start-red { background: var(--mp-player-red); border: 2px solid #a93226; }
-        .cell.start-blue { background: var(--mp-player-blue); border: 2px solid #1f618d; }
-        .cell.start-green { background: var(--mp-player-green); border: 2px solid #1d8348; }
-        .cell.start-yellow { background: var(--mp-player-yellow); border: 2px solid #b7950b; }
+        /* Eingangsfelder - farbige Umrandung */
+        .cell.entry-red { border: 3px solid #e74c3c !important; background: linear-gradient(135deg, #ffe0dc, #f5d0cc) !important; }
+        .cell.entry-blue { border: 3px solid #3498db !important; background: linear-gradient(135deg, #dceeff, #cce5ff) !important; }
+        .cell.entry-green { border: 3px solid #27ae60 !important; background: linear-gradient(135deg, #dcffe0, #ccf5d0) !important; }
+        .cell.entry-yellow { border: 3px solid #f1c40f !important; background: linear-gradient(135deg, #fffadc, #fff5cc) !important; }
         
-        /* Zielfelder (innere Bahnen zur Mitte) */
-        .cell.home-red { background: rgba(231, 76, 60, 0.4); border: 2px solid var(--mp-player-red); }
-        .cell.home-blue { background: rgba(52, 152, 219, 0.4); border: 2px solid var(--mp-player-blue); }
-        .cell.home-green { background: rgba(39, 174, 96, 0.4); border: 2px solid var(--mp-player-green); }
-        .cell.home-yellow { background: rgba(241, 196, 15, 0.4); border: 2px solid var(--mp-player-yellow); }
+        /* Home-Felder (Zielbahnen) */
+        .cell.home-red {
+            background: linear-gradient(135deg, #ffcccc, #e74c3c);
+            border: 2px solid #c0392b;
+        }
+        .cell.home-blue {
+            background: linear-gradient(135deg, #cce5ff, #3498db);
+            border: 2px solid #2980b9;
+        }
+        .cell.home-green {
+            background: linear-gradient(135deg, #ccffcc, #27ae60);
+            border: 2px solid #1e8449;
+        }
+        .cell.home-yellow {
+            background: linear-gradient(135deg, #ffffcc, #f1c40f);
+            border: 2px solid #d4ac0d;
+        }
         
-        /* Eingangsfelder (wo man aufs Spielfeld kommt) */
-        .cell.entry-red { border: 3px solid var(--mp-player-red) !important; }
-        .cell.entry-blue { border: 3px solid var(--mp-player-blue) !important; }
-        .cell.entry-green { border: 3px solid var(--mp-player-green) !important; }
-        .cell.entry-yellow { border: 3px solid var(--mp-player-yellow) !important; }
-        
-        /* Mittelfeld */
+        /* Mittelfeld (4-farbig) */
         .cell.center {
-            background: linear-gradient(135deg, #e74c3c 25%, #3498db 25%, #3498db 50%, #27ae60 50%, #27ae60 75%, #f1c40f 75%);
+            width: 36px;
+            height: 36px;
+            background: conic-gradient(
+                from 45deg,
+                #e74c3c 0deg 90deg,
+                #3498db 90deg 180deg,
+                #27ae60 180deg 270deg,
+                #f1c40f 270deg 360deg
+            );
             border: 3px solid #333;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            z-index: 2;
         }
         
-        /* Animation für bewegbare Felder */
-        .cell.can-move { animation: mp-fieldPulse 0.8s ease infinite; }
+        /* =========================================
+           STARTFELDER (im Grid-System)
+           ========================================= */
+        .cell.start-field {
+            background: rgba(255,255,255,0.3);
+            border: 2px solid rgba(0,0,0,0.2);
+        }
         
-        /* Spielfiguren - BUG-052 FIX: In Grid-Zellen zentriert */
+        .cell.start-red {
+            background: linear-gradient(135deg, #ffcccc, #e74c3c);
+            border: 2px solid #c0392b;
+        }
+        .cell.start-blue {
+            background: linear-gradient(135deg, #cce5ff, #3498db);
+            border: 2px solid #2980b9;
+        }
+        .cell.start-green {
+            background: linear-gradient(135deg, #ccffcc, #27ae60);
+            border: 2px solid #1e8449;
+        }
+        .cell.start-yellow {
+            background: linear-gradient(135deg, #ffffcc, #f1c40f);
+            border: 2px solid #d4ac0d;
+        }
+        
+        /* =========================================
+           SPIELFIGUREN
+           ========================================= */
         .piece {
-            width: 26px;
-            height: 26px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            border: 3px solid #333;
+            border: 2px solid #333;
             cursor: pointer;
-            transition: var(--mp-transition);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-            /* Nicht mehr absolut, sondern in Zelle zentriert */
-            position: relative !important;
-            margin: auto;
+            z-index: 10;
         }
+        
         .piece.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .piece.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
         .piece.green { background: linear-gradient(135deg, #27ae60, #1e8449); }
         .piece.yellow { background: linear-gradient(135deg, #f1c40f, #d4ac0d); }
-        .piece.selectable { animation: mp-bounce 0.5s ease infinite; }
-        .piece.moving { animation: mp-pieceMove 0.4s ease; }
-        .piece.captured { animation: mp-pieceCapture 0.5s ease forwards; }
         
-        /* Sidebar */
+        .piece.selectable {
+            animation: pieceBounce 0.5s ease infinite;
+            cursor: pointer;
+        }
+        
+        .piece.selectable:hover {
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(67, 210, 64, 0.8);
+        }
+        
+        @keyframes pieceBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        
+        /* Bewegbare Felder Animation */
+        .cell.can-move {
+            animation: fieldPulse 0.8s ease infinite;
+        }
+        
+        @keyframes fieldPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(67, 210, 64, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(67, 210, 64, 0); }
+        }
+
+        /* =========================================
+           SIDEBAR
+           ========================================= */
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -218,7 +283,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .turn-indicator .player { font-size: 1.3rem; font-weight: bold; margin-top: 5px; }
         .turn-indicator.my-turn { border: 2px solid var(--mp-accent); }
         
-        /* Würfel - nutzt zentrale mp-diceRoll Animation */
+        /* Würfel */
         .dice-area { text-align: center; padding: 20px; }
         .dice {
             width: 80px;
@@ -234,18 +299,10 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             margin: 15px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             cursor: pointer;
-            transition: var(--mp-transition);
+            transition: all 0.2s ease;
         }
         .dice:hover { transform: rotate(10deg) scale(1.05); }
         .dice.rolling { animation: mp-diceRoll 0.3s linear infinite; }
-        .dice-dots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; }
-        .dot {
-            width: 14px;
-            height: 14px;
-            background: #333;
-            border-radius: 50%;
-        }
-        .dot.hidden { visibility: hidden; }
         
         .scoreboard { margin-top: 10px; }
         .score-row {
@@ -262,7 +319,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .score-row .name { flex: 1; }
         .score-row .pieces { font-size: 0.8rem; color: var(--mp-text-muted); }
         
-        /* Toast - verwendet mp-toast aus theme, aber lokale Overrides */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -293,26 +350,38 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .result-icon { font-size: 5rem; margin-bottom: 15px; }
         .result-title { font-size: 2rem; margin-bottom: 10px; }
         
-        /* Mobile Optimierung - BUG-052 FIX */
+        /* =========================================
+           MOBILE RESPONSIVE
+           ========================================= */
         @media (max-width: 500px) {
             .board-area {
                 padding: 10px;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
             }
             .board {
-                grid-template-columns: repeat(11, 28px);
-                grid-template-rows: repeat(11, 28px);
-                gap: 1px;
-                padding: 10px;
+                width: 320px;
+                height: 320px;
             }
             .cell {
+                width: 24px;
+                height: 24px;
+            }
+            .cell.center {
                 width: 28px;
                 height: 28px;
             }
-            .piece {
+            .start-area {
+                width: 58px;
+                height: 58px;
+                padding: 6px;
+                gap: 4px;
+            }
+            .start-field {
                 width: 20px;
                 height: 20px;
+            }
+            .piece {
+                width: 18px;
+                height: 18px;
             }
             .dice {
                 width: 60px;
@@ -337,16 +406,28 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         
         @media (max-width: 380px) {
             .board {
-                grid-template-columns: repeat(11, 24px);
-                grid-template-rows: repeat(11, 24px);
+                width: 280px;
+                height: 280px;
             }
             .cell {
+                width: 20px;
+                height: 20px;
+            }
+            .cell.center {
                 width: 24px;
                 height: 24px;
             }
-            .piece {
+            .start-area {
+                width: 50px;
+                height: 50px;
+            }
+            .start-field {
                 width: 18px;
                 height: 18px;
+            }
+            .piece {
+                width: 16px;
+                height: 16px;
             }
         }
     </style>
@@ -458,8 +539,16 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             </div>
         </div>
     </div>
+
     
     <script>
+        /**
+         * ============================================
+         * BUG-052 FIX: MADN JavaScript v2.0
+         * Kreuz-Layout mit absoluter Positionierung
+         * ============================================
+         */
+        
         const API_URL = '/api/madn.php';
         const POLL_INTERVAL = 800;
         const COLORS = ['red', 'blue', 'green', 'yellow'];
@@ -467,108 +556,127 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         const COLOR_NAMES = {'red': 'Rot', 'blue': 'Blau', 'green': 'Grün', 'yellow': 'Gelb'};
         
         // ============================================
-        // BUG-052 FIX: Klassisches Kreuz-Layout
-        // 11x11 Grid mit korrekten Feldpositionen
+        // BOARD LAYOUT KONSTANTEN
         // ============================================
         
-        // Board-Layout Definition (11x11 Grid)
-        // 'e' = empty, 'w' = weg (path), 'c' = center
-        // 'sr' = start-red, 'sb' = start-blue, 'sg' = start-green, 'sy' = start-yellow
-        // 'hr' = home-red, 'hb' = home-blue, 'hg' = home-green, 'hy' = home-yellow
-        // 'er' = entry-red, 'eb' = entry-blue, 'eg' = entry-green, 'ey' = entry-yellow
-        const BOARD_LAYOUT = [
-            ['sr','sr','e', 'e', 'w', 'w', 'eb','e', 'e', 'sb','sb'],
-            ['sr','sr','e', 'e', 'w', 'hb','w', 'e', 'e', 'sb','sb'],
-            ['e', 'e', 'e', 'e', 'w', 'hb','w', 'e', 'e', 'e', 'e'],
-            ['e', 'e', 'e', 'e', 'w', 'hb','w', 'e', 'e', 'e', 'e'],
-            ['er','w', 'w', 'w', 'w', 'hb','w', 'w', 'w', 'w', 'w'],
-            ['w', 'hr','hr','hr','hr','c', 'hg','hg','hg','hg','w'],
-            ['w', 'w', 'w', 'w', 'w', 'hy','w', 'w', 'w', 'w', 'eg'],
-            ['e', 'e', 'e', 'e', 'w', 'hy','w', 'e', 'e', 'e', 'e'],
-            ['e', 'e', 'e', 'e', 'w', 'hy','w', 'e', 'e', 'e', 'e'],
-            ['sy','sy','e', 'e', 'w', 'hy','w', 'e', 'e', 'sg','sg'],
-            ['sy','sy','e', 'e', 'ey','w', 'w', 'e', 'e', 'sg','sg']
+        // Feldgröße und Abstände (angepasst an CSS)
+        const FIELD_SIZE = 32;
+        const FIELD_GAP = 6;
+        const BOARD_PADDING = 12;
+        const CELL_STEP = FIELD_SIZE + FIELD_GAP; // 38px
+        
+        /**
+         * Berechnet Pixel-Position aus Grid-Koordinaten
+         */
+        function getPixelPos(col, row) {
+            return {
+                left: BOARD_PADDING + col * CELL_STEP,
+                top: BOARD_PADDING + row * CELL_STEP
+            };
+        }
+        
+        /**
+         * HAUPTWEG: 40 Felder im Uhrzeigersinn
+         * 
+         * KORRIGIERTES Layout - echtes Kreuz ohne Ecken!
+         * Der Weg geht NUR durch die Kreuzform:
+         * - Horizontal: row 4,5,6 von col 0-10
+         * - Vertikal: col 4,5,6 von row 0-10
+         * - NICHT in die Ecken (dort sind Startbereiche)
+         * 
+         * Rot Entry = Position 0 (links, row 4)
+         * Blau Entry = Position 10 (oben, col 6)
+         * Grün Entry = Position 20 (rechts, row 6)
+         * Gelb Entry = Position 30 (unten, col 4)
+         */
+        const MAIN_PATH = [
+            // 0-9: Rot Entry → links hoch → oben nach rechts → Blau Entry
+            {col: 0, row: 4},   // 0: ROT ENTRY
+            {col: 1, row: 4},   // 1
+            {col: 2, row: 4},   // 2
+            {col: 3, row: 4},   // 3
+            {col: 4, row: 4},   // 4: Kreuzung oben-links
+            {col: 4, row: 3},   // 5: nach oben
+            {col: 4, row: 2},   // 6
+            {col: 4, row: 1},   // 7
+            {col: 4, row: 0},   // 8: Ecke oben
+            {col: 5, row: 0},   // 9: nach rechts
+            
+            // 10-19: Blau Entry → rechts → runter → Grün Entry
+            {col: 6, row: 0},   // 10: BLAU ENTRY
+            {col: 6, row: 1},   // 11: nach unten
+            {col: 6, row: 2},   // 12
+            {col: 6, row: 3},   // 13
+            {col: 6, row: 4},   // 14: Kreuzung oben-rechts
+            {col: 7, row: 4},   // 15: nach rechts
+            {col: 8, row: 4},   // 16
+            {col: 9, row: 4},   // 17
+            {col: 10, row: 4},  // 18: Ecke rechts
+            {col: 10, row: 5},  // 19: nach unten
+            
+            // 20-29: Grün Entry → rechts runter → links → Gelb Entry
+            {col: 10, row: 6},  // 20: GRÜN ENTRY
+            {col: 9, row: 6},   // 21: nach links
+            {col: 8, row: 6},   // 22
+            {col: 7, row: 6},   // 23
+            {col: 6, row: 6},   // 24: Kreuzung unten-rechts
+            {col: 6, row: 7},   // 25: nach unten
+            {col: 6, row: 8},   // 26
+            {col: 6, row: 9},   // 27
+            {col: 6, row: 10},  // 28: Ecke unten
+            {col: 5, row: 10},  // 29: nach links
+            
+            // 30-39: Gelb Entry → links → hoch → zurück zu Rot
+            {col: 4, row: 10},  // 30: GELB ENTRY
+            {col: 4, row: 9},   // 31: nach oben
+            {col: 4, row: 8},   // 32
+            {col: 4, row: 7},   // 33
+            {col: 4, row: 6},   // 34: Kreuzung unten-links
+            {col: 3, row: 6},   // 35: nach links
+            {col: 2, row: 6},   // 36
+            {col: 1, row: 6},   // 37
+            {col: 0, row: 6},   // 38: Ecke links
+            {col: 0, row: 5}    // 39: nach oben (vor Rot Entry)
         ];
         
-        // Mapping: Grid-Position (row, col) -> Spielfeld-Index
-        // Hauptfelder 0-39 im Uhrzeigersinn, Start bei Rot (links)
-        const GRID_TO_INDEX = {};
-        const INDEX_TO_GRID = {};
-        
-        // Hauptweg (40 Felder) - Uhrzeigersinn startend bei Rot-Entry
-        // Index 0=Rot Entry, 10=Blau Entry, 20=Grün Entry, 30=Gelb Entry
-        const PATH_COORDS = [
-            // 0-9: Rot Entry bis Blau Entry (links hoch, dann oben nach rechts)
-            [4,0],  // 0: Rot Entry (links mitte)
-            [3,0],  // 1
-            [2,0],  // 2
-            [1,0],  // 3
-            [0,0],  // 4: Ecke oben-links
-            [0,1],  // 5
-            [0,2],  // 6
-            [0,3],  // 7
-            [0,4],  // 8
-            [0,5],  // 9
-            // 10-19: Blau Entry bis Grün Entry (oben nach rechts, dann rechts runter)
-            [0,6],  // 10: Blau Entry (oben mitte)
-            [0,7],  // 11
-            [0,8],  // 12
-            [0,9],  // 13
-            [0,10], // 14: Ecke oben-rechts
-            [1,10], // 15
-            [2,10], // 16
-            [3,10], // 17
-            [4,10], // 18
-            [5,10], // 19
-            // 20-29: Grün Entry bis Gelb Entry (rechts runter, dann unten nach links)
-            [6,10], // 20: Grün Entry (rechts mitte)
-            [7,10], // 21
-            [8,10], // 22
-            [9,10], // 23
-            [10,10],// 24: Ecke unten-rechts
-            [10,9], // 25
-            [10,8], // 26
-            [10,7], // 27
-            [10,6], // 28
-            [10,5], // 29
-            // 30-39: Gelb Entry bis zurück zu Rot (unten nach links, dann links hoch)
-            [10,4], // 30: Gelb Entry (unten mitte)
-            [10,3], // 31
-            [10,2], // 32
-            [10,1], // 33
-            [10,0], // 34: Ecke unten-links
-            [9,0],  // 35
-            [8,0],  // 36
-            [7,0],  // 37
-            [6,0],  // 38
-            [5,0]   // 39: zurück Richtung Rot Entry
-        ];
-        
-        // Startfelder pro Farbe (4 Felder je Ecke)
-        const START_COORDS = {
-            'red':    [[0,0], [0,1], [1,0], [1,1]],
-            'blue':   [[0,9], [0,10], [1,9], [1,10]],
-            'green':  [[9,9], [9,10], [10,9], [10,10]],
-            'yellow': [[9,0], [9,1], [10,0], [10,1]]
-        };
-        
-        // Home-Felder (Zielbahnen zur Mitte, je 4)
+        /**
+         * HOME-FELDER: Zielbahnen (je 4 pro Farbe)
+         * Position 40-43 im Spielzustand
+         */
         const HOME_COORDS = {
-            'red':    [[5,1], [5,2], [5,3], [5,4]],
-            'blue':   [[1,5], [2,5], [3,5], [4,5]],
-            'green':  [[5,9], [5,8], [5,7], [5,6]],
-            'yellow': [[9,5], [8,5], [7,5], [6,5]]
+            red: [
+                {col: 1, row: 5}, {col: 2, row: 5}, {col: 3, row: 5}, {col: 4, row: 5}
+            ],
+            blue: [
+                {col: 5, row: 1}, {col: 5, row: 2}, {col: 5, row: 3}, {col: 5, row: 4}
+            ],
+            green: [
+                {col: 9, row: 5}, {col: 8, row: 5}, {col: 7, row: 5}, {col: 6, row: 5}
+            ],
+            yellow: [
+                {col: 5, row: 9}, {col: 5, row: 8}, {col: 5, row: 7}, {col: 5, row: 6}
+            ]
         };
         
-        // Entry-Felder (wo man aufs Brett kommt)
-        const ENTRY_POSITIONS = {
-            'red': 0,    // Index 0 im Hauptweg
-            'blue': 10,  // Index 10
-            'green': 20, // Index 20
-            'yellow': 30 // Index 30
+        /**
+         * MITTE: Zentrales Feld
+         */
+        const CENTER_COORD = {col: 5, row: 5};
+        
+        /**
+         * ENTRY-POSITIONEN: Index im Hauptweg wo man aufs Brett kommt
+         */
+        const ENTRY_INDICES = {
+            red: 0,
+            blue: 10,
+            green: 20,
+            yellow: 30
         };
         
-        // Spielzustand
+        // ============================================
+        // SPIELZUSTAND
+        // ============================================
+        
         let gameState = {
             gameId: null,
             playerId: null,
@@ -586,89 +694,107 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         let walletChildId = <?php echo $walletChildId ?: 'null'; ?>;
         let pollInterval = null;
         
-        // Board initialisieren - BUG-052 FIX: Grid-basiertes Layout
+        // ============================================
+        // BOARD RENDERING
+        // ============================================
+        
+        /**
+         * START-KOORDINATEN: 4 Felder pro Farbe (2x2 in den Ecken)
+         * Diese sind im selben Grid-System wie der Weg!
+         */
+        const START_COORDS = {
+            red: [
+                {col: 0, row: 0}, {col: 1, row: 0},
+                {col: 0, row: 1}, {col: 1, row: 1}
+            ],
+            blue: [
+                {col: 9, row: 0}, {col: 10, row: 0},
+                {col: 9, row: 1}, {col: 10, row: 1}
+            ],
+            green: [
+                {col: 9, row: 9}, {col: 10, row: 9},
+                {col: 9, row: 10}, {col: 10, row: 10}
+            ],
+            yellow: [
+                {col: 0, row: 9}, {col: 1, row: 9},
+                {col: 0, row: 10}, {col: 1, row: 10}
+            ]
+        };
+        
+        /**
+         * Initialisiert das Spielbrett mit Kreuz-Layout
+         */
         function initBoard() {
             const board = document.getElementById('gameBoard');
             board.innerHTML = '';
             
-            // 11x11 Grid durchgehen
-            for (let row = 0; row < 11; row++) {
-                for (let col = 0; col < 11; col++) {
-                    const cellType = BOARD_LAYOUT[row][col];
+            // 1. Startfelder erstellen (je 4 pro Farbe, im Grid-System)
+            Object.entries(START_COORDS).forEach(([color, coords]) => {
+                coords.forEach((coord, index) => {
                     const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.dataset.row = row;
-                    cell.dataset.col = col;
+                    cell.className = `cell start-field start-${color}`;
+                    cell.dataset.color = color;
+                    cell.dataset.startIndex = index;
                     
-                    switch(cellType) {
-                        case 'e':
-                            cell.classList.add('empty');
-                            break;
-                        case 'w':
-                            cell.classList.add('field');
-                            // Hauptweg-Index finden
-                            const pathIdx = PATH_COORDS.findIndex(c => c[0] === row && c[1] === col);
-                            if (pathIdx !== -1) {
-                                cell.dataset.pathIndex = pathIdx;
-                            }
-                            break;
-                        case 'c':
-                            cell.classList.add('center');
-                            break;
-                        case 'sr': cell.classList.add('start', 'start-red'); cell.dataset.start = 'red'; break;
-                        case 'sb': cell.classList.add('start', 'start-blue'); cell.dataset.start = 'blue'; break;
-                        case 'sg': cell.classList.add('start', 'start-green'); cell.dataset.start = 'green'; break;
-                        case 'sy': cell.classList.add('start', 'start-yellow'); cell.dataset.start = 'yellow'; break;
-                        case 'hr': cell.classList.add('field', 'home-red'); cell.dataset.home = 'red'; break;
-                        case 'hb': cell.classList.add('field', 'home-blue'); cell.dataset.home = 'blue'; break;
-                        case 'hg': cell.classList.add('field', 'home-green'); cell.dataset.home = 'green'; break;
-                        case 'hy': cell.classList.add('field', 'home-yellow'); cell.dataset.home = 'yellow'; break;
-                        case 'er': 
-                            cell.classList.add('field', 'entry-red'); 
-                            cell.dataset.pathIndex = 0;
-                            break;
-                        case 'eb': 
-                            cell.classList.add('field', 'entry-blue'); 
-                            cell.dataset.pathIndex = 10;
-                            break;
-                        case 'eg': 
-                            cell.classList.add('field', 'entry-green'); 
-                            cell.dataset.pathIndex = 20;
-                            break;
-                        case 'ey': 
-                            cell.classList.add('field', 'entry-yellow'); 
-                            cell.dataset.pathIndex = 30;
-                            break;
-                    }
+                    const pos = getPixelPos(coord.col, coord.row);
+                    cell.style.left = pos.left + 'px';
+                    cell.style.top = pos.top + 'px';
                     
                     board.appendChild(cell);
-                }
-            }
+                });
+            });
             
-            // Home-Indizes setzen
+            // 2. Hauptweg erstellen (40 Felder)
+            MAIN_PATH.forEach((coord, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell path';
+                cell.dataset.pathIndex = index;
+                
+                // Entry-Felder markieren
+                if (index === ENTRY_INDICES.red) cell.classList.add('entry-red');
+                if (index === ENTRY_INDICES.blue) cell.classList.add('entry-blue');
+                if (index === ENTRY_INDICES.green) cell.classList.add('entry-green');
+                if (index === ENTRY_INDICES.yellow) cell.classList.add('entry-yellow');
+                
+                const pos = getPixelPos(coord.col, coord.row);
+                cell.style.left = pos.left + 'px';
+                cell.style.top = pos.top + 'px';
+                
+                board.appendChild(cell);
+            });
+            
+            // 3. Home-Felder erstellen (Zielbahnen)
             Object.entries(HOME_COORDS).forEach(([color, coords]) => {
-                coords.forEach((coord, idx) => {
-                    const cell = board.querySelector(`[data-row="${coord[0]}"][data-col="${coord[1]}"]`);
-                    if (cell) {
-                        cell.dataset.homeIndex = idx;
-                    }
+                coords.forEach((coord, index) => {
+                    const cell = document.createElement('div');
+                    cell.className = `cell home-${color}`;
+                    cell.dataset.home = color;
+                    cell.dataset.homeIndex = index;
+                    
+                    const pos = getPixelPos(coord.col, coord.row);
+                    cell.style.left = pos.left + 'px';
+                    cell.style.top = pos.top + 'px';
+                    
+                    board.appendChild(cell);
                 });
             });
             
-            // Start-Indizes setzen
-            Object.entries(START_COORDS).forEach(([color, coords]) => {
-                coords.forEach((coord, idx) => {
-                    const cell = board.querySelector(`[data-row="${coord[0]}"][data-col="${coord[1]}"]`);
-                    if (cell) {
-                        cell.dataset.startIndex = idx;
-                    }
-                });
-            });
+            // 4. Mittelfeld erstellen
+            const center = document.createElement('div');
+            center.className = 'cell center';
+            const centerPos = getPixelPos(CENTER_COORD.col, CENTER_COORD.row);
+            center.style.left = centerPos.left + 'px';
+            center.style.top = centerPos.top + 'px';
+            board.appendChild(center);
         }
+
         
-        // UI Funktionen
+        // ============================================
+        // UI FUNKTIONEN
+        // ============================================
+        
         function showScreen(name) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.mp-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(name + 'Screen').classList.add('active');
         }
         
@@ -681,7 +807,10 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             document.getElementById('joinCard').style.display = 'block';
         }
         
-        // API Funktionen
+        // ============================================
+        // API FUNKTIONEN
+        // ============================================
+        
         async function createGame() {
             const res = await fetch(`${API_URL}?action=create`, {
                 method: 'POST',
@@ -755,7 +884,10 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             location.reload();
         }
         
-        // Polling
+        // ============================================
+        // POLLING
+        // ============================================
+        
         function startPolling() {
             if (pollInterval) clearInterval(pollInterval);
             pollInterval = setInterval(pollStatus, POLL_INTERVAL);
@@ -812,9 +944,14 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                         <span class="color-badge">${COLOR_EMOJIS[color]} ${COLOR_NAMES[color]}</span>
                     </div>`;
                 }
-                return `<div class="player-slot ${color}"><span style="color: var(--text-muted);">${COLOR_EMOJIS[color]} Frei</span></div>`;
+                return `<div class="player-slot ${color}"><span style="color: var(--mp-text-muted);">${COLOR_EMOJIS[color]} Frei</span></div>`;
             }).join('');
         }
+
+        
+        // ============================================
+        // SPIEL RENDERING
+        // ============================================
         
         function renderGame(data) {
             const board = document.getElementById('gameBoard');
@@ -842,57 +979,60 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                 </div>`;
             }).join('');
             
-            // Figuren entfernen
+            // Figuren entfernen (nur Figuren, nicht das Board!)
             board.querySelectorAll('.piece').forEach(p => p.remove());
             
-            // BUG-052 FIX: Figuren in Grid-Zellen platzieren
+            // Figuren rendern
             data.players.forEach(player => {
-                const pieces = player.pieces;
                 const color = player.color;
+                const pieces = player.pieces;
                 const isMyPiece = player.id == gameState.playerId;
+                
+                // DEBUG: Was sind die Positionen?
+                console.log(`[DEBUG] ${color} pieces:`, pieces);
                 
                 pieces.forEach((pos, pieceIdx) => {
                     const piece = document.createElement('div');
                     piece.className = `piece ${color}`;
                     piece.dataset.playerId = player.id;
                     piece.dataset.pieceIndex = pieceIdx;
-                    piece.style.position = 'relative';
                     
-                    let targetCell = null;
+                    let targetElement = null;
                     
                     if (pos < 0) {
                         // Im Startbereich (-1 bis -4)
                         const startIdx = Math.abs(pos) - 1;
-                        const coords = START_COORDS[color][startIdx];
-                        if (coords) {
-                            targetCell = board.querySelector(`[data-row="${coords[0]}"][data-col="${coords[1]}"]`);
-                        }
+                        // Neue Selector für Grid-basierte Startfelder
+                        targetElement = board.querySelector(`.cell.start-${color}[data-start-index="${startIdx}"]`);
+                        console.log(`[DEBUG] ${color} start pos=${pos}, startIdx=${startIdx}, found:`, !!targetElement);
                     } else if (pos >= 40) {
                         // Im Zielbereich (40-43)
                         const homeIdx = pos - 40;
-                        const coords = HOME_COORDS[color][homeIdx];
-                        if (coords) {
-                            targetCell = board.querySelector(`[data-row="${coords[0]}"][data-col="${coords[1]}"]`);
-                        }
+                        targetElement = board.querySelector(`[data-home="${color}"][data-home-index="${homeIdx}"]`);
                     } else {
                         // Auf dem Hauptweg (0-39)
-                        const coords = PATH_COORDS[pos];
-                        if (coords) {
-                            targetCell = board.querySelector(`[data-row="${coords[0]}"][data-col="${coords[1]}"]`);
-                        }
+                        targetElement = board.querySelector(`[data-path-index="${pos}"]`);
                     }
                     
-                    if (targetCell) {
-                        // Klickbar wenn mein Zug und kann ziehen
+                    if (targetElement) {
+                        // Figur klickbar machen wenn am Zug
                         if (isMyPiece && gameState.myTurn && gameState.canMove) {
                             piece.classList.add('selectable');
-                            piece.onclick = (e) => { e.stopPropagation(); selectPiece(pieceIdx); };
+                            piece.onclick = (e) => {
+                                e.stopPropagation();
+                                selectPiece(pieceIdx);
+                            };
                         }
-                        targetCell.appendChild(piece);
+                        
+                        targetElement.appendChild(piece);
                     }
                 });
             });
         }
+        
+        // ============================================
+        // SPIELAKTIONEN
+        // ============================================
         
         async function rollDice() {
             if (!gameState.myTurn || gameState.canMove) return;
@@ -937,6 +1077,10 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                 showToast(data.error || 'Ungültiger Zug', 'error');
             }
         }
+        
+        // ============================================
+        // HILFSFUNKTIONEN
+        // ============================================
         
         function escapeHtml(str) {
             if (!str) return '';
