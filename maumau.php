@@ -231,8 +231,30 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         /* Toast */
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; }
         .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: var(--red); color: white; }
-        .toast.info { background: var(--card-bg); border: 2px solid var(--accent); }
+        .toast.error { background: var(--mp-error); color: white; }
+        .toast.info { background: var(--mp-bg-card); border: 2px solid var(--mp-accent); }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 600px) {
+            .card { width: 55px; height: 85px; padding: 5px; }
+            .card .corner { font-size: 0.7rem; }
+            .card .center-symbol { font-size: 1.8rem; }
+            .card:hover { transform: translateY(-5px); }
+            .card.selected { transform: translateY(-10px); }
+            .my-hand { padding: 10px; }
+            .my-hand .card { margin-left: -30px; }
+            .center-pile { gap: 15px; padding: 15px 20px; }
+            .opponents { gap: 10px; }
+            .opponent { padding: 8px 10px; }
+            .sidebar { gap: 10px; }
+        }
+        
+        @media (max-width: 400px) {
+            .card { width: 45px; height: 70px; padding: 3px; }
+            .card .corner { font-size: 0.6rem; }
+            .card .center-symbol { font-size: 1.4rem; }
+            .my-hand .card { margin-left: -25px; }
+        }
     </style>
 </head>
 <body>

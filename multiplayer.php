@@ -626,6 +626,17 @@ $modules = [
             .options-grid { grid-template-columns: 1fr; }
             .menu-grid { grid-template-columns: 1fr; }
             .header { flex-direction: column; gap: 10px; }
+            .game-card { padding: 20px; }
+            .game-card h3 { font-size: 1rem; }
+            .icon { font-size: 2rem; }
+            .stats-bar { flex-wrap: wrap; gap: 15px; }
+            .stat { min-width: 60px; }
+        }
+        
+        @media (max-width: 400px) {
+            .stats-bar { justify-content: space-around; }
+            .stat { flex: 1 1 40%; text-align: center; }
+            .header-left, .header-right { width: 100%; justify-content: center; }
         }
     </style>
 </head>

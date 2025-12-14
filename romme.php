@@ -177,8 +177,27 @@ if (SessionManager::isLoggedIn()) {
         
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 12px; font-weight: 600; z-index: 1000; }
         .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: var(--red); color: white; }
-        .toast.info { background: var(--card-bg); border: 2px solid var(--accent); }
+        .toast.error { background: var(--mp-error); color: white; }
+        .toast.info { background: var(--mp-bg-card); border: 2px solid var(--mp-accent); }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 600px) {
+            .card { width: 45px; height: 68px; padding: 3px; margin-left: -18px; }
+            .card .corner { font-size: 0.55rem; }
+            .card .center { font-size: 1.3rem; }
+            .melds-area { padding: 10px; min-height: 90px; }
+            .meld { padding: 6px; gap: -12px; }
+            .pile-cards, .pile-cards .card-back { width: 50px; height: 72px; }
+            .piles-area { gap: 20px; }
+            .my-hand { padding: 10px; }
+            .sidebar { gap: 10px; }
+        }
+        
+        @media (max-width: 400px) {
+            .card { width: 38px; height: 58px; margin-left: -15px; }
+            .card .corner { font-size: 0.5rem; }
+            .card .center { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>

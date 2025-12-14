@@ -204,7 +204,29 @@ if (SessionManager::isLoggedIn()) {
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; }
         .toast.success { background: var(--accent); color: var(--primary); }
         .toast.error { background: #e74c3c; color: white; }
-        .toast.info { background: var(--card-bg); border: 2px solid var(--accent); }
+        .toast.info { background: var(--mp-bg-card); border: 2px solid var(--mp-accent); }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 500px) {
+            .board-area { padding: 10px; }
+            .board {
+                grid-template-columns: repeat(8, 38px);
+                grid-template-rows: repeat(8, 38px);
+            }
+            .cell { width: 38px; height: 38px; }
+            .piece { width: 30px; height: 30px; }
+            .sidebar { gap: 10px; }
+            .info-card { padding: 10px; }
+        }
+        
+        @media (max-width: 380px) {
+            .board {
+                grid-template-columns: repeat(8, 32px);
+                grid-template-rows: repeat(8, 32px);
+            }
+            .cell { width: 32px; height: 32px; }
+            .piece { width: 26px; height: 26px; }
+        }
     </style>
 </head>
 <body>

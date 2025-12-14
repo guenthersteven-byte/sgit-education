@@ -265,6 +265,62 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         }
         .result-icon { font-size: 5rem; margin-bottom: 15px; }
         .result-title { font-size: 2rem; margin-bottom: 10px; }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 500px) {
+            .board-area {
+                padding: 10px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .board {
+                width: 320px;
+                height: 320px;
+                transform-origin: top left;
+            }
+            .field {
+                width: 26px;
+                height: 26px;
+            }
+            .piece {
+                width: 20px;
+                height: 20px;
+            }
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+            .sidebar {
+                gap: 10px;
+            }
+            .info-card {
+                padding: 10px;
+            }
+            .players-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .player-slot {
+                padding: 10px;
+                min-height: auto;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .board {
+                width: 280px;
+                height: 280px;
+            }
+            .field {
+                width: 22px;
+                height: 22px;
+            }
+            .piece {
+                width: 16px;
+                height: 16px;
+            }
+        }
     </style>
 </head>
 <body class="mp-body">

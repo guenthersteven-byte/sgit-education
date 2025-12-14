@@ -1237,3 +1237,250 @@
     top: -10px;
     animation: mp-confetti 3s ease-out forwards;
 }
+
+
+/* ===========================================
+   24. SPRINT 3: Mobile Optimierung
+   =========================================== */
+
+/* ---- Touch-Target Optimierung ---- */
+@media (pointer: coarse) {
+    /* Mindestens 44px Touch-Target für alle interaktiven Elemente */
+    .mp-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .mp-input, .mp-select {
+        min-height: 48px;
+        font-size: 16px; /* Verhindert iOS Zoom */
+    }
+    
+    .mp-player-slot {
+        min-height: 60px;
+        padding: 12px;
+    }
+    
+    /* Größere Klickflächen für Spielelemente */
+    .mp-dice {
+        min-width: 70px;
+        min-height: 70px;
+    }
+}
+
+/* ---- Mobile Portrait (< 480px) ---- */
+@media (max-width: 480px) {
+    /* Base Layout */
+    .mp-container {
+        padding: 10px;
+    }
+    
+    /* Header kompakter */
+    .mp-header {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .mp-header__left,
+    .mp-header__right {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .mp-back-link {
+        font-size: 0.85rem;
+    }
+    
+    /* User Info Badge kompakter */
+    .mp-user-info {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .mp-user-info__avatar {
+        font-size: 20px;
+    }
+    
+    /* Cards */
+    .mp-card {
+        padding: 15px;
+        border-radius: 12px;
+    }
+    
+    /* Buttons volle Breite */
+    .mp-btn {
+        width: 100%;
+        padding: 14px 20px;
+    }
+    
+    .mp-btn--small {
+        padding: 10px 16px;
+    }
+    
+    /* Toast zentriert */
+    .mp-toast {
+        left: 10px;
+        right: 10px;
+        transform: translateX(0) translateY(-100px);
+        text-align: center;
+    }
+    
+    .mp-toast.show {
+        transform: translateX(0) translateY(0);
+    }
+    
+    /* Spieler-Liste vertikal */
+    .mp-players-list {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .mp-player-slot {
+        width: 100%;
+    }
+}
+
+
+/* ---- Spiel-spezifische Mobile Styles ---- */
+
+/* Spielbrett-Container (MADN, Dame, Schach) */
+@media (max-width: 480px) {
+    .mp-board-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+    }
+    
+    /* Sidebar unter dem Spielfeld */
+    .mp-game-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .mp-game-sidebar {
+        order: 2;
+    }
+    
+    .mp-game-main {
+        order: 1;
+    }
+}
+
+/* Karten-Spiele (Poker, Mau Mau, Rommé) */
+@media (max-width: 480px) {
+    /* Karten kleiner auf Mobile */
+    .mp-card-mobile {
+        width: 50px !important;
+        height: 75px !important;
+        font-size: 0.5rem !important;
+    }
+    
+    .mp-card-mobile .center,
+    .mp-card-mobile .center-symbol {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Hand-Karten überlappend */
+    .mp-hand-mobile {
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .mp-hand-mobile .card {
+        margin-left: -25px;
+        flex-shrink: 0;
+    }
+    
+    .mp-hand-mobile .card:first-child {
+        margin-left: 0;
+    }
+}
+
+/* Würfel Mobile */
+@media (max-width: 480px) {
+    .mp-dice {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+}
+
+/* ---- Mobile Landscape (< 768px height) ---- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .mp-header {
+        padding: 8px 15px;
+    }
+    
+    .mp-header__title {
+        font-size: 1rem;
+    }
+    
+    .mp-lobby {
+        margin: 10px auto;
+    }
+    
+    .mp-card {
+        padding: 12px;
+    }
+}
+
+/* ---- Tablet (481px - 768px) ---- */
+@media (min-width: 481px) and (max-width: 768px) {
+    .mp-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    .mp-header {
+        padding: 12px 15px;
+    }
+    
+    /* 2-Spalten Grid für Spieler */
+    .mp-players-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    /* Game Layout 2-Spalten */
+    .mp-game-layout {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 15px;
+    }
+}
+
+/* ---- Desktop (> 768px) ---- */
+@media (min-width: 769px) {
+    .mp-container {
+        max-width: 1100px;
+        padding: 20px;
+    }
+    
+    /* Hover-Effekte nur auf Desktop */
+    .mp-card--clickable:hover {
+        transform: translateY(-5px);
+    }
+    
+    .mp-btn:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* ---- Safe Area für Notch-Geräte ---- */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .mp-container {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .mp-toast {
+        bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+}

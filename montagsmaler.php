@@ -498,7 +498,48 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         }
         .toast.success { background: var(--accent); color: var(--primary); }
         .toast.error { background: var(--error); color: white; }
-        .toast.info { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
+        .toast.info { background: var(--mp-bg-card); color: var(--mp-text); border: 2px solid var(--mp-accent); }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 800px) {
+            .game-layout { grid-template-columns: 1fr; }
+            .sidebar { order: 2; }
+        }
+        
+        @media (max-width: 500px) {
+            .canvas-container { padding: 10px; }
+            #drawCanvas { 
+                max-width: 100%; 
+                height: auto;
+                touch-action: none;
+            }
+            .toolbar { 
+                flex-wrap: wrap; 
+                gap: 8px;
+                padding: 10px;
+            }
+            .toolbar button, .color-btn {
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .brush-size { width: 80px; }
+            .guess-input { padding: 12px; font-size: 16px; }
+            .timer { font-size: 2rem; }
+            .word-display { font-size: 1.5rem; letter-spacing: 6px; }
+            .players-list { gap: 8px; }
+            .player-card { padding: 10px; min-width: 100px; }
+        }
+        
+        /* Touch-Optimierung für Canvas */
+        @media (pointer: coarse) {
+            #drawCanvas {
+                touch-action: none;
+            }
+            .color-btn {
+                width: 36px;
+                height: 36px;
+            }
+        }
     </style>
 </head>
 <body>

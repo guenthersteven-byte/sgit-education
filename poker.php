@@ -226,8 +226,30 @@ if (SessionManager::isLoggedIn()) {
         
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 12px; font-weight: 600; z-index: 1000; }
         .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: var(--red); color: white; }
-        .toast.info { background: var(--card-bg); border: 2px solid var(--accent); }
+        .toast.error { background: var(--mp-error); color: white; }
+        .toast.info { background: var(--mp-bg-card); border: 2px solid var(--mp-accent); }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 600px) {
+            .poker-table {
+                min-height: 250px;
+                padding: 15px;
+            }
+            .card { width: 35px; height: 50px; font-size: 0.5rem; }
+            .card.large { width: 45px; height: 65px; font-size: 0.6rem; }
+            .card .center { font-size: 1rem; }
+            .card.large .center { font-size: 1.3rem; }
+            .player-seat { padding: 5px; min-width: 70px; }
+            .player-seat .name { font-size: 0.7rem; }
+            .actions-panel { padding: 10px; gap: 8px; }
+            .btn { padding: 10px 16px; font-size: 0.9rem; }
+        }
+        
+        @media (max-width: 400px) {
+            .card { width: 30px; height: 45px; }
+            .card.large { width: 38px; height: 55px; }
+            .player-seat { min-width: 60px; }
+        }
     </style>
 </head>
 <body>
