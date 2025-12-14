@@ -740,12 +740,12 @@ $modules = [
                         <div class="menu-desc">Das Kartenspiel für 2-4 Spieler!</div>
                         <span style="position: absolute; top: 10px; right: 10px; background: var(--accent); color: var(--bg-dark); padding: 2px 8px; border-radius: 10px; font-size: 11px;">NEU</span>
                     </a>
-                    <div class="menu-card" style="opacity: 0.5; cursor: not-allowed;">
+                    <a href="/dame.php" class="menu-card" style="text-decoration: none; color: inherit;">
                         <div class="menu-icon">⚫</div>
                         <div class="menu-title">Dame</div>
-                        <div class="menu-desc">Bald verfügbar...</div>
-                        <span style="position: absolute; top: 10px; right: 10px; background: var(--text-dim); color: var(--bg-dark); padding: 2px 8px; border-radius: 10px; font-size: 11px;">SOON</span>
-                    </div>
+                        <div class="menu-desc">Klassiker für 2 Spieler!</div>
+                        <span style="position: absolute; top: 10px; right: 10px; background: var(--accent); color: var(--bg-dark); padding: 2px 8px; border-radius: 10px; font-size: 11px;">NEU</span>
+                    </a>
                     <div class="menu-card" style="opacity: 0.5; cursor: not-allowed;">
                         <div class="menu-icon">♟️</div>
                         <div class="menu-title">Schach</div>
