@@ -736,7 +736,8 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             status: 'lobby',
             currentWord: null,
             players: [],
-            guesses: []
+            guesses: [],
+            roundEnded: false  // BUG-049 FIX
         };
         
         let playerName = '<?php echo addslashes($userName); ?>';
@@ -1110,6 +1111,26 @@ elseif (isset($_SESSION['wallet_child_id'])) {
                     // Timer aktualisieren
                     timeLeft = game.time_left;
                     updateTimerDisplay();
+                    
+                    // BUG-049 FIX: Prüfen ob Runde bereits erraten wurde
+                    if (game.round_guessed && !gameState.roundEnded) {
+                        gameState.roundEnded = true;
+                        clearInterval(timerInterval);
+                        showToast(`🎉 ${game.round_guessed_by || 'Jemand'} hat es erraten!`, 'success');
+                        
+                        if (gameState.isHost) {
+                            // Host startet nächste Runde nach kurzer Pause
+                            setTimeout(() => {
+                                gameState.roundEnded = false;
+                                nextRound();
+                            }, 3000);
+                        }
+                    }
+                    
+                    // Reset roundEnded bei neuer Runde
+                    if (!game.round_guessed) {
+                        gameState.roundEnded = false;
+                    }
                 }
                 else if (game.status === 'finished') {
                     showScreen('result');

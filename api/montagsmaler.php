@@ -352,6 +352,20 @@ function getGameStatus($db, $params) {
     // Wort-Länge für alle (als Hinweis)
     $wordLength = $game['current_word'] ? strlen($game['current_word']) : 0;
     
+    // BUG-049 FIX: Prüfen ob Runde bereits erraten wurde
+    $roundGuessed = false;
+    $roundGuessedBy = null;
+    if ($game['status'] === 'playing') {
+        $correctGuess = $db->querySingle("SELECT g.*, p.player_name FROM guesses g 
+            JOIN game_players p ON g.player_id = p.id 
+            WHERE g.game_id = $gameId AND g.round = {$game['current_round']} AND g.is_correct = 1 
+            LIMIT 1", true);
+        if ($correctGuess) {
+            $roundGuessed = true;
+            $roundGuessedBy = $correctGuess['player_name'];
+        }
+    }
+    
     return [
         'success' => true,
         'game' => [
@@ -365,7 +379,9 @@ function getGameStatus($db, $params) {
             'current_drawer_id' => $game['current_drawer_id'],
             'word_length' => $wordLength,
             'current_word' => $currentWord,
-            'drawing_data' => $game['drawing_data']
+            'drawing_data' => $game['drawing_data'],
+            'round_guessed' => $roundGuessed,
+            'round_guessed_by' => $roundGuessedBy
         ],
         'players' => $players,
         'guesses' => array_reverse($guesses),
