@@ -127,7 +127,8 @@ if (SessionManager::isLoggedIn()) {
         }
         .cell.light { background: var(--light-sq); }
         .cell.dark { background: var(--dark-sq); }
-        .cell.selected { box-shadow: inset 0 0 0 4px var(--accent); }
+        .cell.selected { box-shadow: inset 0 0 0 4px var(--mp-accent); }
+        .cell.valid-move { animation: mp-fieldPulse 1s ease infinite; }
         .cell.valid-move::after {
             content: ''; position: absolute;
             width: 18px; height: 18px; background: var(--highlight); border-radius: 50%;
@@ -136,11 +137,13 @@ if (SessionManager::isLoggedIn()) {
             width: 44px; height: 44px; background: transparent;
             border: 4px solid var(--highlight); border-radius: 50%;
         }
-        .cell.check { background: var(--check) !important; }
+        .cell.check { background: var(--check) !important; animation: mp-shake 0.3s ease; }
         .cell.last-move { background: rgba(255, 255, 0, 0.3); }
         
-        .piece { cursor: pointer; transition: transform 0.1s; }
+        .piece { cursor: pointer; transition: var(--mp-transition); }
         .piece:hover { transform: scale(1.1); }
+        .piece.moving { animation: mp-pieceMove 0.4s ease; }
+        .piece.captured { animation: mp-pieceCapture 0.5s ease forwards; }
         .piece.white { filter: drop-shadow(1px 1px 1px #333); }
         .piece.black { filter: drop-shadow(1px 1px 1px #000); }
         

@@ -158,7 +158,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         .deck-pile .card-back:nth-child(3) { top: 4px; left: 4px; }
         .deck-count { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: var(--text-muted); }
         
-        /* Spielkarten */
+        /* Spielkarten - mit Animationen aus multiplayer-theme.css */
         .card {
             width: 80px;
             height: 120px;
@@ -170,17 +170,18 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             justify-content: space-between;
             padding: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--mp-transition);
             position: relative;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .card:hover { transform: translateY(-10px); }
+        .card.deal { animation: mp-cardDeal 0.3s ease-out forwards; }
         .card.red { color: #e74c3c; }
         .card.black { color: #2c3e50; }
         .card .corner { font-size: 0.9rem; line-height: 1; }
         .card .corner-bottom { align-self: flex-end; transform: rotate(180deg); }
         .card .center-symbol { font-size: 2.5rem; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; }
-        .card.playable { border-color: var(--accent); box-shadow: 0 0 15px rgba(67, 210, 64, 0.5); }
+        .card.playable { border-color: var(--mp-accent); box-shadow: 0 0 15px var(--mp-accent-glow); animation: mp-fieldPulse 1.5s ease infinite; }
         .card.selected { transform: translateY(-20px); border-color: #f39c12; }
         
         .my-hand {

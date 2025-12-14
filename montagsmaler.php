@@ -275,17 +275,17 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             font-size: 0.9rem;
             color: var(--text-muted);
         }
-        .round-info strong { color: var(--accent); }
+        .round-info strong { color: var(--mp-accent); }
         .timer {
             background: var(--bg);
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
             font-size: 1.2rem;
+            transition: var(--mp-transition);
         }
-        .timer.warning { color: var(--warning); }
-        .timer.danger { color: var(--error); animation: pulse 0.5s infinite; }
-        @keyframes pulse { 50% { opacity: 0.5; } }
+        .timer.warning { color: var(--mp-warning); }
+        .timer.danger { color: var(--mp-error); animation: mp-timerWarning 0.5s infinite; }
         
         .word-display {
             text-align: center;
@@ -295,11 +295,11 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             margin-bottom: 10px;
         }
         .word-display.drawer {
-            background: linear-gradient(135deg, var(--primary), var(--card-bg));
-            border: 2px solid var(--accent);
+            background: linear-gradient(135deg, var(--mp-primary), var(--mp-bg-card));
+            border: 2px solid var(--mp-accent);
         }
         .word-label { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 5px; }
-        .word-text { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
+        .word-text { font-size: 1.8rem; font-weight: bold; color: var(--mp-accent); animation: mp-wordReveal 0.5s ease-out; }
         .word-hint {
             font-size: 1.5rem;
             letter-spacing: 5px;
@@ -407,14 +407,16 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             border-radius: 8px;
             background: rgba(255,255,255,0.05);
             font-size: 0.9rem;
+            animation: mp-fadeIn 0.3s ease-out;
         }
         .guess-item.correct {
-            background: rgba(67, 210, 64, 0.3);
-            border: 1px solid var(--accent);
+            background: var(--mp-success-bg);
+            border: 1px solid var(--mp-accent);
+            animation: mp-correctFlash 0.5s ease, mp-fadeIn 0.3s ease-out;
         }
-        .guess-item .player { color: var(--accent); font-weight: 600; }
+        .guess-item .player { color: var(--mp-accent); font-weight: 600; }
         .guess-item .text { color: var(--text); }
-        .guess-item .points { color: var(--warning); font-size: 0.8rem; }
+        .guess-item .points { color: var(--mp-warning); font-size: 0.8rem; animation: mp-scorePop 0.4s ease; }
         
         .guess-input-area {
             display: flex;

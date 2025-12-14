@@ -131,7 +131,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--mp-transition);
             font-size: 1.4rem;
         }
         .field:hover { transform: scale(1.1); }
@@ -147,7 +147,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .field.entry-blue { border-color: var(--mp-player-blue); border-width: 3px; }
         .field.entry-green { border-color: var(--mp-player-green); border-width: 3px; }
         .field.entry-yellow { border-color: var(--mp-player-yellow); border-width: 3px; }
-        .field.can-move { animation: pulse 0.8s infinite; box-shadow: 0 0 10px var(--mp-accent-glow); }
+        .field.can-move { animation: mp-fieldPulse 0.8s ease infinite; }
         @keyframes pulse { 50% { transform: scale(1.15); } }
         
         .piece {
@@ -157,15 +157,16 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             border: 3px solid #333;
             position: absolute;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--mp-transition);
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
         .piece.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .piece.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
         .piece.green { background: linear-gradient(135deg, #27ae60, #1e8449); }
         .piece.yellow { background: linear-gradient(135deg, #f1c40f, #d4ac0d); }
-        .piece.selectable { animation: bounce 0.5s infinite; }
-        @keyframes bounce { 50% { transform: translateY(-5px); } }
+        .piece.selectable { animation: mp-bounce 0.5s ease infinite; }
+        .piece.moving { animation: mp-pieceMove 0.4s ease; }
+        .piece.captured { animation: mp-pieceCapture 0.5s ease forwards; }
         
         /* Sidebar */
         .sidebar {
@@ -190,7 +191,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .turn-indicator .player { font-size: 1.3rem; font-weight: bold; margin-top: 5px; }
         .turn-indicator.my-turn { border: 2px solid var(--mp-accent); }
         
-        /* Würfel */
+        /* Würfel - nutzt zentrale mp-diceRoll Animation */
         .dice-area { text-align: center; padding: 20px; }
         .dice {
             width: 80px;
@@ -206,17 +207,10 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             margin: 15px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--mp-transition);
         }
         .dice:hover { transform: rotate(10deg) scale(1.05); }
-        .dice.rolling { animation: roll 0.3s infinite; }
-        @keyframes roll {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(90deg); }
-            50% { transform: rotate(180deg); }
-            75% { transform: rotate(270deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .dice.rolling { animation: mp-diceRoll 0.3s linear infinite; }
         .dice-dots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; }
         .dot {
             width: 14px;

@@ -146,12 +146,13 @@ if (SessionManager::isLoggedIn()) {
         }
         .cell.light { background: var(--light-square); }
         .cell.dark { background: var(--dark-square); }
-        .cell.selected { box-shadow: inset 0 0 0 3px var(--accent); }
+        .cell.selected { box-shadow: inset 0 0 0 3px var(--mp-accent); }
+        .cell.valid-move { animation: mp-fieldPulse 1s ease infinite; }
         .cell.valid-move::after {
             content: '';
             width: 20px;
             height: 20px;
-            background: rgba(67, 210, 64, 0.5);
+            background: var(--mp-accent-glow);
             border-radius: 50%;
             position: absolute;
         }
@@ -167,10 +168,12 @@ if (SessionManager::isLoggedIn()) {
             border-radius: 50%;
             cursor: pointer;
             position: relative;
-            transition: transform 0.2s;
+            transition: var(--mp-transition);
             box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
         .piece:hover { transform: scale(1.1); }
+        .piece.moving { animation: mp-pieceMove 0.4s ease; }
+        .piece.captured { animation: mp-pieceCapture 0.5s ease forwards; }
         .piece.black { background: linear-gradient(135deg, #2c2c2c, #1a1a1a); border: 3px solid #444; }
         .piece.white { background: linear-gradient(135deg, #f5f5f5, #d0d0d0); border: 3px solid #999; }
         .piece.king::after {

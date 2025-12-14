@@ -128,20 +128,22 @@ if (SessionManager::isLoggedIn()) {
         .pile-count { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
         
         /* Cards */
+        /* Cards - mit Animationen aus multiplayer-theme.css */
         .card {
             width: 60px; height: 90px;
             background: var(--card-white);
             border-radius: 6px; border: 2px solid #ccc;
             display: flex; flex-direction: column;
             justify-content: space-between; padding: 5px;
-            cursor: pointer; transition: all 0.15s;
+            cursor: pointer; transition: var(--mp-transition);
             position: relative; flex-shrink: 0;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             margin-left: -25px;
         }
         .card:first-child { margin-left: 0; }
         .card:hover { transform: translateY(-8px); z-index: 10; }
-        .card.selected { transform: translateY(-15px); border-color: var(--accent); box-shadow: 0 0 15px rgba(67, 210, 64, 0.5); z-index: 11; }
+        .card.deal { animation: mp-cardDeal 0.3s ease-out forwards; }
+        .card.selected { transform: translateY(-15px); border-color: var(--mp-accent); box-shadow: 0 0 15px var(--mp-accent-glow); z-index: 11; }
         .card.red { color: #c0392b; }
         .card.black { color: #2c3e50; }
         .card .corner { font-size: 0.7rem; line-height: 1; }

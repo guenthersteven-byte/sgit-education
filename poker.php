@@ -159,7 +159,7 @@ if (SessionManager::isLoggedIn()) {
         
         .hole-cards { display: flex; gap: 4px; justify-content: center; margin-top: 5px; }
         
-        /* Cards */
+        /* Cards - mit Animationen aus multiplayer-theme.css */
         .card {
             width: 45px; height: 65px;
             background: var(--card-white);
@@ -168,7 +168,10 @@ if (SessionManager::isLoggedIn()) {
             justify-content: space-between; padding: 3px;
             font-size: 0.6rem;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            transition: var(--mp-transition);
         }
+        .card:hover { transform: translateY(-5px); }
+        .card.deal { animation: mp-cardDeal 0.3s ease-out forwards; }
         .card.large { width: 55px; height: 80px; font-size: 0.7rem; }
         .card.red { color: #c0392b; }
         .card.black { color: #2c3e50; }
@@ -180,7 +183,9 @@ if (SessionManager::isLoggedIn()) {
             width: 45px; height: 65px;
             background: linear-gradient(135deg, #1a5f2a, #0d3015);
             border-radius: 5px; border: 2px solid #2a7f3a;
+            transition: var(--mp-transition);
         }
+        .card-back:hover { transform: scale(1.05); }
         .card-back.large { width: 55px; height: 80px; }
         
         /* Actions */
