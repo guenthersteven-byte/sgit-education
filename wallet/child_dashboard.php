@@ -73,6 +73,7 @@ $categories = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mein Dashboard - sgiT Education</title>
     <style>
+        /* BUG-057 FIX: Dark Mode für Child Dashboard */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -83,13 +84,19 @@ $categories = [
             --silver: #C0C0C0;
             --bronze: #CD7F32;
             --master: #9B59B6;
+            --bg-dark: #0d1a02;
+            --card-bg: rgba(0, 0, 0, 0.3);
+            --border: rgba(67, 210, 64, 0.3);
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
         }
         
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--primary), #2d5a06);
+            background: linear-gradient(135deg, var(--bg-dark), var(--primary));
             min-height: 100vh;
             padding: 20px;
+            color: var(--text);
         }
         
         .container {
@@ -99,7 +106,8 @@ $categories = [
         
         /* Header */
         .header {
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 25px 30px;
             margin-bottom: 25px;
@@ -108,7 +116,7 @@ $categories = [
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
         
         .user-info {
@@ -129,7 +137,7 @@ $categories = [
         }
         
         .user-details h1 {
-            color: var(--primary);
+            color: var(--accent);
             font-size: 24px;
             margin-bottom: 5px;
         }
@@ -138,7 +146,7 @@ $categories = [
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #666;
+            color: var(--text-muted);
         }
         
         .streak-fire {
@@ -170,13 +178,14 @@ $categories = [
         }
         
         .btn-secondary {
-            background: #f0f0f0;
-            color: var(--primary);
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         /* Stats Grid */
@@ -188,11 +197,12 @@ $categories = [
         }
         
         .stat-card {
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 25px;
             text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
         }
@@ -219,18 +229,18 @@ $categories = [
         .stat-value {
             font-size: 32px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         .stat-label {
             font-size: 14px;
-            color: #666;
+            color: var(--text-muted);
             margin-top: 5px;
         }
         
         .stat-sub {
             font-size: 12px;
-            color: #999;
+            color: var(--text-muted);
             margin-top: 8px;
         }
         
@@ -262,11 +272,12 @@ $categories = [
         
         /* Achievement Section */
         .section {
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
         
         .section-header {
@@ -275,11 +286,11 @@ $categories = [
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid var(--border);
         }
         
         .section-title {
-            color: var(--primary);
+            color: var(--accent);
             font-size: 22px;
             display: flex;
             align-items: center;
@@ -308,7 +319,7 @@ $categories = [
         }
         
         .progress-ring .bg {
-            stroke: #e0e0e0;
+            stroke: rgba(255,255,255,0.1);
         }
         
         .progress-ring .progress {
@@ -324,7 +335,7 @@ $categories = [
             transform: translate(-50%, -50%);
             font-size: 14px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         /* Category Tabs */
@@ -337,9 +348,10 @@ $categories = [
         
         .tab-btn {
             padding: 10px 20px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border);
             border-radius: 25px;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text);
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
@@ -359,7 +371,7 @@ $categories = [
         }
         
         .tab-btn .count {
-            background: rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.1);
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 12px;
@@ -377,21 +389,22 @@ $categories = [
         }
         
         .achievement-card {
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border);
             border-radius: 16px;
             padding: 20px;
             position: relative;
             transition: all 0.3s;
+            background: rgba(0,0,0,0.2);
         }
         
         .achievement-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         
         .achievement-card.unlocked {
             border-color: var(--accent);
-            background: linear-gradient(135deg, #f0fff0, white);
+            background: rgba(67, 210, 64, 0.1);
         }
         
         .achievement-card.locked {
@@ -415,14 +428,14 @@ $categories = [
         }
         
         .achievement-info h3 {
-            color: var(--primary);
+            color: var(--accent);
             font-size: 16px;
             margin-bottom: 5px;
         }
         
         .achievement-info p {
             font-size: 13px;
-            color: #666;
+            color: var(--text-muted);
         }
         
         .achievement-tier {
@@ -442,7 +455,7 @@ $categories = [
         
         .achievement-progress-bar {
             height: 8px;
-            background: #e0e0e0;
+            background: rgba(255,255,255,0.1);
             border-radius: 4px;
             overflow: hidden;
             margin-top: 15px;
@@ -501,7 +514,7 @@ $categories = [
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border);
         }
         
         .transaction-item:last-child {
@@ -524,19 +537,19 @@ $categories = [
             font-size: 18px;
         }
         
-        .transaction-icon.earn { background: #E8F5E9; }
-        .transaction-icon.bonus { background: #FFF3E0; }
-        .transaction-icon.withdraw { background: #FFEBEE; }
+        .transaction-icon.earn { background: rgba(67, 210, 64, 0.2); }
+        .transaction-icon.bonus { background: rgba(247, 147, 26, 0.2); }
+        .transaction-icon.withdraw { background: rgba(220, 53, 69, 0.2); }
         
         .transaction-details h4 {
             font-size: 14px;
-            color: var(--primary);
+            color: var(--text);
             margin-bottom: 3px;
         }
         
         .transaction-details span {
             font-size: 12px;
-            color: #999;
+            color: var(--text-muted);
         }
         
         .transaction-amount {

@@ -51,13 +51,64 @@ if (!$isLoggedIn) {
         <meta charset="UTF-8">
         <title>🔐 Bot Dashboard - Login</title>
         <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1A3503, #2d5a06); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
-            .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; }
-            h1 { color: #1A3503; margin-bottom: 30px; }
-            input[type="password"] { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
-            button { background: #43D240; color: white; border: none; padding: 15px 40px; border-radius: 8px; font-size: 16px; cursor: pointer; }
-            button:hover { background: #3ab837; }
-            .error { color: #dc3545; margin-bottom: 20px; }
+            /* BUG-058 FIX: Dark Mode für Login */
+            body { 
+                font-family: 'Segoe UI', Arial, sans-serif; 
+                background: linear-gradient(135deg, #0d1a02, #1A3503); 
+                min-height: 100vh; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                margin: 0; 
+            }
+            .login-box { 
+                background: rgba(0, 0, 0, 0.4); 
+                border: 1px solid rgba(67, 210, 64, 0.3);
+                padding: 40px; 
+                border-radius: 20px; 
+                box-shadow: 0 20px 60px rgba(0,0,0,0.5); 
+                text-align: center; 
+                max-width: 400px; 
+            }
+            h1 { color: #43D240; margin-bottom: 30px; }
+            input[type="password"] { 
+                width: 100%; 
+                padding: 15px; 
+                border: 2px solid rgba(67, 210, 64, 0.3); 
+                border-radius: 8px; 
+                font-size: 16px; 
+                margin-bottom: 20px; 
+                background: rgba(0, 0, 0, 0.3);
+                color: #ffffff;
+            }
+            input[type="password"]::placeholder { color: #aaa; }
+            input[type="password"]:focus { 
+                outline: none; 
+                border-color: #43D240; 
+                box-shadow: 0 0 10px rgba(67, 210, 64, 0.3);
+            }
+            button { 
+                background: linear-gradient(135deg, #43D240, #35B035); 
+                color: white; 
+                border: none; 
+                padding: 15px 40px; 
+                border-radius: 8px; 
+                font-size: 16px; 
+                cursor: pointer; 
+                transition: all 0.3s;
+            }
+            button:hover { 
+                background: linear-gradient(135deg, #35B035, #2d9a2d); 
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(67, 210, 64, 0.3);
+            }
+            .error { 
+                color: #e74c3c; 
+                margin-bottom: 20px; 
+                padding: 10px;
+                background: rgba(231, 76, 60, 0.1);
+                border-radius: 8px;
+            }
         </style>
     </head>
     <body>

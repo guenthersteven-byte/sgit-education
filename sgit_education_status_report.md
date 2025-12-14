@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.46.1 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
+**Version:** 3.47.0 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
 
 ---
 
@@ -136,25 +136,27 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Ursache** | Vermutlich fehlende Logik nach beidseitigem Check zum Phasenwechsel |
 | **Aufwand** | ~1h |
 
-### 🔴 BUG-057: Child Dashboard - Kein Dark Mode - OFFEN
+### ✅ BUG-057: Child Dashboard - Dark Mode - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | MITTEL |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
-| **Symptom** | Dashboard hat hellen/orangen Header, kein einheitliches Dark Theme |
+| **Behoben** | 14.12.2025 ✅ |
+| **Symptom** | Dashboard hatte hellen/orangen Header, kein einheitliches Dark Theme |
 | **Datei** | `/wallet/child_dashboard.php` |
-| **Aufwand** | ~1h |
+| **Fix** | Komplettes CSS auf Dark Theme umgestellt (card-bg, border, text-muted) |
+| **Aufwand** | ~30min |
 
-### 🔴 BUG-058: Bot Dashboard Login - Kein Dark Mode - OFFEN
+### ✅ BUG-058: Bot Dashboard Login - Dark Mode - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | NIEDRIG |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
-| **Symptom** | Login-Box ist weiß statt Dark Theme |
+| **Behoben** | 14.12.2025 ✅ |
+| **Symptom** | Login-Box war weiß statt Dark Theme |
 | **Datei** | `/bots/bot_summary.php` |
-| **Aufwand** | ~30min |
+| **Fix** | Login-Box auf Dark Theme umgestellt (rgba backgrounds, accent colors) |
+| **Aufwand** | ~15min |
 
 ### ✅ BUG-059: Backup Manager - "NaN undefined" bei Quellcode-Größe - BEHOBEN
 | Info | Details |
@@ -189,15 +191,16 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Datei** | `/auto_generator.php` |
 | **Aufwand** | ~2h |
 
-### 🟡 FEATURE-002: Wallet Admin - Dark Mode - OFFEN
+### ✅ FEATURE-002: Wallet Admin - Dark Mode - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | MITTEL |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
+| **Behoben** | 14.12.2025 ✅ |
 | **Wunsch** | Wallet Admin Header ist orange/hell, soll Dark Mode sein |
 | **Datei** | `/wallet/wallet_admin.php` |
-| **Aufwand** | ~1h |
+| **Fix** | Komplettes CSS auf Dark Theme umgestellt (CSS Variablen, Karten, Formulare) |
+| **Aufwand** | ~25min |
 
 ### 🟡 FEATURE-003: Wallet - Sats zu EUR/USD Umrechnung - OFFEN
 | Info | Details |

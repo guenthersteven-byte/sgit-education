@@ -199,13 +199,29 @@ function getCategoryIcon($category) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>₿ Wallet Admin - sgiT Education</title>
     <style>
+        /* FEATURE-002 FIX: Dark Mode für Wallet Admin */
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --primary: #1A3503;
+            --accent: #43D240;
+            --bitcoin: #f7931a;
+            --bg-dark: #0d1a02;
+            --card-bg: rgba(0, 0, 0, 0.3);
+            --border: rgba(67, 210, 64, 0.3);
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --success: #28a745;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
         
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #1A3503 0%, #2d5a06 100%);
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary) 100%);
             min-height: 100vh;
             padding: 20px;
+            color: var(--text);
         }
         
         .container {
@@ -215,7 +231,8 @@ function getCategoryIcon($category) {
         
         /* Header */
         .header {
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 20px;
@@ -227,13 +244,13 @@ function getCategoryIcon($category) {
         }
         
         .header h1 {
-            color: #1A3503;
+            color: var(--accent);
             display: flex;
             align-items: center;
             gap: 15px;
         }
         
-        .header h1 .btc { color: #f7931a; }
+        .header h1 .btc { color: var(--bitcoin); }
         .admin-badge {
             background: #F44336;
             color: white;
@@ -276,9 +293,9 @@ function getCategoryIcon($category) {
             margin-bottom: 20px;
         }
         
-        .message.success { background: #d4edda; color: #155724; }
-        .message.error { background: #f8d7da; color: #721c24; }
-        .message.info { background: #d1ecf1; color: #0c5460; }
+        .message.success { background: rgba(40, 167, 69, 0.2); color: #5cb85c; border: 1px solid rgba(40, 167, 69, 0.3); }
+        .message.error { background: rgba(220, 53, 69, 0.2); color: #e74c3c; border: 1px solid rgba(220, 53, 69, 0.3); }
+        .message.info { background: rgba(23, 162, 184, 0.2); color: #5bc0de; border: 1px solid rgba(23, 162, 184, 0.3); }
         
         /* Grid Layout */
         .grid {
@@ -294,18 +311,19 @@ function getCategoryIcon($category) {
         
         /* Cards */
         .card {
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
         .card h2 {
-            color: #1A3503;
+            color: var(--accent);
             font-size: 18px;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #43D240;
+            border-bottom: 2px solid var(--border);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -344,7 +362,7 @@ function getCategoryIcon($category) {
         }
         
         .stat-item {
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.2);
             padding: 15px;
             border-radius: 10px;
             text-align: center;
@@ -353,12 +371,12 @@ function getCategoryIcon($category) {
         .stat-item .value {
             font-size: 24px;
             font-weight: bold;
-            color: #1A3503;
+            color: var(--accent);
         }
         
         .stat-item .label {
-            font-size: 11px;
-            color: #666;
+            font-size: 12px;
+            color: var(--text-muted);
         }
         
         /* Child Cards */
@@ -367,7 +385,8 @@ function getCategoryIcon($category) {
             align-items: center;
             gap: 15px;
             padding: 15px;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
             border-radius: 12px;
             margin-bottom: 10px;
         }
@@ -379,7 +398,7 @@ function getCategoryIcon($category) {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 50%;
         }
         
@@ -389,18 +408,18 @@ function getCategoryIcon($category) {
         
         .child-name {
             font-weight: bold;
-            color: #1A3503;
+            color: var(--text);
         }
         
         .child-balance {
-            color: #f7931a;
+            color: var(--bitcoin);
             font-size: 20px;
             font-weight: bold;
         }
         
         .child-streak {
             font-size: 12px;
-            color: #666;
+            color: var(--text-muted);
         }
         
         /* Achievement Übersicht */
@@ -429,12 +448,12 @@ function getCategoryIcon($category) {
         .achievement-donut-percent {
             font-size: 28px;
             font-weight: bold;
-            color: #1A3503;
+            color: var(--accent);
         }
         
         .achievement-donut-label {
             font-size: 11px;
-            color: #666;
+            color: var(--text-muted);
         }
         
         .category-progress {
@@ -459,7 +478,7 @@ function getCategoryIcon($category) {
         .category-bar {
             flex: 1;
             height: 8px;
-            background: #e0e0e0;
+            background: rgba(255,255,255,0.1);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -472,7 +491,7 @@ function getCategoryIcon($category) {
         
         .category-count {
             font-size: 11px;
-            color: #666;
+            color: var(--text-muted);
             width: 40px;
             text-align: right;
         }
@@ -495,14 +514,15 @@ function getCategoryIcon($category) {
             font-weight: 600;
         }
         
-        .achievement-badge.bronze { background: #FFF3E0; color: #CD7F32; }
-        .achievement-badge.silver { background: #F5F5F5; color: #666; }
-        .achievement-badge.gold { background: #FFFDE7; color: #F9A825; }
-        .achievement-badge.master { background: #F3E5F5; color: #7B1FA2; }
+        .achievement-badge.bronze { background: rgba(205, 127, 50, 0.2); color: #CD7F32; }
+        .achievement-badge.silver { background: rgba(192, 192, 192, 0.2); color: #C0C0C0; }
+        .achievement-badge.gold { background: rgba(255, 215, 0, 0.2); color: #FFD700; }
+        .achievement-badge.master { background: rgba(155, 89, 182, 0.2); color: #9B59B6; }
         
         /* Child Achievement Card */
         .child-achievement-card {
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 15px;
@@ -517,7 +537,7 @@ function getCategoryIcon($category) {
         
         .child-ach-name {
             font-weight: bold;
-            color: #1A3503;
+            color: var(--text);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -537,7 +557,7 @@ function getCategoryIcon($category) {
         
         .child-ach-stat .value {
             font-weight: bold;
-            color: #1A3503;
+            color: var(--accent);
         }
         
         .tier-distribution {
@@ -565,20 +585,22 @@ function getCategoryIcon($category) {
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #555;
+            color: var(--text-muted);
             font-size: 14px;
         }
         
         .form-group input, .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd;
+            border: 2px solid var(--border);
             border-radius: 8px;
             font-size: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text);
         }
         
         .form-group input:focus, .form-group select:focus {
-            border-color: #43D240;
+            border-color: var(--accent);
             outline: none;
         }
         
@@ -622,7 +644,7 @@ function getCategoryIcon($category) {
             align-items: center;
             gap: 15px;
             padding: 12px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border);
         }
         
         .transaction:last-child {
@@ -639,10 +661,10 @@ function getCategoryIcon($category) {
             font-size: 18px;
         }
         
-        .tx-icon.earn { background: #d4edda; }
-        .tx-icon.withdraw { background: #f8d7da; }
-        .tx-icon.bonus { background: #fff3cd; }
-        .tx-icon.achievement { background: #e8f5e9; }
+        .tx-icon.earn { background: rgba(67, 210, 64, 0.2); }
+        .tx-icon.withdraw { background: rgba(220, 53, 69, 0.2); }
+        .tx-icon.bonus { background: rgba(247, 147, 26, 0.2); }
+        .tx-icon.achievement { background: rgba(67, 210, 64, 0.2); }
         
         .tx-info {
             flex: 1;
@@ -650,37 +672,37 @@ function getCategoryIcon($category) {
         
         .tx-child {
             font-weight: 600;
-            color: #1A3503;
+            color: var(--text);
         }
         
         .tx-reason {
             font-size: 12px;
-            color: #666;
+            color: var(--text-muted);
         }
         
         .tx-amount {
             font-weight: bold;
         }
         
-        .tx-amount.positive { color: #28a745; }
-        .tx-amount.negative { color: #dc3545; }
+        .tx-amount.positive { color: var(--accent); }
+        .tx-amount.negative { color: var(--danger); }
         
         .tx-time {
             font-size: 11px;
-            color: #999;
+            color: var(--text-muted);
         }
         
         /* Error State */
         .error-card {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border: 2px solid var(--danger);
             padding: 30px;
             text-align: center;
         }
         
         .error-card h2 {
-            color: #dc3545;
-            border-bottom-color: #dc3545;
+            color: var(--danger);
+            border-bottom-color: var(--danger);
         }
         
         /* Empty State */
