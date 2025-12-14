@@ -110,55 +110,82 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             align-items: center;
         }
         
-        /* Spielbrett */
+        /* Spielbrett - BUG-052 FIX: Klassisches Kreuz-Layout */
         .board {
-            width: 440px;
-            height: 440px;
+            display: grid;
+            grid-template-columns: repeat(11, 36px);
+            grid-template-rows: repeat(11, 36px);
+            gap: 2px;
             background: #2d4a1c;
-            border-radius: 10px;
-            position: relative;
+            border-radius: 12px;
+            padding: 15px;
             border: 4px solid #1a3503;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
         }
         
-        .field {
-            position: absolute;
+        .cell {
             width: 36px;
             height: 36px;
-            background: var(--field-bg);
-            border: 2px solid var(--field-border);
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            border-radius: 50%;
             transition: var(--mp-transition);
-            font-size: 1.4rem;
         }
-        .field:hover { transform: scale(1.1); }
-        .field.start-red { background: var(--mp-player-red); }
-        .field.start-blue { background: var(--mp-player-blue); }
-        .field.start-green { background: var(--mp-player-green); }
-        .field.start-yellow { background: var(--mp-player-yellow); }
-        .field.home-red { background: rgba(231, 76, 60, 0.3); border-color: var(--mp-player-red); }
-        .field.home-blue { background: rgba(52, 152, 219, 0.3); border-color: var(--mp-player-blue); }
-        .field.home-green { background: rgba(39, 174, 96, 0.3); border-color: var(--mp-player-green); }
-        .field.home-yellow { background: rgba(241, 196, 15, 0.3); border-color: var(--mp-player-yellow); }
-        .field.entry-red { border-color: var(--mp-player-red); border-width: 3px; }
-        .field.entry-blue { border-color: var(--mp-player-blue); border-width: 3px; }
-        .field.entry-green { border-color: var(--mp-player-green); border-width: 3px; }
-        .field.entry-yellow { border-color: var(--mp-player-yellow); border-width: 3px; }
-        .field.can-move { animation: mp-fieldPulse 0.8s ease infinite; }
-        @keyframes pulse { 50% { transform: scale(1.15); } }
         
+        /* Leere Zellen (transparent) */
+        .cell.empty {
+            background: transparent;
+        }
+        
+        /* Spielfelder (Laufweg) */
+        .cell.field {
+            background: var(--field-bg);
+            border: 2px solid var(--field-border);
+            cursor: pointer;
+        }
+        .cell.field:hover { transform: scale(1.08); }
+        
+        /* Startfelder (4 Ecken) */
+        .cell.start { cursor: pointer; }
+        .cell.start-red { background: var(--mp-player-red); border: 2px solid #a93226; }
+        .cell.start-blue { background: var(--mp-player-blue); border: 2px solid #1f618d; }
+        .cell.start-green { background: var(--mp-player-green); border: 2px solid #1d8348; }
+        .cell.start-yellow { background: var(--mp-player-yellow); border: 2px solid #b7950b; }
+        
+        /* Zielfelder (innere Bahnen zur Mitte) */
+        .cell.home-red { background: rgba(231, 76, 60, 0.4); border: 2px solid var(--mp-player-red); }
+        .cell.home-blue { background: rgba(52, 152, 219, 0.4); border: 2px solid var(--mp-player-blue); }
+        .cell.home-green { background: rgba(39, 174, 96, 0.4); border: 2px solid var(--mp-player-green); }
+        .cell.home-yellow { background: rgba(241, 196, 15, 0.4); border: 2px solid var(--mp-player-yellow); }
+        
+        /* Eingangsfelder (wo man aufs Spielfeld kommt) */
+        .cell.entry-red { border: 3px solid var(--mp-player-red) !important; }
+        .cell.entry-blue { border: 3px solid var(--mp-player-blue) !important; }
+        .cell.entry-green { border: 3px solid var(--mp-player-green) !important; }
+        .cell.entry-yellow { border: 3px solid var(--mp-player-yellow) !important; }
+        
+        /* Mittelfeld */
+        .cell.center {
+            background: linear-gradient(135deg, #e74c3c 25%, #3498db 25%, #3498db 50%, #27ae60 50%, #27ae60 75%, #f1c40f 75%);
+            border: 3px solid #333;
+        }
+        
+        /* Animation für bewegbare Felder */
+        .cell.can-move { animation: mp-fieldPulse 0.8s ease infinite; }
+        
+        /* Spielfiguren - BUG-052 FIX: In Grid-Zellen zentriert */
         .piece {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             border: 3px solid #333;
-            position: absolute;
             cursor: pointer;
             transition: var(--mp-transition);
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            /* Nicht mehr absolut, sondern in Zelle zentriert */
+            position: relative !important;
+            margin: auto;
         }
         .piece.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .piece.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
@@ -266,7 +293,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .result-icon { font-size: 5rem; margin-bottom: 15px; }
         .result-title { font-size: 2rem; margin-bottom: 10px; }
         
-        /* Mobile Optimierung */
+        /* Mobile Optimierung - BUG-052 FIX */
         @media (max-width: 500px) {
             .board-area {
                 padding: 10px;
@@ -274,13 +301,14 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                 -webkit-overflow-scrolling: touch;
             }
             .board {
-                width: 320px;
-                height: 320px;
-                transform-origin: top left;
+                grid-template-columns: repeat(11, 28px);
+                grid-template-rows: repeat(11, 28px);
+                gap: 1px;
+                padding: 10px;
             }
-            .field {
-                width: 26px;
-                height: 26px;
+            .cell {
+                width: 28px;
+                height: 28px;
             }
             .piece {
                 width: 20px;
@@ -309,16 +337,16 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         
         @media (max-width: 380px) {
             .board {
-                width: 280px;
-                height: 280px;
+                grid-template-columns: repeat(11, 24px);
+                grid-template-rows: repeat(11, 24px);
             }
-            .field {
-                width: 22px;
-                height: 22px;
+            .cell {
+                width: 24px;
+                height: 24px;
             }
             .piece {
-                width: 16px;
-                height: 16px;
+                width: 18px;
+                height: 18px;
             }
         }
     </style>
@@ -438,44 +466,106 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         const COLOR_EMOJIS = {'red': '🔴', 'blue': '🔵', 'green': '🟢', 'yellow': '🟡'};
         const COLOR_NAMES = {'red': 'Rot', 'blue': 'Blau', 'green': 'Grün', 'yellow': 'Gelb'};
         
-        // Spielfeld-Koordinaten (x, y in Pixel)
-        // 40 Felder im Kreis + Startfelder + Zielfelder
-        const FIELD_POSITIONS = {};
+        // ============================================
+        // BUG-052 FIX: Klassisches Kreuz-Layout
+        // 11x11 Grid mit korrekten Feldpositionen
+        // ============================================
         
-        // Hauptfelder (0-39) - im Uhrzeigersinn
-        const mainFields = [
-            // Unten links nach oben (Rot Start)
-            [42, 202], [42, 162], [42, 122], [42, 82], [82, 42],
-            // Oben links nach rechts
-            [122, 42], [162, 42], [202, 42], [202, 82],
-            // Rechts oben (Blau Start)
-            [202, 122], [242, 82], [282, 42], [322, 42], [362, 42],
-            // Oben rechts nach unten
-            [402, 82], [402, 122], [402, 162], [402, 202], [362, 202],
-            // Rechts unten (Grün Start)
-            [322, 202], [362, 242], [402, 282], [402, 322], [402, 362],
-            // Unten rechts nach links
-            [362, 402], [322, 402], [282, 402], [242, 402], [242, 362],
-            // Links unten (Gelb Start)
-            [242, 322], [202, 362], [162, 402], [122, 402], [82, 402],
-            // Unten links nach oben
-            [42, 362], [42, 322], [42, 282], [42, 242], [82, 202]
+        // Board-Layout Definition (11x11 Grid)
+        // 'e' = empty, 'w' = weg (path), 'c' = center
+        // 'sr' = start-red, 'sb' = start-blue, 'sg' = start-green, 'sy' = start-yellow
+        // 'hr' = home-red, 'hb' = home-blue, 'hg' = home-green, 'hy' = home-yellow
+        // 'er' = entry-red, 'eb' = entry-blue, 'eg' = entry-green, 'ey' = entry-yellow
+        const BOARD_LAYOUT = [
+            ['sr','sr','e', 'e', 'w', 'w', 'eb','e', 'e', 'sb','sb'],
+            ['sr','sr','e', 'e', 'w', 'hb','w', 'e', 'e', 'sb','sb'],
+            ['e', 'e', 'e', 'e', 'w', 'hb','w', 'e', 'e', 'e', 'e'],
+            ['e', 'e', 'e', 'e', 'w', 'hb','w', 'e', 'e', 'e', 'e'],
+            ['er','w', 'w', 'w', 'w', 'hb','w', 'w', 'w', 'w', 'w'],
+            ['w', 'hr','hr','hr','hr','c', 'hg','hg','hg','hg','w'],
+            ['w', 'w', 'w', 'w', 'w', 'hy','w', 'w', 'w', 'w', 'eg'],
+            ['e', 'e', 'e', 'e', 'w', 'hy','w', 'e', 'e', 'e', 'e'],
+            ['e', 'e', 'e', 'e', 'w', 'hy','w', 'e', 'e', 'e', 'e'],
+            ['sy','sy','e', 'e', 'w', 'hy','w', 'e', 'e', 'sg','sg'],
+            ['sy','sy','e', 'e', 'ey','w', 'w', 'e', 'e', 'sg','sg']
         ];
         
-        // Startbereiche (je 4 Figuren) - -1 bis -4 pro Spieler
-        const startAreas = {
-            'red': [[20, 20], [60, 20], [20, 60], [60, 60]],
-            'blue': [[340, 20], [380, 20], [340, 60], [380, 60]],
-            'green': [[340, 340], [380, 340], [340, 380], [380, 380]],
-            'yellow': [[20, 340], [60, 340], [20, 380], [60, 380]]
+        // Mapping: Grid-Position (row, col) -> Spielfeld-Index
+        // Hauptfelder 0-39 im Uhrzeigersinn, Start bei Rot (links)
+        const GRID_TO_INDEX = {};
+        const INDEX_TO_GRID = {};
+        
+        // Hauptweg (40 Felder) - Uhrzeigersinn startend bei Rot-Entry
+        // Index 0=Rot Entry, 10=Blau Entry, 20=Grün Entry, 30=Gelb Entry
+        const PATH_COORDS = [
+            // 0-9: Rot Entry bis Blau Entry (links hoch, dann oben nach rechts)
+            [4,0],  // 0: Rot Entry (links mitte)
+            [3,0],  // 1
+            [2,0],  // 2
+            [1,0],  // 3
+            [0,0],  // 4: Ecke oben-links
+            [0,1],  // 5
+            [0,2],  // 6
+            [0,3],  // 7
+            [0,4],  // 8
+            [0,5],  // 9
+            // 10-19: Blau Entry bis Grün Entry (oben nach rechts, dann rechts runter)
+            [0,6],  // 10: Blau Entry (oben mitte)
+            [0,7],  // 11
+            [0,8],  // 12
+            [0,9],  // 13
+            [0,10], // 14: Ecke oben-rechts
+            [1,10], // 15
+            [2,10], // 16
+            [3,10], // 17
+            [4,10], // 18
+            [5,10], // 19
+            // 20-29: Grün Entry bis Gelb Entry (rechts runter, dann unten nach links)
+            [6,10], // 20: Grün Entry (rechts mitte)
+            [7,10], // 21
+            [8,10], // 22
+            [9,10], // 23
+            [10,10],// 24: Ecke unten-rechts
+            [10,9], // 25
+            [10,8], // 26
+            [10,7], // 27
+            [10,6], // 28
+            [10,5], // 29
+            // 30-39: Gelb Entry bis zurück zu Rot (unten nach links, dann links hoch)
+            [10,4], // 30: Gelb Entry (unten mitte)
+            [10,3], // 31
+            [10,2], // 32
+            [10,1], // 33
+            [10,0], // 34: Ecke unten-links
+            [9,0],  // 35
+            [8,0],  // 36
+            [7,0],  // 37
+            [6,0],  // 38
+            [5,0]   // 39: zurück Richtung Rot Entry
+        ];
+        
+        // Startfelder pro Farbe (4 Felder je Ecke)
+        const START_COORDS = {
+            'red':    [[0,0], [0,1], [1,0], [1,1]],
+            'blue':   [[0,9], [0,10], [1,9], [1,10]],
+            'green':  [[9,9], [9,10], [10,9], [10,10]],
+            'yellow': [[9,0], [9,1], [10,0], [10,1]]
         };
         
-        // Zielbereiche (40-43 pro Spieler)
-        const homeAreas = {
-            'red': [[82, 202], [122, 202], [162, 202], [202, 202]],
-            'blue': [[202, 82], [202, 122], [202, 162], [202, 202]],
-            'green': [[322, 202], [282, 202], [242, 202], [202, 202]],
-            'yellow': [[202, 322], [202, 282], [202, 242], [202, 202]]
+        // Home-Felder (Zielbahnen zur Mitte, je 4)
+        const HOME_COORDS = {
+            'red':    [[5,1], [5,2], [5,3], [5,4]],
+            'blue':   [[1,5], [2,5], [3,5], [4,5]],
+            'green':  [[5,9], [5,8], [5,7], [5,6]],
+            'yellow': [[9,5], [8,5], [7,5], [6,5]]
+        };
+        
+        // Entry-Felder (wo man aufs Brett kommt)
+        const ENTRY_POSITIONS = {
+            'red': 0,    // Index 0 im Hauptweg
+            'blue': 10,  // Index 10
+            'green': 20, // Index 20
+            'yellow': 30 // Index 30
         };
         
         // Spielzustand
@@ -496,51 +586,82 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         let walletChildId = <?php echo $walletChildId ?: 'null'; ?>;
         let pollInterval = null;
         
-        // Board initialisieren
+        // Board initialisieren - BUG-052 FIX: Grid-basiertes Layout
         function initBoard() {
             const board = document.getElementById('gameBoard');
             board.innerHTML = '';
             
-            // Hauptfelder erzeugen
-            mainFields.forEach((pos, i) => {
-                const field = document.createElement('div');
-                field.className = 'field';
-                field.dataset.index = i;
-                field.style.left = pos[0] + 'px';
-                field.style.top = pos[1] + 'px';
-                
-                // Startfelder markieren
-                if (i === 0) field.classList.add('entry-red');
-                if (i === 10) field.classList.add('entry-blue');
-                if (i === 20) field.classList.add('entry-green');
-                if (i === 30) field.classList.add('entry-yellow');
-                
-                board.appendChild(field);
-            });
+            // 11x11 Grid durchgehen
+            for (let row = 0; row < 11; row++) {
+                for (let col = 0; col < 11; col++) {
+                    const cellType = BOARD_LAYOUT[row][col];
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    switch(cellType) {
+                        case 'e':
+                            cell.classList.add('empty');
+                            break;
+                        case 'w':
+                            cell.classList.add('field');
+                            // Hauptweg-Index finden
+                            const pathIdx = PATH_COORDS.findIndex(c => c[0] === row && c[1] === col);
+                            if (pathIdx !== -1) {
+                                cell.dataset.pathIndex = pathIdx;
+                            }
+                            break;
+                        case 'c':
+                            cell.classList.add('center');
+                            break;
+                        case 'sr': cell.classList.add('start', 'start-red'); cell.dataset.start = 'red'; break;
+                        case 'sb': cell.classList.add('start', 'start-blue'); cell.dataset.start = 'blue'; break;
+                        case 'sg': cell.classList.add('start', 'start-green'); cell.dataset.start = 'green'; break;
+                        case 'sy': cell.classList.add('start', 'start-yellow'); cell.dataset.start = 'yellow'; break;
+                        case 'hr': cell.classList.add('field', 'home-red'); cell.dataset.home = 'red'; break;
+                        case 'hb': cell.classList.add('field', 'home-blue'); cell.dataset.home = 'blue'; break;
+                        case 'hg': cell.classList.add('field', 'home-green'); cell.dataset.home = 'green'; break;
+                        case 'hy': cell.classList.add('field', 'home-yellow'); cell.dataset.home = 'yellow'; break;
+                        case 'er': 
+                            cell.classList.add('field', 'entry-red'); 
+                            cell.dataset.pathIndex = 0;
+                            break;
+                        case 'eb': 
+                            cell.classList.add('field', 'entry-blue'); 
+                            cell.dataset.pathIndex = 10;
+                            break;
+                        case 'eg': 
+                            cell.classList.add('field', 'entry-green'); 
+                            cell.dataset.pathIndex = 20;
+                            break;
+                        case 'ey': 
+                            cell.classList.add('field', 'entry-yellow'); 
+                            cell.dataset.pathIndex = 30;
+                            break;
+                    }
+                    
+                    board.appendChild(cell);
+                }
+            }
             
-            // Startbereiche
-            Object.entries(startAreas).forEach(([color, positions]) => {
-                positions.forEach((pos, i) => {
-                    const field = document.createElement('div');
-                    field.className = `field start-${color}`;
-                    field.dataset.start = color;
-                    field.dataset.startIndex = i;
-                    field.style.left = pos[0] + 'px';
-                    field.style.top = pos[1] + 'px';
-                    board.appendChild(field);
+            // Home-Indizes setzen
+            Object.entries(HOME_COORDS).forEach(([color, coords]) => {
+                coords.forEach((coord, idx) => {
+                    const cell = board.querySelector(`[data-row="${coord[0]}"][data-col="${coord[1]}"]`);
+                    if (cell) {
+                        cell.dataset.homeIndex = idx;
+                    }
                 });
             });
             
-            // Zielbereiche (nur die ersten 3 pro Farbe, da 4. im Zentrum)
-            Object.entries(homeAreas).forEach(([color, positions]) => {
-                positions.slice(0, 3).forEach((pos, i) => {
-                    const field = document.createElement('div');
-                    field.className = `field home-${color}`;
-                    field.dataset.home = color;
-                    field.dataset.homeIndex = i;
-                    field.style.left = pos[0] + 'px';
-                    field.style.top = pos[1] + 'px';
-                    board.appendChild(field);
+            // Start-Indizes setzen
+            Object.entries(START_COORDS).forEach(([color, coords]) => {
+                coords.forEach((coord, idx) => {
+                    const cell = board.querySelector(`[data-row="${coord[0]}"][data-col="${coord[1]}"]`);
+                    if (cell) {
+                        cell.dataset.startIndex = idx;
+                    }
                 });
             });
         }
@@ -724,11 +845,10 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             // Figuren entfernen
             board.querySelectorAll('.piece').forEach(p => p.remove());
             
-            // Figuren zeichnen
+            // BUG-052 FIX: Figuren in Grid-Zellen platzieren
             data.players.forEach(player => {
                 const pieces = player.pieces;
                 const color = player.color;
-                const playerOrder = player.player_order;
                 const isMyPiece = player.id == gameState.playerId;
                 
                 pieces.forEach((pos, pieceIdx) => {
@@ -736,33 +856,40 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                     piece.className = `piece ${color}`;
                     piece.dataset.playerId = player.id;
                     piece.dataset.pieceIndex = pieceIdx;
+                    piece.style.position = 'relative';
                     
-                    let x, y;
+                    let targetCell = null;
                     
                     if (pos < 0) {
-                        // Im Startbereich
+                        // Im Startbereich (-1 bis -4)
                         const startIdx = Math.abs(pos) - 1;
-                        [x, y] = startAreas[color][startIdx];
+                        const coords = START_COORDS[color][startIdx];
+                        if (coords) {
+                            targetCell = board.querySelector(`[data-row="${coords[0]}"][data-col="${coords[1]}"]`);
+                        }
                     } else if (pos >= 40) {
-                        // Im Zielbereich
+                        // Im Zielbereich (40-43)
                         const homeIdx = pos - 40;
-                        [x, y] = homeAreas[color][homeIdx] || homeAreas[color][2];
+                        const coords = HOME_COORDS[color][homeIdx];
+                        if (coords) {
+                            targetCell = board.querySelector(`[data-row="${coords[0]}"][data-col="${coords[1]}"]`);
+                        }
                     } else {
-                        // Auf dem Brett - pos ist bereits absolute Position (von API)
-                        // BUG-049 FIX: Überflüssige absPos-Berechnung entfernt
-                        [x, y] = mainFields[pos] || [200, 200];
+                        // Auf dem Hauptweg (0-39)
+                        const coords = PATH_COORDS[pos];
+                        if (coords) {
+                            targetCell = board.querySelector(`[data-row="${coords[0]}"][data-col="${coords[1]}"]`);
+                        }
                     }
                     
-                    piece.style.left = (x + 4) + 'px';
-                    piece.style.top = (y + 4) + 'px';
-                    
-                    // Klickbar wenn mein Zug und kann ziehen
-                    if (isMyPiece && gameState.myTurn && gameState.canMove) {
-                        piece.classList.add('selectable');
-                        piece.onclick = () => selectPiece(pieceIdx);
+                    if (targetCell) {
+                        // Klickbar wenn mein Zug und kann ziehen
+                        if (isMyPiece && gameState.myTurn && gameState.canMove) {
+                            piece.classList.add('selectable');
+                            piece.onclick = (e) => { e.stopPropagation(); selectPiece(pieceIdx); };
+                        }
+                        targetCell.appendChild(piece);
                     }
-                    
-                    board.appendChild(piece);
                 });
             });
         }

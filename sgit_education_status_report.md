@@ -182,6 +182,30 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Datei** | `/auto_generator.php` |
 | **Aufwand** | ~2h |
 
+### 🟡 FEATURE-002: Wallet Admin - Dark Mode - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | MITTEL |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Wunsch** | Wallet Admin Header ist orange/hell, soll Dark Mode sein |
+| **Datei** | `/wallet/wallet_admin.php` |
+| **Aufwand** | ~1h |
+
+### 🟡 FEATURE-003: Wallet - Sats zu EUR/USD Umrechnung - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | HOCH |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Wunsch** | Live-Umrechnung von Sats in EUR und USD anzeigen |
+| **Details** | 1. Bei Family Wallet: "10,278 Sats = X EUR / Y USD" anzeigen |
+| | 2. Bei Kinder-Wallets: Sats-Beträge auch in EUR/USD |
+| | 3. Kleiner Chart der BTC/EUR und BTC/USD Kursentwicklung |
+| | 4. Live-Berechnung via API (z.B. CoinGecko) |
+| **Dateien** | `/wallet/wallet_admin.php`, ggf. neues `/api/btc_price.php` |
+| **Aufwand** | ~4-6h |
+
 ### ℹ️ BUG-053: Rommé - Doppelte Karten im Deck - KEIN BUG
 | Info | Details |
 |------|---------|
