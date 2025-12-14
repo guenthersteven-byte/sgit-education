@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.45.2 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
+**Version:** 3.45.3 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
 
 ---
 
@@ -140,16 +140,17 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Dateien** | `/romme.php` (JS Drag & Drop) |
 | **Aufwand** | ~2h |
 
-### 🔴 BUG-055: Schach PvP - Beide Spieler haben weiße Figuren - OFFEN
+### ✅ BUG-055: Schach PvP - Beide Spieler haben weiße Figuren - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | HOCH |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
+| **Behoben** | 14.12.2025 ✅ |
 | **Symptom** | Beide Spielerseiten zeigen weiße Unicode-Figuren |
-| **Soll** | Weiß vs. Schwarz (oder Comic-Figuren) |
-| **Dateien** | `/schach_pvp.php`, `/api/schach_pvp.php` |
-| **Aufwand** | ~1h |
+| **Dateien** | `/schach_pvp.php` |
+| **Ursache** | CSS hatte nur drop-shadow, keine Farbunterscheidung |
+| **Fix** | Einheitliche Symbole (♚♛♜♝♞♟) + CSS color/text-shadow für Weiß (#FFF) vs Schwarz (#1a1a1a) |
+| **Status** | ✅ BEHOBEN |
 
 ### ⏳ TEST-001: Montagsmaler BUG-050 Fix - TEST AUSSTEHEND
 | Info | Details |

@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.45.2');
+define('SGIT_VERSION', '3.45.3');
 define('SGIT_VERSION_DATE', '14.12.2025');
 
 // Kurzversion für UI (ohne Patch)
 define('SGIT_VERSION_SHORT', '3.45');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Montagsmaler Runden-Fix');
+define('SGIT_VERSION_NAME', 'Schach Figuren-Fix');

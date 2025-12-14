@@ -144,8 +144,26 @@ if (SessionManager::isLoggedIn()) {
         .piece:hover { transform: scale(1.1); }
         .piece.moving { animation: mp-pieceMove 0.4s ease; }
         .piece.captured { animation: mp-pieceCapture 0.5s ease forwards; }
-        .piece.white { filter: drop-shadow(1px 1px 1px #333); }
-        .piece.black { filter: drop-shadow(1px 1px 1px #000); }
+        
+        /* BUG-055 FIX: Deutliche Unterscheidung Weiß vs Schwarz */
+        .piece.white { 
+            color: #FFFFFF;
+            text-shadow: 
+                -1px -1px 0 #333,
+                1px -1px 0 #333,
+                -1px 1px 0 #333,
+                1px 1px 0 #333,
+                0 0 3px #333;
+        }
+        .piece.black { 
+            color: #1a1a1a;
+            text-shadow: 
+                -1px -1px 0 #888,
+                1px -1px 0 #888,
+                -1px 1px 0 #888,
+                1px 1px 0 #888,
+                0 0 2px #aaa;
+        }
         
         .coord { position: absolute; font-size: 0.65rem; color: #666; font-weight: bold; }
         .coord.file { bottom: 2px; right: 4px; }
@@ -340,7 +358,8 @@ if (SessionManager::isLoggedIn()) {
         const POLL_INTERVAL = 800;
         
         const PIECES = {
-            wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
+            // BUG-055 FIX: Gleiche Symbole für beide, CSS bestimmt Farbe
+            wK: '♚', wQ: '♛', wR: '♜', wB: '♝', wN: '♞', wP: '♟',
             bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
         };
         
