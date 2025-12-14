@@ -103,7 +103,7 @@ function initDatabase($db) {
         color TEXT NOT NULL,
         player_order INTEGER NOT NULL,
         is_host INTEGER DEFAULT 0,
-        pieces TEXT DEFAULT '[0,0,0,0]',
+        pieces TEXT DEFAULT '[-1,-2,-3,-4]',  -- Im Startbereich (nicht auf dem Brett!)
         finished INTEGER DEFAULT 0,
         joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (game_id) REFERENCES games(id)

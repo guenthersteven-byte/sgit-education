@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.40.0');
+define('SGIT_VERSION', '3.42.0');
 define('SGIT_VERSION_DATE', '14.12.2025');
 
 // Kurzversion für UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.40');
+define('SGIT_VERSION_SHORT', '3.42');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Poker Texas Hold\'em');
+define('SGIT_VERSION_NAME', 'Multiplayer UI Zentralisierung');

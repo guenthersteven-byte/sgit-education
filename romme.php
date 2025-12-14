@@ -38,40 +38,38 @@ if (SessionManager::isLoggedIn()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎴 Rommé - sgiT Education</title>
+    <!-- Zentrale Multiplayer CSS -->
+    <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===========================================
+           Rommé-Spezifische Styles
+           =========================================== */
         :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --bg: #0d1f02;
-            --card-bg: #1e3a08;
-            --text: #ffffff;
-            --text-muted: #a0a0a0;
             --card-white: #fffef5;
-            --red: #e74c3c;
         }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh;
-            color: var(--text);
+            color: var(--mp-text);
+            margin: 0; padding: 0;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
         
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: var(--card-bg); border-radius: 12px; margin-bottom: 20px;
+            padding: 15px 20px; background: var(--mp-bg-card); border-radius: 12px; margin-bottom: 20px;
         }
         .header h1 { font-size: 1.4rem; }
-        .header h1 span { color: var(--accent); }
-        .back-link { color: var(--accent); text-decoration: none; }
+        .header h1 span { color: var(--mp-accent); }
+        .back-link { color: var(--mp-accent); text-decoration: none; }
         
         .screen { display: none; }
         .screen.active { display: block; }
         
         .lobby-container { max-width: 500px; margin: 30px auto; text-align: center; }
-        .lobby-card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .lobby-card h2 { color: var(--accent); margin-bottom: 15px; }
+        .lobby-card { background: var(--mp-bg-card); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .lobby-card h2 { color: var(--mp-accent); margin-bottom: 15px; }
         .input-group { margin-bottom: 15px; }
         .input-group input {
             width: 100%; padding: 12px; border: 2px solid transparent; border-radius: 10px;

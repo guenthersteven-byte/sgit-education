@@ -48,26 +48,98 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎲 Mensch ärgere dich nicht - sgiT Education</title>
-    <!-- Zentrale Multiplayer CSS -->
-    <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
-        /* ===========================================
-           MADN-Spezifische Styles
-           =========================================== */
-        
-        /* Lokale Variablen für MADN (erben von multiplayer-theme) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
+            --primary: #1A3503;
+            --accent: #43D240;
+            --bg: #0d1f02;
+            --card-bg: #1e3a08;
+            --text: #ffffff;
+            --text-muted: #a0a0a0;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --green: #27ae60;
+            --yellow: #f1c40f;
             --field-bg: #f5f5dc;
             --field-border: #333;
         }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
         
-        /* Player Colors */
-        .player-slot.red { border-color: var(--mp-player-red); }
-        .player-slot.blue { border-color: var(--mp-player-blue); }
-        .player-slot.green { border-color: var(--mp-player-green); }
-        .player-slot.yellow { border-color: var(--mp-player-yellow); }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 1.4rem; }
+        .header h1 span { color: var(--accent); }
+        .back-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { text-decoration: underline; }
         
-        /* Players Grid (MADN-spezifisch: 2x2) */
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
+        /* Lobby */
+        .lobby-container { max-width: 500px; margin: 30px auto; text-align: center; }
+        .lobby-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .lobby-card h2 { color: var(--accent); margin-bottom: 15px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; text-align: left; }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        .input-group input:focus { outline: none; border-color: var(--accent); }
+        .game-code-input { font-size: 1.5rem !important; text-align: center; letter-spacing: 8px; text-transform: uppercase; }
+        
+        .btn {
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(67, 210, 64, 0.3); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn.secondary { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
+        
+        .divider { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--text-muted); opacity: 0.3; }
+        .divider span { padding: 0 15px; }
+        
+        /* Waiting Room */
+        .game-code-display {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .game-code { font-size: 2.5rem; font-weight: bold; color: var(--accent); letter-spacing: 8px; font-family: monospace; }
         .players-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -75,8 +147,8 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             margin: 20px 0;
         }
         .player-slot {
-            background: var(--mp-bg-medium);
-            border: 2px dashed var(--mp-text-muted);
+            background: var(--bg);
+            border: 2px dashed var(--text-muted);
             border-radius: 12px;
             padding: 15px;
             text-align: center;
@@ -87,9 +159,13 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             align-items: center;
         }
         .player-slot.filled { border-style: solid; }
+        .player-slot.red { border-color: var(--red); }
+        .player-slot.blue { border-color: var(--blue); }
+        .player-slot.green { border-color: var(--green); }
+        .player-slot.yellow { border-color: var(--yellow); }
         .player-slot .avatar { font-size: 1.8rem; }
         .player-slot .name { font-weight: 600; margin-top: 5px; }
-        .player-slot .color-badge { font-size: 0.8rem; color: var(--mp-text-muted); }
+        .player-slot .color-badge { font-size: 0.8rem; color: var(--text-muted); }
         
         /* Game Board Container */
         .game-container {
@@ -102,7 +178,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         }
         
         .board-area {
-            background: var(--mp-bg-card);
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             display: flex;
@@ -135,19 +211,19 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             font-size: 1.4rem;
         }
         .field:hover { transform: scale(1.1); }
-        .field.start-red { background: var(--mp-player-red); }
-        .field.start-blue { background: var(--mp-player-blue); }
-        .field.start-green { background: var(--mp-player-green); }
-        .field.start-yellow { background: var(--mp-player-yellow); }
-        .field.home-red { background: rgba(231, 76, 60, 0.3); border-color: var(--mp-player-red); }
-        .field.home-blue { background: rgba(52, 152, 219, 0.3); border-color: var(--mp-player-blue); }
-        .field.home-green { background: rgba(39, 174, 96, 0.3); border-color: var(--mp-player-green); }
-        .field.home-yellow { background: rgba(241, 196, 15, 0.3); border-color: var(--mp-player-yellow); }
-        .field.entry-red { border-color: var(--mp-player-red); border-width: 3px; }
-        .field.entry-blue { border-color: var(--mp-player-blue); border-width: 3px; }
-        .field.entry-green { border-color: var(--mp-player-green); border-width: 3px; }
-        .field.entry-yellow { border-color: var(--mp-player-yellow); border-width: 3px; }
-        .field.can-move { animation: pulse 0.8s infinite; box-shadow: 0 0 10px var(--mp-accent-glow); }
+        .field.start-red { background: var(--red); }
+        .field.start-blue { background: var(--blue); }
+        .field.start-green { background: var(--green); }
+        .field.start-yellow { background: var(--yellow); }
+        .field.home-red { background: rgba(231, 76, 60, 0.3); border-color: var(--red); }
+        .field.home-blue { background: rgba(52, 152, 219, 0.3); border-color: var(--blue); }
+        .field.home-green { background: rgba(39, 174, 96, 0.3); border-color: var(--green); }
+        .field.home-yellow { background: rgba(241, 196, 15, 0.3); border-color: var(--yellow); }
+        .field.entry-red { border-color: var(--red); border-width: 3px; }
+        .field.entry-blue { border-color: var(--blue); border-width: 3px; }
+        .field.entry-green { border-color: var(--green); border-width: 3px; }
+        .field.entry-yellow { border-color: var(--yellow); border-width: 3px; }
+        .field.can-move { animation: pulse 0.8s infinite; box-shadow: 0 0 10px var(--accent); }
         @keyframes pulse { 50% { transform: scale(1.15); } }
         
         .piece {
@@ -174,21 +250,21 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             gap: 15px;
         }
         .info-card {
-            background: var(--mp-bg-card);
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 15px;
         }
-        .info-card h3 { color: var(--mp-accent); margin-bottom: 10px; font-size: 1rem; }
+        .info-card h3 { color: var(--accent); margin-bottom: 10px; font-size: 1rem; }
         
         .turn-indicator {
             text-align: center;
             padding: 15px;
             border-radius: 10px;
-            background: var(--mp-bg-medium);
+            background: var(--bg);
         }
-        .turn-indicator .label { font-size: 0.85rem; color: var(--mp-text-muted); }
+        .turn-indicator .label { font-size: 0.85rem; color: var(--text-muted); }
         .turn-indicator .player { font-size: 1.3rem; font-weight: bold; margin-top: 5px; }
-        .turn-indicator.my-turn { border: 2px solid var(--mp-accent); }
+        .turn-indicator.my-turn { border: 2px solid var(--accent); }
         
         /* Würfel */
         .dice-area { text-align: center; padding: 20px; }
@@ -232,16 +308,16 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             align-items: center;
             gap: 10px;
             padding: 8px;
-            background: var(--mp-bg-medium);
+            background: var(--bg);
             border-radius: 8px;
             margin-bottom: 6px;
         }
-        .score-row.active { border: 2px solid var(--mp-accent); }
+        .score-row.active { border: 2px solid var(--accent); }
         .score-row .color { font-size: 1.2rem; }
         .score-row .name { flex: 1; }
-        .score-row .pieces { font-size: 0.8rem; color: var(--mp-text-muted); }
+        .score-row .pieces { font-size: 0.8rem; color: var(--text-muted); }
         
-        /* Toast - verwendet mp-toast aus theme, aber lokale Overrides */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -257,79 +333,79 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             from { transform: translateX(-50%) translateY(20px); opacity: 0; }
             to { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
-        .toast.success { background: var(--mp-accent); color: var(--mp-text-dark); }
-        .toast.error { background: var(--mp-error); color: white; }
-        .toast.info { background: var(--mp-bg-card); color: var(--mp-text); border: 2px solid var(--mp-accent); }
+        .toast.success { background: var(--accent); color: var(--primary); }
+        .toast.error { background: #e74c3c; color: white; }
+        .toast.info { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
         
         /* Result */
         .result-container { max-width: 500px; margin: 50px auto; text-align: center; }
         .result-card {
-            background: var(--mp-bg-card);
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 30px;
-            border: 3px solid var(--mp-accent);
+            border: 3px solid var(--accent);
         }
         .result-icon { font-size: 5rem; margin-bottom: 15px; }
         .result-title { font-size: 2rem; margin-bottom: 10px; }
     </style>
 </head>
-<body class="mp-body">
-    <div class="mp-container">
-        <div class="mp-header">
+<body>
+    <div class="container">
+        <div class="header">
             <div>
-                <a href="multiplayer.php" class="mp-back-link">← Multiplayer</a>
-                <h1 class="mp-header__title">🎲 <span>Mensch ärgere dich nicht</span></h1>
+                <a href="multiplayer.php" class="back-link">← Multiplayer</a>
+                <h1>🎲 <span>Mensch ärgere dich nicht</span></h1>
             </div>
-            <span class="mp-header__user"><?php echo $userAvatar . ' ' . htmlspecialchars($userName ?: 'Gast'); ?></span>
+            <span><?php echo $userAvatar . ' ' . htmlspecialchars($userName ?: 'Gast'); ?></span>
         </div>
         
         <!-- LOBBY -->
-        <div id="lobbyScreen" class="mp-screen active">
-            <div class="mp-lobby">
+        <div id="lobbyScreen" class="screen active">
+            <div class="lobby-container">
                 <div style="font-size: 4rem; margin-bottom: 10px;">🎲</div>
-                <h1 class="mp-lobby__title">Mensch ärgere dich nicht</h1>
-                <p class="mp-lobby__subtitle">Das Klassiker-Brettspiel für 2-4 Spieler</p>
+                <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Mensch ärgere dich nicht</h1>
+                <p style="color: var(--text-muted); margin-bottom: 25px;">Das Klassiker-Brettspiel für 2-4 Spieler</p>
                 
-                <div class="mp-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
-                    <h2 class="mp-card__title">👤 Dein Name</h2>
-                    <div class="mp-input-group">
-                        <input type="text" id="playerNameInput" class="mp-input" placeholder="Name eingeben..." maxlength="20">
+                <div class="lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
+                    <h2>👤 Dein Name</h2>
+                    <div class="input-group">
+                        <input type="text" id="playerNameInput" placeholder="Name eingeben..." maxlength="20">
                     </div>
-                    <button class="mp-btn mp-btn--full" onclick="setPlayerName()">Weiter →</button>
+                    <button class="btn" onclick="setPlayerName()">Weiter →</button>
                 </div>
                 
-                <div class="mp-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
-                    <h2 class="mp-card__title">🎮 Neues Spiel</h2>
-                    <button class="mp-btn mp-btn--full" onclick="createGame()">Spiel erstellen</button>
+                <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+                    <h2>🎮 Neues Spiel</h2>
+                    <button class="btn" onclick="createGame()">Spiel erstellen</button>
                 </div>
                 
-                <div class="mp-divider"><span>oder</span></div>
+                <div class="divider"><span>oder</span></div>
                 
-                <div class="mp-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
-                    <h2 class="mp-card__title">🔗 Spiel beitreten</h2>
-                    <div class="mp-input-group">
-                        <input type="text" id="gameCodeInput" class="mp-input mp-game-code-input" placeholder="CODE" maxlength="6">
+                <div class="lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+                    <h2>🔗 Spiel beitreten</h2>
+                    <div class="input-group">
+                        <input type="text" id="gameCodeInput" class="game-code-input" placeholder="CODE" maxlength="6">
                     </div>
-                    <button class="mp-btn mp-btn--secondary mp-btn--full" onclick="joinGame()">Beitreten →</button>
+                    <button class="btn secondary" onclick="joinGame()">Beitreten →</button>
                 </div>
             </div>
         </div>
         
         <!-- WAITING -->
-        <div id="waitingScreen" class="mp-screen">
-            <div class="mp-lobby">
-                <div class="mp-game-code-display">
-                    <p class="mp-text-muted" style="font-size: 0.9rem;">Spiel-Code</p>
-                    <div class="mp-game-code mp-animate-pulse" id="displayCode">------</div>
+        <div id="waitingScreen" class="screen">
+            <div class="lobby-container">
+                <div class="game-code-display">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Spiel-Code</p>
+                    <div class="game-code" id="displayCode">------</div>
                 </div>
                 
-                <div class="mp-card">
-                    <h2 class="mp-card__title">👥 Spieler</h2>
+                <div class="lobby-card">
+                    <h2>👥 Spieler</h2>
                     <div class="players-grid" id="playersGrid">
-                        <div class="player-slot red"><span class="mp-text-muted">🔴 Wartet...</span></div>
-                        <div class="player-slot blue"><span class="mp-text-muted">🔵 Wartet...</span></div>
-                        <div class="player-slot green"><span class="mp-text-muted">🟢 Wartet...</span></div>
-                        <div class="player-slot yellow"><span class="mp-text-muted">🟡 Wartet...</span></div>
+                        <div class="player-slot red"><span style="color: var(--text-muted);">🔴 Wartet...</span></div>
+                        <div class="player-slot blue"><span style="color: var(--text-muted);">🔵 Wartet...</span></div>
+                        <div class="player-slot green"><span style="color: var(--text-muted);">🟢 Wartet...</span></div>
+                        <div class="player-slot yellow"><span style="color: var(--text-muted);">🟡 Wartet...</span></div>
                     </div>
                 </div>
                 
@@ -342,7 +418,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         </div>
         
         <!-- GAME -->
-        <div id="gameScreen" class="mp-screen">
+        <div id="gameScreen" class="screen">
             <div class="game-container">
                 <div class="board-area">
                     <div class="board" id="gameBoard"></div>
@@ -357,7 +433,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                     <div class="info-card dice-area">
                         <h3>🎲 Würfel</h3>
                         <div class="dice" id="dice" onclick="rollDice()">?</div>
-                        <p id="diceMsg" class="mp-text-muted" style="font-size: 0.9rem;">Klicke zum Würfeln</p>
+                        <p id="diceMsg" style="color: var(--text-muted); font-size: 0.9rem;">Klicke zum Würfeln</p>
                     </div>
                     <div class="info-card">
                         <h3>📊 Spieler</h3>
@@ -368,14 +444,14 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         </div>
         
         <!-- RESULT -->
-        <div id="resultScreen" class="mp-screen">
-            <div class="result-container mp-animate-pop">
+        <div id="resultScreen" class="screen">
+            <div class="result-container">
                 <div class="result-card">
                     <div class="result-icon">🏆</div>
                     <div class="result-title" id="winnerName">Gewinner!</div>
-                    <p class="mp-text-muted" style="margin: 20px 0;">hat alle Figuren ins Ziel gebracht!</p>
-                    <button class="mp-btn mp-btn--full" onclick="location.reload()">🔄 Neues Spiel</button>
-                    <button class="mp-btn mp-btn--secondary mp-btn--full mp-mt-1" onclick="location.href='multiplayer.php'">← Zurück</button>
+                    <p style="color: var(--text-muted); margin: 20px 0;">hat alle Figuren ins Ziel gebracht!</p>
+                    <button class="btn" onclick="location.reload()">🔄 Neues Spiel</button>
+                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">← Zurück</button>
                 </div>
             </div>
         </div>

@@ -41,23 +41,22 @@ if (SessionManager::isLoggedIn()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚫ Dame - sgiT Education</title>
+    <!-- Zentrale Multiplayer CSS -->
+    <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===========================================
+           Dame-Spezifische Styles
+           =========================================== */
         :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --bg: #0d1f02;
-            --card-bg: #1e3a08;
-            --text: #ffffff;
-            --text-muted: #a0a0a0;
             --light-square: #d4a76a;
             --dark-square: #8b5a2b;
         }
-        body {
+        body { 
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh;
-            color: var(--text);
+            color: var(--mp-text);
+            margin: 0; padding: 0;
         }
         .container { max-width: 1000px; margin: 0 auto; padding: 15px; }
         
@@ -66,13 +65,13 @@ if (SessionManager::isLoggedIn()) {
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 12px;
             margin-bottom: 20px;
         }
         .header h1 { font-size: 1.4rem; }
-        .header h1 span { color: var(--accent); }
-        .back-link { color: var(--accent); text-decoration: none; }
+        .header h1 span { color: var(--mp-accent); }
+        .back-link { color: var(--mp-accent); text-decoration: none; }
         
         .screen { display: none; }
         .screen.active { display: block; }

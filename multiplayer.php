@@ -87,26 +87,19 @@ $modules = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚔️ Multiplayer - sgiT Education</title>
-    <link rel="stylesheet" href="/assets/css/dark-theme.css">
+    <!-- Zentrale Multiplayer CSS -->
+    <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --bg-dark: #0a0f02;
-            --bg-card: #111a05;
-            --primary: #1A3503;
-            --accent: #43D240;
-            --orange: #E86F2C;
-            --text: #e8f5e9;
-            --text-dim: #81c784;
-            --border: #2d4a0a;
-        }
+        /* ===========================================
+           Multiplayer Hub-Spezifische Styles
+           =========================================== */
         
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh;
-            color: var(--text);
+            color: var(--mp-text);
+            margin: 0; padding: 0;
         }
         
         /* Header */
@@ -116,7 +109,7 @@ $modules = [
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--mp-border);
         }
         
         .header-left {
@@ -126,9 +119,9 @@ $modules = [
         }
         
         .back-btn {
-            background: var(--primary);
-            border: 1px solid var(--border);
-            color: var(--text);
+            background: var(--mp-primary);
+            border: 1px solid var(--mp-border);
+            color: var(--mp-text);
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;

@@ -1,0 +1,754 @@
+/**
+ * ============================================================================
+ * sgiT Education Platform - Multiplayer Theme
+ * ============================================================================
+ * 
+ * Zentrale CSS für alle Multiplayer-Spiele
+ * Ersetzt redundante Inline-Styles in allen Spiel-Dateien
+ * 
+ * @version 1.0
+ * @date 2025-12-14
+ * 
+ * Verwendung:
+ * <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
+ */
+
+/* ===========================================
+   1. CSS Custom Properties
+   =========================================== */
+:root {
+    /* Basis-Farben */
+    --mp-bg-dark: #0a0f02;
+    --mp-bg-medium: #0d1f02;
+    --mp-bg-card: #1e3a08;
+    --mp-bg-input: rgba(0, 0, 0, 0.3);
+    --mp-primary: #1A3503;
+    --mp-accent: #43D240;
+    --mp-accent-hover: #5ae85a;
+    --mp-accent-glow: rgba(67, 210, 64, 0.3);
+    --mp-orange: #E86F2C;
+    --mp-orange-glow: rgba(232, 111, 44, 0.3);
+    
+    /* Text */
+    --mp-text: #ffffff;
+    --mp-text-light: #e8f5e9;
+    --mp-text-muted: #a0a0a0;
+    --mp-text-dim: #81c784;
+    
+    /* Borders */
+    --mp-border: #2d4a0a;
+    --mp-border-light: rgba(67, 210, 64, 0.3);
+    
+    /* Spieler-Farben */
+    --mp-red: #e74c3c;
+    --mp-blue: #3498db;
+    --mp-green: #27ae60;
+    --mp-yellow: #f1c40f;
+    --mp-gold: #FFD700;
+    
+    /* Status-Farben */
+    --mp-success: #22c55e;
+    --mp-success-bg: rgba(34, 197, 94, 0.15);
+    --mp-warning: #eab308;
+    --mp-warning-bg: rgba(234, 179, 8, 0.15);
+    --mp-error: #ef4444;
+    --mp-error-bg: rgba(239, 68, 68, 0.15);
+    --mp-info: #3b82f6;
+    --mp-info-bg: rgba(59, 130, 246, 0.15);
+    
+    /* Spacing */
+    --mp-radius-sm: 8px;
+    --mp-radius-md: 12px;
+    --mp-radius-lg: 16px;
+    --mp-radius-xl: 20px;
+    
+    /* Transitions */
+    --mp-transition-fast: all 0.15s ease;
+    --mp-transition: all 0.2s ease;
+    --mp-transition-slow: all 0.3s ease;
+    
+    /* Shadows */
+    --mp-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --mp-shadow-md: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --mp-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --mp-shadow-glow: 0 0 20px var(--mp-accent-glow);
+}
+
+
+/* ===========================================
+   2. Reset & Base
+   =========================================== */
+.mp-body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
+    min-height: 100vh;
+    color: var(--mp-text);
+    line-height: 1.5;
+}
+
+.mp-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+/* ===========================================
+   3. Header Component
+   =========================================== */
+.mp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--mp-bg-card);
+    border-radius: var(--mp-radius-md);
+    margin-bottom: 20px;
+    border: 1px solid var(--mp-border);
+}
+
+.mp-header__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mp-header__title span {
+    color: var(--mp-accent);
+}
+
+.mp-header__left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mp-header__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* ===========================================
+   4. Navigation & Links
+   =========================================== */
+.mp-back-link {
+    color: var(--mp-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--mp-transition);
+}
+
+.mp-back-link:hover {
+    text-decoration: underline;
+    color: var(--mp-accent-hover);
+}
+
+/* ===========================================
+   5. User Info Badge
+   =========================================== */
+.mp-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--mp-bg-input);
+    padding: 8px 15px;
+    border-radius: var(--mp-radius-xl);
+}
+
+.mp-user-info__avatar {
+    font-size: 24px;
+}
+
+.mp-user-info__name {
+    font-weight: 600;
+}
+
+.mp-user-info__elo {
+    color: var(--mp-accent);
+    font-size: 14px;
+}
+
+/* ===========================================
+   6. Screen System (View Switching)
+   =========================================== */
+.mp-screen {
+    display: none;
+}
+
+.mp-screen.active {
+    display: block;
+    animation: mp-fadeIn 0.3s ease-out;
+}
+
+
+/* ===========================================
+   7. Lobby Components
+   =========================================== */
+.mp-lobby {
+    max-width: 500px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+.mp-lobby__title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.mp-lobby__subtitle {
+    color: var(--mp-text-muted);
+    margin-bottom: 30px;
+}
+
+/* ===========================================
+   8. Card Component
+   =========================================== */
+.mp-card {
+    background: var(--mp-bg-card);
+    border: 1px solid var(--mp-border);
+    border-radius: var(--mp-radius-lg);
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: var(--mp-transition);
+}
+
+.mp-card:hover {
+    border-color: var(--mp-border-light);
+}
+
+.mp-card__title {
+    color: var(--mp-accent);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.mp-card--clickable {
+    cursor: pointer;
+}
+
+.mp-card--clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--mp-shadow-md);
+    border-color: var(--mp-accent);
+}
+
+
+/* ===========================================
+   9. Form Elements
+   =========================================== */
+.mp-input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.mp-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--mp-text-muted);
+    font-size: 0.9rem;
+}
+
+.mp-input,
+.mp-select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid transparent;
+    border-radius: var(--mp-radius-sm);
+    background: var(--mp-bg-input);
+    color: var(--mp-text);
+    font-size: 1rem;
+    transition: var(--mp-transition);
+}
+
+.mp-input:focus,
+.mp-select:focus {
+    outline: none;
+    border-color: var(--mp-accent);
+}
+
+.mp-input::placeholder {
+    color: var(--mp-text-muted);
+}
+
+/* Game Code Input (special) */
+.mp-game-code-input {
+    font-size: 1.5rem !important;
+    text-align: center;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Game Code Display */
+.mp-game-code-display {
+    background: var(--mp-bg-card);
+    border-radius: var(--mp-radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mp-game-code {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--mp-accent);
+    letter-spacing: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+
+/* ===========================================
+   10. Button System
+   =========================================== */
+.mp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--mp-radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--mp-transition);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Primary Button (Green) */
+.mp-btn--primary {
+    background: var(--mp-accent);
+    color: var(--mp-primary);
+}
+
+.mp-btn--primary:hover {
+    background: var(--mp-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--mp-accent-glow);
+}
+
+/* Secondary Button (Outline) */
+.mp-btn--secondary {
+    background: transparent;
+    color: var(--mp-text);
+    border: 2px solid var(--mp-accent);
+}
+
+.mp-btn--secondary:hover {
+    background: var(--mp-accent);
+    color: var(--mp-primary);
+}
+
+/* Danger Button (Red) */
+.mp-btn--danger {
+    background: var(--mp-error);
+    color: white;
+}
+
+.mp-btn--danger:hover {
+    background: #dc2626;
+}
+
+/* Gold Button */
+.mp-btn--gold {
+    background: var(--mp-gold);
+    color: #333;
+}
+
+/* Orange Button */
+.mp-btn--orange {
+    background: var(--mp-orange);
+    color: white;
+}
+
+/* Button Sizes */
+.mp-btn--small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.mp-btn--large {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+}
+
+.mp-btn--full {
+    width: 100%;
+}
+
+/* Disabled State */
+.mp-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Button Shine Effect on Hover */
+.mp-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.mp-btn:hover::after {
+    left: 100%;
+}
+
+
+/* ===========================================
+   11. Player Components
+   =========================================== */
+.mp-players-list {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.mp-player-slot {
+    background: var(--mp-bg-medium);
+    border: 2px dashed var(--mp-text-muted);
+    border-radius: var(--mp-radius-md);
+    padding: 15px 20px;
+    text-align: center;
+    min-width: 120px;
+    transition: var(--mp-transition);
+}
+
+.mp-player-slot--filled {
+    border-style: solid;
+    border-color: var(--mp-accent);
+    background: var(--mp-bg-card);
+}
+
+.mp-player-slot--current {
+    border-color: var(--mp-gold);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.mp-player-slot__avatar {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.mp-player-slot__name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.mp-player-slot__score {
+    color: var(--mp-accent);
+    font-size: 0.85rem;
+}
+
+/* ===========================================
+   12. Divider
+   =========================================== */
+.mp-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: var(--mp-text-muted);
+}
+
+.mp-divider::before,
+.mp-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--mp-text-muted);
+    opacity: 0.3;
+}
+
+.mp-divider span {
+    padding: 0 15px;
+}
+
+
+/* ===========================================
+   13. Toast / Notifications
+   =========================================== */
+.mp-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--mp-bg-card);
+    border: 2px solid var(--mp-accent);
+    color: var(--mp-text);
+    padding: 15px 30px;
+    border-radius: var(--mp-radius-md);
+    font-weight: 600;
+    z-index: 10000;
+    opacity: 0;
+    transition: var(--mp-transition-slow);
+    box-shadow: var(--mp-shadow-lg);
+}
+
+.mp-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.mp-toast--success {
+    border-color: var(--mp-success);
+    background: var(--mp-success-bg);
+}
+
+.mp-toast--error {
+    border-color: var(--mp-error);
+    background: var(--mp-error-bg);
+}
+
+.mp-toast--warning {
+    border-color: var(--mp-warning);
+    background: var(--mp-warning-bg);
+}
+
+.mp-toast--info {
+    border-color: var(--mp-info);
+    background: var(--mp-info-bg);
+}
+
+/* ===========================================
+   14. Status Badges
+   =========================================== */
+.mp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: var(--mp-radius-xl);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.mp-badge--waiting {
+    background: var(--mp-warning-bg);
+    color: var(--mp-warning);
+}
+
+.mp-badge--ready {
+    background: var(--mp-success-bg);
+    color: var(--mp-success);
+}
+
+.mp-badge--playing {
+    background: var(--mp-info-bg);
+    color: var(--mp-info);
+}
+
+
+/* ===========================================
+   15. Animations
+   =========================================== */
+@keyframes mp-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mp-slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mp-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes mp-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes mp-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes mp-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Animation Classes */
+.mp-animate-fadeIn {
+    animation: mp-fadeIn 0.3s ease-out;
+}
+
+.mp-animate-slideUp {
+    animation: mp-slideUp 0.3s ease-out;
+}
+
+.mp-animate-pulse {
+    animation: mp-pulse 2s infinite;
+}
+
+.mp-animate-bounce {
+    animation: mp-bounce 0.5s ease;
+}
+
+.mp-animate-spin {
+    animation: mp-spin 1s linear infinite;
+}
+
+.mp-animate-shake {
+    animation: mp-shake 0.3s ease;
+}
+
+
+/* ===========================================
+   16. Responsive Design
+   =========================================== */
+
+/* Mobile First - Small Screens */
+@media (max-width: 480px) {
+    .mp-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .mp-header__title {
+        font-size: 1.1rem;
+    }
+    
+    .mp-btn {
+        padding: 12px 20px;
+        width: 100%;
+    }
+    
+    .mp-game-code {
+        font-size: 1.8rem;
+        letter-spacing: 5px;
+    }
+    
+    .mp-lobby__title {
+        font-size: 1.8rem;
+    }
+    
+    .mp-player-slot {
+        min-width: 100px;
+        padding: 10px 15px;
+    }
+    
+    .mp-players-list {
+        gap: 8px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+    .mp-container {
+        padding: 15px;
+    }
+    
+    .mp-header__title {
+        font-size: 1.2rem;
+    }
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    .mp-container {
+        max-width: 1100px;
+    }
+}
+
+/* ===========================================
+   17. Utility Classes
+   =========================================== */
+.mp-text-center { text-align: center; }
+.mp-text-left { text-align: left; }
+.mp-text-right { text-align: right; }
+
+.mp-text-muted { color: var(--mp-text-muted); }
+.mp-text-accent { color: var(--mp-accent); }
+.mp-text-error { color: var(--mp-error); }
+.mp-text-success { color: var(--mp-success); }
+
+.mp-mt-1 { margin-top: 10px; }
+.mp-mt-2 { margin-top: 20px; }
+.mp-mt-3 { margin-top: 30px; }
+.mp-mb-1 { margin-bottom: 10px; }
+.mp-mb-2 { margin-bottom: 20px; }
+.mp-mb-3 { margin-bottom: 30px; }
+
+.mp-hidden { display: none !important; }
+.mp-flex { display: flex; }
+.mp-flex-center { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.mp-gap-1 { gap: 10px; }
+.mp-gap-2 { gap: 20px; }
+
+/* ===========================================
+   18. Loading Spinner
+   =========================================== */
+.mp-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--mp-border);
+    border-top-color: var(--mp-accent);
+    border-radius: 50%;
+    animation: mp-spin 1s linear infinite;
+}
+
+.mp-spinner--small {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+
+.mp-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 40px;
+    color: var(--mp-text-muted);
+}

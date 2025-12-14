@@ -48,24 +48,30 @@ elseif (isset($_SESSION['wallet_child_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎨 Montagsmaler - sgiT Education</title>
+    <!-- Zentrale Multiplayer CSS -->
+    <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===========================================
+           Montagsmaler-Spezifische Styles
+           =========================================== */
+        
+        /* Lokale Aliase für Kompatibilität */
         :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --bg: #0d1f02;
-            --card-bg: #1e3a08;
-            --text: #ffffff;
-            --text-muted: #a0a0a0;
-            --error: #ff4444;
-            --success: #43D240;
-            --warning: #ffaa00;
+            --bg: var(--mp-bg-medium);
+            --card-bg: var(--mp-bg-card);
+            --text: var(--mp-text);
+            --text-muted: var(--mp-text-muted);
+            --error: var(--mp-error);
+            --success: var(--mp-success);
+            --warning: var(--mp-warning);
         }
-        body {
+        
+        body { 
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh;
-            color: var(--text);
+            color: var(--mp-text);
+            margin: 0; padding: 0;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
         
@@ -1197,6 +1203,15 @@ elseif (isset($_SESSION['wallet_child_id'])) {
                 
                 if (data.is_correct) {
                     showToast(data.message, 'success');
+                    
+                    // BUG-047 FIX: Bei korrektem Raten nächste Runde starten
+                    if (data.round_ended) {
+                        // Kurze Pause, dann nächste Runde (nur Host startet)
+                        showToast(`🎉 ${data.guesser_name || 'Jemand'} hat es erraten!`, 'success');
+                        if (gameState.isHost) {
+                            setTimeout(() => nextRound(), 3000);
+                        }
+                    }
                 }
             } catch (err) {
                 showToast('Fehler beim Senden', 'error');

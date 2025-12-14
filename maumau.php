@@ -46,23 +46,21 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🃏 Mau Mau - sgiT Education</title>
+    <!-- Zentrale Multiplayer CSS -->
+    <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===========================================
+           Mau Mau-Spezifische Styles
+           =========================================== */
         :root {
-            --primary: #1A3503;
-            --accent: #43D240;
-            --bg: #0d1f02;
-            --card-bg: #1e3a08;
-            --text: #ffffff;
-            --text-muted: #a0a0a0;
-            --red: #e74c3c;
             --card-white: #fffef5;
         }
-        body {
+        body { 
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh;
-            color: var(--text);
+            color: var(--mp-text);
+            margin: 0; padding: 0;
         }
         .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
         
@@ -71,7 +69,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 12px;
             margin-bottom: 20px;
         }

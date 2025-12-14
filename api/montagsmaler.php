@@ -454,10 +454,19 @@ function submitGuess($db, $input) {
     $stmt->bindValue(6, $points);
     $stmt->execute();
     
+    // BUG-047 FIX: Bei korrektem Raten - Spieler-Name holen für Anzeige
+    $guesserName = '';
+    if ($isCorrect) {
+        $guesser = $db->querySingle("SELECT player_name FROM game_players WHERE id = $playerId", true);
+        $guesserName = $guesser ? $guesser['player_name'] : '';
+    }
+    
     return [
         'success' => true,
         'is_correct' => $isCorrect,
         'points' => $points,
+        'round_ended' => $isCorrect, // BUG-047: Signalisiert Frontend dass Runde beendet
+        'guesser_name' => $guesserName, // Wer hat geraten
         'message' => $isCorrect ? "🎉 Richtig! +$points Punkte" : ''
     ];
 }
