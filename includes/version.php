@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.37.0');
+define('SGIT_VERSION', '3.38.0');
 define('SGIT_VERSION_DATE', '14.12.2025');
 
 // Kurzversion für UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.37');
+define('SGIT_VERSION_SHORT', '3.38');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Dame Brettspiel');
+define('SGIT_VERSION_NAME', 'Schach PvP Multiplayer');
