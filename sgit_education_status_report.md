@@ -118,6 +118,70 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Dateien** | `/madn.php` (CSS/HTML), `/api/madn.php` (Positionslogik) |
 | **Aufwand** | ~4-6h (komplettes Redesign) |
 
+### 🔴 BUG-056: Poker - River-Karte wird nicht gezogen wenn beide checken - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | HOCH |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Symptom** | Bei Turn (4 Karten) checken beide Spieler, aber 5. Karte (River) wird nicht aufgedeckt |
+| **Dateien** | `/api/poker.php` |
+| **Ursache** | Vermutlich fehlende Logik nach beidseitigem Check zum Phasenwechsel |
+| **Aufwand** | ~1h |
+
+### 🔴 BUG-057: Child Dashboard - Kein Dark Mode - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | MITTEL |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Symptom** | Dashboard hat hellen/orangen Header, kein einheitliches Dark Theme |
+| **Datei** | `/wallet/child_dashboard.php` |
+| **Aufwand** | ~1h |
+
+### 🔴 BUG-058: Bot Dashboard Login - Kein Dark Mode - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | NIEDRIG |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Symptom** | Login-Box ist weiß statt Dark Theme |
+| **Datei** | `/bots/bot_summary.php` |
+| **Aufwand** | ~30min |
+
+### 🔴 BUG-059: Backup Manager - "NaN undefined" bei Quellcode-Größe - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | MITTEL |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Symptom** | Quellcode-Statistik zeigt "NaN undefined" statt Größenangabe |
+| **Datei** | `/backup_manager.php` |
+| **Ursache** | JavaScript-Fehler bei Größenberechnung |
+| **Aufwand** | ~30min |
+
+### 🔴 BUG-060: Backup Manager - Dateinamen schlecht lesbar - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | NIEDRIG |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Symptom** | Backup-Dateinamen zu dunkel, kaum lesbar |
+| **Datei** | `/backup_manager.php` |
+| **Fix** | CSS Textfarbe heller machen |
+| **Aufwand** | ~15min |
+
+### 🟡 FEATURE-001: Auto-Generator - Level-Auswahl - OFFEN
+| Info | Details |
+|------|---------|
+| **Priorität** | MITTEL |
+| **Entdeckt** | 14.12.2025 |
+| **Status** | ⏳ OFFEN |
+| **Wunsch** | Level-Auswahl im Generator hinzufügen |
+| **Verhalten** | Wenn nichts ausgewählt: Fragen für alle Level generieren |
+| **Datei** | `/auto_generator.php` |
+| **Aufwand** | ~2h |
+
 ### ℹ️ BUG-053: Rommé - Doppelte Karten im Deck - KEIN BUG
 | Info | Details |
 |------|---------|
