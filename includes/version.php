@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.35.0');
+define('SGIT_VERSION', '3.36.0');
 define('SGIT_VERSION_DATE', '13.12.2025');
 
 // Kurzversion für UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.35');
+define('SGIT_VERSION_SHORT', '3.36');
 
 // Für Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Mensch ärgere dich nicht');
+define('SGIT_VERSION_NAME', 'Mau Mau Kartenspiel');
