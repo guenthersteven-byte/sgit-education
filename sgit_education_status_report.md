@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.45.3 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
+**Version:** 3.45.4 | **Datum:** 14. Dezember 2025 | **Module:** 21/21 ✅
 
 ---
 
@@ -118,27 +118,25 @@ GitHub:         https://github.com/guenthersteven-byte/sgit-education
 | **Dateien** | `/madn.php` (CSS/HTML), `/api/madn.php` (Positionslogik) |
 | **Aufwand** | ~4-6h (komplettes Redesign) |
 
-### 🔴 BUG-053: Rommé - Doppelte Karten im Deck - OFFEN
+### ℹ️ BUG-053: Rommé - Doppelte Karten im Deck - KEIN BUG
 | Info | Details |
 |------|---------|
-| **Priorität** | HOCH |
-| **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
-| **Symptom** | Kreuz 3 erscheint zweimal in der Hand |
-| **Datei** | `/api/romme.php` |
-| **Ursache** | Wahrscheinlich fehlerhafte Deck-Generierung (2x52 Karten?) |
-| **Aufwand** | ~30min |
+| **Priorität** | - |
+| **Status** | ℹ️ Kein Bug - Spielregel |
+| **Ergebnis** | Bei Rommé ist 2x52 Karten + Joker KORREKT! |
+| **Info** | Jede Karte existiert doppelt - das ist Teil der Spielregeln |
 
-### 🔴 BUG-054: Rommé - Karten nicht sortierbar - OFFEN
+### ✅ BUG-054: Rommé - Karten nicht sortierbar - BEHOBEN
 | Info | Details |
 |------|---------|
 | **Priorität** | MITTEL |
 | **Entdeckt** | 14.12.2025 |
-| **Status** | ⏳ OFFEN |
-| **Symptom** | Spieler kann Karten nicht nach Wunsch umsortieren |
-| **Feature** | Drag & Drop zum Sortieren der Handkarten |
-| **Dateien** | `/romme.php` (JS Drag & Drop) |
-| **Aufwand** | ~2h |
+| **Behoben** | 14.12.2025 ✅ |
+| **Symptom** | Spieler konnte Karten nicht nach Wunsch umsortieren |
+| **Datei** | `/romme.php` |
+| **Fix** | Sortier-Buttons (🎨 Farbe, 🔢 Wert) + JavaScript-Sortierung hinzugefügt |
+| **Features** | Nach Farbe sortieren, nach Wert sortieren, Sortierung bleibt nach Server-Update erhalten |
+| **Status** | ✅ BEHOBEN |
 
 ### ✅ BUG-055: Schach PvP - Beide Spieler haben weiße Figuren - BEHOBEN
 | Info | Details |

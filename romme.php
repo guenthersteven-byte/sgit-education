@@ -157,6 +157,10 @@ if (SessionManager::isLoggedIn()) {
         .hand-area h3 { color: var(--accent); font-size: 0.9rem; margin-bottom: 10px; }
         .hand { display: flex; justify-content: center; flex-wrap: wrap; padding: 10px; }
         
+        /* BUG-054 FIX: Sortier-Buttons */
+        .sort-buttons { display: flex; gap: 8px; margin-bottom: 10px; justify-content: center; }
+        .btn.tiny { padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; }
+        
         /* Action Buttons */
         .actions { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
         
@@ -302,6 +306,10 @@ if (SessionManager::isLoggedIn()) {
                     <!-- Meine Hand -->
                     <div class="hand-area">
                         <h3>🃏 Deine Karten (<span id="handCount">0</span>) - Klicke zum Auswählen</h3>
+                        <div class="sort-buttons">
+                            <button class="btn tiny" onclick="sortHand('suit')" title="Nach Farbe sortieren">🎨 Farbe</button>
+                            <button class="btn tiny" onclick="sortHand('value')" title="Nach Wert sortieren">🔢 Wert</button>
+                        </div>
                         <div class="hand" id="myHand"></div>
                         <div class="actions">
                             <button class="btn small" id="meldBtn" onclick="meldSelected()" disabled>📤 Auslegen</button>
@@ -368,6 +376,37 @@ if (SessionManager::isLoggedIn()) {
         let pollInterval = null;
         let currentMelds = [];
         let myHand = [];
+        let sortMode = 'none'; // BUG-054 FIX: Sortier-Modus speichern
+        
+        // BUG-054 FIX: Karten sortieren
+        const SUIT_ORDER = { 'hearts': 0, 'diamonds': 1, 'clubs': 2, 'spades': 3, 'joker': 4 };
+        const VALUE_ORDER = { 'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'JOKER': 14 };
+        
+        function applySorting() {
+            if (sortMode === 'suit') {
+                myHand.sort((a, b) => {
+                    const suitDiff = SUIT_ORDER[a.suit] - SUIT_ORDER[b.suit];
+                    if (suitDiff !== 0) return suitDiff;
+                    return VALUE_ORDER[a.value] - VALUE_ORDER[b.value];
+                });
+            } else if (sortMode === 'value') {
+                myHand.sort((a, b) => {
+                    const valueDiff = VALUE_ORDER[a.value] - VALUE_ORDER[b.value];
+                    if (valueDiff !== 0) return valueDiff;
+                    return SUIT_ORDER[a.suit] - SUIT_ORDER[b.suit];
+                });
+            }
+        }
+        
+        function sortHand(mode) {
+            sortMode = mode;
+            applySorting();
+            // Neu rendern
+            document.getElementById('myHand').innerHTML = myHand.map((card, i) => 
+                renderCard(card, gameState.selectedCards.includes(card.id), true)
+            ).join('');
+            showToast(`🎴 Sortiert nach ${mode === 'suit' ? 'Farbe' : 'Wert'}`, 'info');
+        }
         
         function showScreen(name) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -460,7 +499,13 @@ if (SessionManager::isLoggedIn()) {
             else if (game.status === 'playing') {
                 if (prevStatus !== 'playing') showScreen('game');
                 const me = data.players.find(p => p.hand);
-                if (me) myHand = me.hand;
+                if (me) {
+                    myHand = me.hand;
+                    // BUG-054 FIX: Sortierung beibehalten nach Server-Update
+                    if (sortMode !== 'none') {
+                        applySorting();
+                    }
+                }
                 renderGame(data);
             }
             else if (game.status === 'finished') {
