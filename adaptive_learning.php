@@ -2026,6 +2026,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 <span class="nav-link-icon">📊</span>
                 <span>Statistik</span>
             </a>
+            <a href="hausaufgaben/" class="nav-link">
+                <span class="nav-link-icon">📝</span>
+                <span>Hausaufgaben</span>
+            </a>
             <?php if ($walletEnabled): ?>
             <a href="wallet/child_dashboard.php" class="nav-link">
                 <span class="nav-link-icon">₿</span>
@@ -2170,6 +2174,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <div>Kochen <span style="font-size: 10px; color: var(--accent);">NEU!</span></div>
         </div>
         
+        <!-- Hausaufgaben -->
+        <div class="module-card" onclick="window.location.href='hausaufgaben/'" style="border: 2px dashed var(--accent);">
+            <div class="module-icon">📝</div>
+            <div>Hausaufgaben <span style="font-size: 10px; color: var(--accent);">NEU!</span></div>
+        </div>
+
         <!-- Multiplayer -->
         <div class="module-card multiplayer-card" onclick="window.location.href='/multiplayer.php'" style="border: 2px solid #E86F2C; background: linear-gradient(135deg, rgba(232,111,44,0.15), rgba(255,140,66,0.1));">
             <div class="module-icon">⚔️</div>
