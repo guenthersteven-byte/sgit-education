@@ -8,11 +8,11 @@
  * @author sgiT Solution Engineering & IT Services
  */
 
-define('SGIT_VERSION', '3.52.0');
+define('SGIT_VERSION', '3.53.0');
 define('SGIT_VERSION_DATE', '12.02.2026');
 
 // Kurzversion fuer UI (ohne Patch)
-define('SGIT_VERSION_SHORT', '3.52');
+define('SGIT_VERSION_SHORT', '3.53');
 
 // Fuer Changelog/Release Notes
-define('SGIT_VERSION_NAME', 'Multiplayer KI-Gegner + SVG Redesign');
+define('SGIT_VERSION_NAME', 'Hausaufgaben-Upload System');

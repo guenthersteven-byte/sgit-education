@@ -32,5 +32,5 @@ if (!headers_sent()) {
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
     // Permissions Policy (ehemals Feature-Policy)
-    header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+    header('Permissions-Policy: geolocation=(), microphone=(), camera=(self)');
 }

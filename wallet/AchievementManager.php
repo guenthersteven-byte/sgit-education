@@ -361,6 +361,76 @@ class AchievementManager {
             ],
             
             // ================================================================
+            // 📝 HOMEWORK - Hausaufgaben-Uploads
+            // ================================================================
+
+            'homework_first' => [
+                'key' => 'homework_first',
+                'name' => 'Erste Hausaufgabe',
+                'description' => 'Lade deine erste Hausaufgabe hoch',
+                'icon' => '📝',
+                'category' => 'homework',
+                'reward_sats' => 10,
+                'requirement' => ['type' => 'homework_uploads', 'count' => 1],
+                'tier' => 'bronze'
+            ],
+
+            'homework_10' => [
+                'key' => 'homework_10',
+                'name' => 'Fleissiger Schueler',
+                'description' => 'Lade 10 Hausaufgaben hoch',
+                'icon' => '📚',
+                'category' => 'homework',
+                'reward_sats' => 25,
+                'requirement' => ['type' => 'homework_uploads', 'count' => 10],
+                'tier' => 'bronze'
+            ],
+
+            'homework_50' => [
+                'key' => 'homework_50',
+                'name' => 'Dokumentar',
+                'description' => 'Lade 50 Hausaufgaben hoch',
+                'icon' => '🗂️',
+                'category' => 'homework',
+                'reward_sats' => 100,
+                'requirement' => ['type' => 'homework_uploads', 'count' => 50],
+                'tier' => 'silver'
+            ],
+
+            'homework_100' => [
+                'key' => 'homework_100',
+                'name' => 'Archiv-Meister',
+                'description' => 'Lade 100 Hausaufgaben hoch',
+                'icon' => '🏛️',
+                'category' => 'homework',
+                'reward_sats' => 250,
+                'requirement' => ['type' => 'homework_uploads', 'count' => 100],
+                'tier' => 'gold'
+            ],
+
+            'homework_all_subjects' => [
+                'key' => 'homework_all_subjects',
+                'name' => 'Allrounder',
+                'description' => 'Lade Hausaufgaben in 5 verschiedenen Faechern hoch',
+                'icon' => '🌈',
+                'category' => 'homework',
+                'reward_sats' => 50,
+                'requirement' => ['type' => 'homework_subjects', 'count' => 5],
+                'tier' => 'silver'
+            ],
+
+            'homework_streak_7' => [
+                'key' => 'homework_streak_7',
+                'name' => 'Woechentlicher Sammler',
+                'description' => 'Lade 7 Tage in Folge Hausaufgaben hoch',
+                'icon' => '📅',
+                'category' => 'homework',
+                'reward_sats' => 75,
+                'requirement' => ['type' => 'homework_streak', 'count' => 7],
+                'tier' => 'silver'
+            ],
+
+            // ================================================================
             // ⭐ SPECIAL - Besondere Achievements
             // ================================================================
             
@@ -615,7 +685,7 @@ class AchievementManager {
         
         // Nach Kategorie
         $byCategory = [];
-        foreach (['learning', 'streak', 'sats', 'module', 'special'] as $cat) {
+        foreach (['learning', 'streak', 'sats', 'module', 'homework', 'special'] as $cat) {
             $catTotal = count(array_filter(self::$achievements, fn($a) => $a['category'] === $cat));
             $catUnlocked = count(array_filter($unlocked, fn($a) => $a['category'] === $cat));
             $byCategory[$cat] = [
@@ -693,6 +763,15 @@ class AchievementManager {
             $moduleStats[strtolower($row['module'])] = (int) $row['count'];
         }
         
+        // Homework-Stats (Cross-DB)
+        $hwStats = ['total_uploads' => 0, 'distinct_subjects' => 0, 'consecutive_days' => 0];
+        try {
+            require_once __DIR__ . '/../hausaufgaben/HausaufgabenManager.php';
+            $hwStats = HausaufgabenManager::getStatsForAchievements($childId);
+        } catch (Exception $e) {
+            // Hausaufgaben-Modul noch nicht installiert - kein Fehler
+        }
+
         return [
             'sessions' => $sessions,
             'correct_answers' => $correctAnswers,
@@ -702,7 +781,10 @@ class AchievementManager {
             'longest_streak' => (int) ($childData['longest_streak'] ?? 0),
             'modules' => $moduleStats,
             'modules_count' => count($moduleStats),
-            'last_activity' => $childData['last_activity_date'] ?? null
+            'last_activity' => $childData['last_activity_date'] ?? null,
+            'homework_uploads' => $hwStats['total_uploads'],
+            'homework_subjects' => $hwStats['distinct_subjects'],
+            'homework_streak' => $hwStats['consecutive_days'],
         ];
     }
     
@@ -737,6 +819,15 @@ class AchievementManager {
             case 'all_modules':
                 return $stats['modules_count'] >= $count;
                 
+            case 'homework_uploads':
+                return ($stats['homework_uploads'] ?? 0) >= $count;
+
+            case 'homework_subjects':
+                return ($stats['homework_subjects'] ?? 0) >= $count;
+
+            case 'homework_streak':
+                return ($stats['homework_streak'] ?? 0) >= $count;
+
             case 'time_based':
                 $hour = (int) date('H');
                 if (isset($req['before'])) {
@@ -800,6 +891,15 @@ class AchievementManager {
                 break;
             case 'all_modules':
                 $current = $stats['modules_count'];
+                break;
+            case 'homework_uploads':
+                $current = $stats['homework_uploads'] ?? 0;
+                break;
+            case 'homework_subjects':
+                $current = $stats['homework_subjects'] ?? 0;
+                break;
+            case 'homework_streak':
+                $current = $stats['homework_streak'] ?? 0;
                 break;
             default:
                 $required = 1;

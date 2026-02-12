@@ -108,6 +108,10 @@ function renderHeader($showNav = true, $showUserInfo = true) {
                     <span class="nav-icon">🔢</span>
                     <span class="nav-text">Mathe</span>
                 </a>
+                <a href="<?php echo BASE_URL; ?>hausaufgaben/" class="nav-link">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">Hausaufgaben</span>
+                </a>
                 <a href="<?php echo BASE_URL; ?>?logout=1" class="nav-link nav-logout">
                     <span class="nav-icon">👋</span>
                     <span class="nav-text">Tschüss</span>

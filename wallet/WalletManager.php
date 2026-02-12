@@ -121,6 +121,24 @@ class WalletManager {
             $this->db->exec("ALTER TABLE child_wallets ADD COLUMN birthdate DATE");
             error_log("WalletManager Migration: birthdate Spalte hinzugefügt (BUG-017 Fix)");
         }
+
+        // Migration 2: current_grade Spalte für Hausaufgaben-System (v1.6)
+        $columnExists = $this->db->querySingle(
+            "SELECT COUNT(*) FROM pragma_table_info('child_wallets') WHERE name='current_grade'"
+        );
+        if (!$columnExists) {
+            $this->db->exec("ALTER TABLE child_wallets ADD COLUMN current_grade INTEGER DEFAULT NULL");
+            error_log("WalletManager Migration: current_grade Spalte hinzugefügt (v1.6)");
+        }
+
+        // Migration 3: current_school_year Spalte für Hausaufgaben-System (v1.6)
+        $columnExists = $this->db->querySingle(
+            "SELECT COUNT(*) FROM pragma_table_info('child_wallets') WHERE name='current_school_year'"
+        );
+        if (!$columnExists) {
+            $this->db->exec("ALTER TABLE child_wallets ADD COLUMN current_school_year TEXT DEFAULT NULL");
+            error_log("WalletManager Migration: current_school_year Spalte hinzugefügt (v1.6)");
+        }
     }
     
     /**
@@ -524,7 +542,7 @@ class WalletManager {
      * Aktualisiert Kind-Wallet Daten
      */
     public function updateChildWallet(int $childId, array $data): bool {
-        $allowedFields = ['child_name', 'avatar', 'birth_year', 'btc_address', 'lightning_address', 'is_active'];
+        $allowedFields = ['child_name', 'avatar', 'birth_year', 'btc_address', 'lightning_address', 'is_active', 'current_grade', 'current_school_year'];
         $updates = [];
         $values = [':id' => $childId];
         
@@ -789,6 +807,105 @@ class WalletManager {
         }
     }
     
+    /**
+     * Vergibt einen festen Sat-Betrag (umgeht calculateReward)
+     *
+     * Fuer Module wie Hausaufgaben, die einen festen Betrag vergeben
+     * statt den Score-basierten Reward aus calculateReward().
+     * Folgt dem Transaction-Pattern aus earnSats().
+     *
+     * @param int $childId Kind-ID
+     * @param int $amount Fester Sat-Betrag
+     * @param string $reason Grund fuer die Gutschrift
+     * @param string $module Modul-Name (z.B. 'hausaufgaben')
+     * @return array Ergebnis mit success, sats, new_balance
+     */
+    public function creditSats(int $childId, int $amount, string $reason = '', string $module = ''): array {
+        if ($amount <= 0) {
+            return ['success' => false, 'error' => 'Ungueltiger Betrag'];
+        }
+
+        // System aktiv?
+        if (!$this->getConfig('system_enabled', true)) {
+            return ['success' => false, 'error' => 'Reward-System ist deaktiviert'];
+        }
+
+        // Family Wallet Balance pruefen
+        $familyBalance = $this->getFamilyBalance();
+        if ($familyBalance < $amount) {
+            return [
+                'success' => false,
+                'sats' => 0,
+                'error' => 'Family Wallet leer! Eltern muessen aufladen.'
+            ];
+        }
+
+        $this->db->exec("BEGIN TRANSACTION");
+
+        try {
+            // 1. Family Wallet reduzieren
+            $stmt = $this->db->prepare("
+                UPDATE family_wallet
+                SET balance_sats = balance_sats - :sats,
+                    total_distributed = total_distributed + :sats,
+                    updated_at = CURRENT_TIMESTAMP
+            ");
+            $stmt->bindValue(':sats', $amount, SQLITE3_INTEGER);
+            $stmt->execute();
+
+            // 2. Kind-Wallet erhoehen
+            $stmt = $this->db->prepare("
+                UPDATE child_wallets
+                SET balance_sats = balance_sats + :sats,
+                    total_earned = total_earned + :sats,
+                    last_activity_date = DATE('now'),
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = :id
+            ");
+            $stmt->bindValue(':sats', $amount, SQLITE3_INTEGER);
+            $stmt->bindValue(':id', $childId, SQLITE3_INTEGER);
+            $stmt->execute();
+
+            $newBalance = $this->getChildBalance($childId);
+
+            // 3. Transaktion loggen
+            $stmt = $this->db->prepare("
+                INSERT INTO sat_transactions
+                (child_id, type, amount_sats, reason, module, balance_after)
+                VALUES (:child_id, 'earn', :sats, :reason, :module, :balance)
+            ");
+            $stmt->bindValue(':child_id', $childId, SQLITE3_INTEGER);
+            $stmt->bindValue(':sats', $amount, SQLITE3_INTEGER);
+            $stmt->bindValue(':reason', $reason);
+            $stmt->bindValue(':module', $module);
+            $stmt->bindValue(':balance', $newBalance, SQLITE3_INTEGER);
+            $stmt->execute();
+
+            // 4. Daily Stats updaten
+            $this->updateDailyStats($childId, $amount, 0, 0);
+
+            // 5. Streak updaten
+            $this->updateStreak($childId);
+
+            $this->db->exec("COMMIT");
+
+            return [
+                'success' => true,
+                'sats' => $amount,
+                'new_balance' => $newBalance
+            ];
+
+        } catch (Exception $e) {
+            $this->db->exec("ROLLBACK");
+            error_log("WalletManager::creditSats Error: " . $e->getMessage());
+            return [
+                'success' => false,
+                'sats' => 0,
+                'error' => 'Datenbankfehler: ' . $e->getMessage()
+            ];
+        }
+    }
+
     /**
      * Holt die heute verdienten Sats eines Kindes
      */

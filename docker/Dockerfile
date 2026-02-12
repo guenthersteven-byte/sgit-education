@@ -26,6 +26,10 @@ RUN apk add --no-cache \
     libzip-dev \
     # ICU
     icu-dev icu-libs \
+    # OCR
+    tesseract-ocr \
+    tesseract-ocr-data-deu \
+    tesseract-ocr-data-eng \
     # Tools
     curl bash
 
@@ -40,7 +44,8 @@ RUN docker-php-ext-install -j$(nproc) \
     pdo_sqlite \
     zip \
     intl \
-    opcache
+    opcache \
+    exif
 
 # ============================================================================
 # Cleanup - NUR Dev-Pakete entfernen, Runtime behalten!
