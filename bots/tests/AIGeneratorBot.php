@@ -659,7 +659,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
+            font-family: 'Space Grotesk', system-ui, sans-serif; 
             background: linear-gradient(135deg, #0d1a02 0%, #1A3503 100%);
             color: #fff;
             min-height: 100vh;

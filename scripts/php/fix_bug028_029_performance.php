@@ -13,7 +13,7 @@
 
 echo "<!DOCTYPE html><html><head><title>Performance Analyse</title>
 <style>
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #1A3503; padding: 20px; }
+body { font-family: 'Space Grotesk', system-ui, sans-serif; background: #1A3503; padding: 20px; }
 .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; }
 h1 { color: #1A3503; border-bottom: 3px solid #43D240; padding-bottom: 15px; }
 h2 { color: #1A3503; margin-top: 30px; }

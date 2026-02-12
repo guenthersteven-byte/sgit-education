@@ -110,11 +110,16 @@ class CSVQuestionImporter {
         if (!in_array('image_url', $columns)) {
             $this->db->exec("ALTER TABLE questions ADD COLUMN image_url TEXT");
         }
-        
+
+        if (!in_array('is_active', $columns)) {
+            $this->db->exec("ALTER TABLE questions ADD COLUMN is_active INTEGER DEFAULT 1");
+        }
+
         // Indices
         $this->db->exec("CREATE INDEX IF NOT EXISTS idx_question_hash ON questions(question_hash)");
         $this->db->exec("CREATE INDEX IF NOT EXISTS idx_batch_id ON questions(batch_id)");
         $this->db->exec("CREATE INDEX IF NOT EXISTS idx_source ON questions(source)");
+        $this->db->exec("CREATE INDEX IF NOT EXISTS idx_is_active ON questions(is_active)");
     }
     
     // ========================================================================

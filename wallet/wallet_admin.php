@@ -198,6 +198,7 @@ function getCategoryIcon($category) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>₿ Wallet Admin - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         /* FEATURE-002 FIX: Dark Mode für Wallet Admin */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -217,7 +218,7 @@ function getCategoryIcon($category) {
         }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary) 100%);
             min-height: 100vh;
             padding: 20px;

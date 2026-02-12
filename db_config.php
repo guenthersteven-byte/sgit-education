@@ -167,7 +167,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     <meta charset='UTF-8'>
     <title>🗄️ DB Status - sgiT Education</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1A3503, #2d5a06); padding: 20px; min-height: 100vh; margin: 0; }
+        body { font-family: 'Space Grotesk', system-ui, sans-serif; background: linear-gradient(135deg, #1A3503, #2d5a06); padding: 20px; min-height: 100vh; margin: 0; }
         .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         h1 { color: #1A3503; border-bottom: 3px solid #43D240; padding-bottom: 15px; }
         .db-card { background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0; }

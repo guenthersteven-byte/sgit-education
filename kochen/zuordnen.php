@@ -58,7 +58,7 @@ if (!$finished) {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #1A3503; --accent: #43D240; --bg: #0d1f02; --card-bg: #1e3a08; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--bg), var(--primary)); min-height: 100vh; color: #fff; padding: 20px; }
+        body { font-family: 'Space Grotesk', system-ui, sans-serif; background: linear-gradient(135deg, var(--bg), var(--primary)); min-height: 100vh; color: #fff; padding: 20px; }
         .container { max-width: 650px; margin: 0 auto; text-align: center; }
         .back-link { color: var(--accent); text-decoration: none; display: inline-block; margin-bottom: 15px; }
         .back-link:hover { text-decoration: underline; }

@@ -40,25 +40,25 @@ if (file_exists($questionsDb)) {
         $db = new PDO('sqlite:' . $questionsDb);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
-        $stats['questions']['total'] = $db->query("SELECT COUNT(*) FROM questions")->fetchColumn();
-        $stats['questions']['ai'] = $db->query("SELECT COUNT(*) FROM questions WHERE ai_generated = 1")->fetchColumn();
-        $stats['questions']['csv'] = $db->query("SELECT COUNT(*) FROM questions WHERE source = 'csv_import'")->fetchColumn() ?: 0;
-        $stats['questions']['with_explanation'] = $db->query("SELECT COUNT(*) FROM questions WHERE explanation IS NOT NULL AND explanation != ''")->fetchColumn();
+        $stats['questions']['total'] = $db->query("SELECT COUNT(*) FROM questions WHERE is_active = 1")->fetchColumn();
+        $stats['questions']['ai'] = $db->query("SELECT COUNT(*) FROM questions WHERE ai_generated = 1 AND is_active = 1")->fetchColumn();
+        $stats['questions']['csv'] = $db->query("SELECT COUNT(*) FROM questions WHERE source = 'csv_import' AND is_active = 1")->fetchColumn() ?: 0;
+        $stats['questions']['with_explanation'] = $db->query("SELECT COUNT(*) FROM questions WHERE explanation IS NOT NULL AND explanation != '' AND is_active = 1")->fetchColumn();
         
         // Module
-        $r = $db->query("SELECT module, COUNT(*) as cnt FROM questions GROUP BY module ORDER BY cnt DESC");
+        $r = $db->query("SELECT module, COUNT(*) as cnt FROM questions WHERE is_active = 1 GROUP BY module ORDER BY cnt DESC");
         while ($row = $r->fetch(PDO::FETCH_ASSOC)) {
             $stats['modules'][$row['module']] = (int)$row['cnt'];
         }
         
         // Schwierigkeit
-        $r = $db->query("SELECT difficulty, COUNT(*) as cnt FROM questions GROUP BY difficulty ORDER BY difficulty");
+        $r = $db->query("SELECT difficulty, COUNT(*) as cnt FROM questions WHERE is_active = 1 GROUP BY difficulty ORDER BY difficulty");
         while ($row = $r->fetch(PDO::FETCH_ASSOC)) {
             $stats['difficulty'][$row['difficulty']] = (int)$row['cnt'];
         }
         
         // Altersgruppen
-        $r = $db->query("SELECT age_min, age_max, COUNT(*) as cnt FROM questions GROUP BY age_min, age_max ORDER BY age_min");
+        $r = $db->query("SELECT age_min, age_max, COUNT(*) as cnt FROM questions WHERE is_active = 1 GROUP BY age_min, age_max ORDER BY age_min");
         while ($row = $r->fetch(PDO::FETCH_ASSOC)) {
             $label = $row['age_min'] . '-' . $row['age_max'];
             $stats['ages'][$label] = (int)$row['cnt'];

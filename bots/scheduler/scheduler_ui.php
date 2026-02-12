@@ -126,7 +126,7 @@ $logs = $scheduler->getLog(30);
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, #1A3503 100%);
             min-height: 100vh;
             color: var(--text-primary);

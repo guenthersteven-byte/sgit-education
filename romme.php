@@ -49,7 +49,7 @@ if (SessionManager::isLoggedIn()) {
             --card-white: #fffef5;
         }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh;
             color: var(--mp-text);

@@ -1,6 +1,8 @@
+@import url('/assets/css/fonts.css');
+
 /**
  * sgiT Education Platform - Main Stylesheet
- * 
+ *
  * Haupt-Stylesheet mit sgiT Brand Colors und responsivem Design.
  * Basis: Dark Green #1A3503, Neon Green #43D240
  * 
@@ -25,7 +27,7 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     color: var(--color-text);
     background-color: var(--color-background);

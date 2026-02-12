@@ -38,6 +38,7 @@ usort($templates, function($a, $b) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🖼️ Ausmalbilder - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         :root {
             --sgit-dark: #1A3503;
@@ -46,7 +47,7 @@ usort($templates, function($a, $b) {
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: #1a1a1a;
             min-height: 100vh;
             padding: 20px;

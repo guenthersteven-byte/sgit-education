@@ -30,7 +30,7 @@ echo "<!DOCTYPE html>
     <title>SQLite WAL-Mode Check</title>
     <style>
         body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
+            font-family: 'Space Grotesk', system-ui, sans-serif; 
             background: linear-gradient(135deg, #1A3503, #2d5a06); 
             padding: 20px; 
             min-height: 100vh;

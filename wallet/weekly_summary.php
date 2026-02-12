@@ -110,6 +110,7 @@ function getTrendIcon($trend) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wöchentliche Zusammenfassung - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         :root {
             --primary: #1A3503;
@@ -127,7 +128,7 @@ function getTrendIcon($trend) {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;

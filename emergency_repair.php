@@ -534,9 +534,10 @@ $config = $module_configs[$current_module] ?? $module_configs["mathematik"];
 <head>
     <meta charset="UTF-8">
     <title><?= $config["icon"] ?> <?= $config["name"] ?> - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
+            font-family: "Space Grotesk", system-ui, sans-serif;
             background: linear-gradient(135deg, <?= $config["color"] ?>, <?= $config["color"] ?>aa);
             margin: 0;
             padding: 20px;
@@ -744,7 +745,7 @@ foreach ($modules_to_fix as $module => $func) {
     <title>🚨 NOTFALL-REPARATUR</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, #ff4444, #ff8888);
             color: white;
             padding: 40px;

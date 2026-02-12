@@ -38,7 +38,7 @@ $_SESSION['user_name'] = 'TestKind';
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--fox-beige) 0%, #fff 100%);
             min-height: 100vh;
             padding: 30px 20px;

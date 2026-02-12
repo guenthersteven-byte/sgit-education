@@ -1,3 +1,5 @@
+@import url('/assets/css/fonts.css');
+
 /**
  * ============================================================================
  * sgiT Education Platform - Dark Theme CSS
@@ -66,7 +68,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
     background: var(--bg-gradient);
     min-height: 100vh;
     color: var(--text);

@@ -222,9 +222,8 @@ function timeAgo($datetime) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏆 Leaderboard - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <link rel="stylesheet" href="/assets/css/dark-theme.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ================================================================
          * VARIABLES & RESET - DARK THEME
@@ -248,7 +247,7 @@ function timeAgo($datetime) {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: var(--bg);
             min-height: 100vh;
             color: var(--text);

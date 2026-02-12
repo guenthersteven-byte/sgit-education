@@ -96,7 +96,7 @@ $currentPiece = $quizMode ? $pieceKeys[$session['current'] % count($pieceKeys)] 
             --dark-sq: #b58863;
         }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
             min-height: 100vh;
             color: var(--text);

@@ -137,11 +137,20 @@ try {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         module TEXT NOT NULL,
         question TEXT NOT NULL,
+        answer TEXT,
         correct_answer TEXT NOT NULL,
         wrong_answers TEXT,
+        options TEXT,
         difficulty INTEGER DEFAULT 1,
         age_group INTEGER,
+        age_min INTEGER,
+        age_max INTEGER,
         ai_generated INTEGER DEFAULT 0,
+        is_active INTEGER DEFAULT 1,
+        explanation TEXT,
+        times_used INTEGER DEFAULT 0,
+        question_hash TEXT,
+        source TEXT DEFAULT 'ai_generated',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )";
     

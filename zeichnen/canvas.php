@@ -93,6 +93,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
     <script src="/zeichnen/js/brushes.js"></script>
     <script src="/zeichnen/js/colorpicker.js"></script>
     <script src="/zeichnen/js/layers.js"></script>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         :root {
             --sgit-dark: #1A3503;
@@ -101,7 +102,7 @@ $sgitColors = ['#1A3503', '#43D240', '#E86F2C'];
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: #1a1a1a;
             min-height: 100vh;
             display: flex;

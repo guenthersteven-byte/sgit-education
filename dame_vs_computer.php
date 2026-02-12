@@ -43,7 +43,7 @@ if (SessionManager::isLoggedIn()) {
             --dark-square: #2a5a0a;
         }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
             min-height: 100vh; color: var(--mp-text); margin: 0; padding: 0;
         }

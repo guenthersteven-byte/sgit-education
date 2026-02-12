@@ -1,3 +1,5 @@
+@import url('/assets/css/fonts.css');
+
 /* ============================================================================
  * sgiT Education - Hausaufgaben Module Styles
  * ============================================================================
@@ -13,7 +15,7 @@
     min-height: 100vh;
     background: linear-gradient(135deg, #0d1b02 0%, #1A3503 50%, #0d1b02 100%);
     color: #e0e0e0;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
     padding: 0;
     margin: 0;
 }

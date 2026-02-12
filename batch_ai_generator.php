@@ -225,7 +225,7 @@ if (php_sapi_name() === 'cli') {
     <title>sgiT Education - Batch AI Generator</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, #667eea, #764ba2);
             padding: 20px;
             margin: 0;

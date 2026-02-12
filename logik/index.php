@@ -68,6 +68,7 @@ $availablePuzzles = array_filter($puzzleTypes, function($p) use ($userAge) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🧩 Logik & Rätsel - sgiT Education</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -79,7 +80,7 @@ $availablePuzzles = array_filter($puzzleTypes, function($p) use ($userAge) {
             --text-muted: #a0a0a0;
         }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--bg) 0%, var(--primary) 100%);
             min-height: 100vh;
             color: var(--text);

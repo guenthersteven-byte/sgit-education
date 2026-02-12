@@ -15,7 +15,8 @@
 $dbPath = __DIR__ . '/foxy_chat.db';
 
 echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Foxy Seeder</title>";
-echo "<style>body{font-family:'Segoe UI',sans-serif;background:#1a1a1a;color:#fff;padding:30px;max-width:900px;margin:0 auto;}";
+echo "<link rel='stylesheet' href='/assets/css/fonts.css'>";
+echo "<style>body{font-family:'Space Grotesk',system-ui,sans-serif;background:#1a1a1a;color:#fff;padding:30px;max-width:900px;margin:0 auto;}";
 echo "h1{color:#E86F2C;}pre{background:#2a2a2a;padding:20px;border-radius:10px;overflow:auto;max-height:500px;}";
 echo ".success{color:#43D240;}.skip{color:#888;}.error{color:#F44336;}";
 echo "a{color:#E86F2C;text-decoration:none;padding:10px 20px;background:#333;border-radius:8px;display:inline-block;margin-top:20px;}";
