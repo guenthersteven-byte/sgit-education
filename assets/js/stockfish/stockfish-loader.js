@@ -31,73 +31,37 @@ class StockfishLoader {
             { name: 'Meister',   skill: 20, depth: 16, moveTime: 3000, elo: '~2000' }
         ];
 
-        // CDN URLs - Fallback-Kette
-        this.cdnUrls = [
-            'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js',
-            'https://unpkg.com/stockfish.js@10.0.2/stockfish.js'
-        ];
     }
 
     init() {
-        return this._tryLoad(0);
-    }
-
-    _tryLoad(urlIndex) {
         return new Promise((resolve, reject) => {
-            if (urlIndex >= this.cdnUrls.length) {
-                reject(new Error('Stockfish konnte von keinem CDN geladen werden'));
-                return;
-            }
-
             try {
-                const cdnUrl = this.cdnUrls[urlIndex];
-                console.log('Stockfish laden von:', cdnUrl);
-
-                const workerCode = `importScripts('${cdnUrl}');`;
-                const blob = new Blob([workerCode], { type: 'application/javascript' });
-                const workerUrl = URL.createObjectURL(blob);
-
-                this.worker = new Worker(workerUrl);
-                URL.revokeObjectURL(workerUrl);
-
-                let settled = false;
+                // Stockfish lokal laden (gehostet auf dem Server, kein CDN/CORS noetig)
+                this.worker = new Worker('/assets/js/stockfish/stockfish.js');
 
                 this.worker.onmessage = (e) => this._handleMessage(e.data);
                 this.worker.onerror = (e) => {
-                    console.warn('Stockfish Worker Error (CDN ' + urlIndex + '):', e.message || e);
-                    if (!settled && !this.ready) {
-                        settled = true;
-                        this.worker.terminate();
-                        this.worker = null;
-                        // Naechsten CDN probieren
-                        this._tryLoad(urlIndex + 1).then(resolve).catch(reject);
-                    }
+                    console.error('Stockfish Worker Error:', e);
+                    if (!this.ready) reject(new Error('Stockfish Worker konnte nicht geladen werden'));
                 };
 
                 // UCI initialisieren
                 this.worker.postMessage('uci');
 
-                // Timeout fuer Init (20s, CDN kann langsam sein)
+                // Timeout
                 const timeout = setTimeout(() => {
-                    if (!settled && !this.ready) {
-                        settled = true;
-                        console.warn('Stockfish timeout (CDN ' + urlIndex + '), versuche naechsten...');
-                        this.worker.terminate();
-                        this.worker = null;
-                        this._tryLoad(urlIndex + 1).then(resolve).catch(reject);
+                    if (!this.ready) {
+                        reject(new Error('Stockfish init timeout (20s)'));
                     }
                 }, 20000);
 
                 this.onReady = () => {
-                    if (!settled) {
-                        settled = true;
-                        clearTimeout(timeout);
-                        console.log('Stockfish bereit! (CDN ' + urlIndex + ')');
-                        resolve();
-                    }
+                    clearTimeout(timeout);
+                    console.log('Stockfish bereit!');
+                    resolve();
                 };
             } catch (e) {
-                this._tryLoad(urlIndex + 1).then(resolve).catch(reject);
+                reject(e);
             }
         });
     }
