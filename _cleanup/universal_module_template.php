@@ -422,7 +422,7 @@ if ($question && !$is_complete) {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, <?= $config['color1'] ?> 0%, <?= $config['color2'] ?> 100%);
             min-height: 100vh;
             display: flex;

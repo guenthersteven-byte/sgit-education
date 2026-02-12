@@ -418,7 +418,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             min-height: 100vh;
             padding: 20px;

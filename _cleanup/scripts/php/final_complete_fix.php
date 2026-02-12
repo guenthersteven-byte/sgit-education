@@ -127,7 +127,7 @@ if (!$is_complete && $current_index < count($session["questions"])) {
     <title><?= $config["icon"] ?> <?= $config["name"] ?> - sgiT Education</title>
     <style>
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
+            font-family: "Space Grotesk", system-ui, sans-serif;
             background: linear-gradient(135deg, <?= $config["color"] ?>, <?= $config["color"] ?>88);
             margin: 0;
             padding: 20px;

@@ -174,7 +174,7 @@ file_put_contents(__DIR__ . '/session_manager.php', $session_manager);
     <title>Installation - Verbesserte Fragen-Engine</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: linear-gradient(135deg, #667eea, #764ba2);
             padding: 40px;
         }

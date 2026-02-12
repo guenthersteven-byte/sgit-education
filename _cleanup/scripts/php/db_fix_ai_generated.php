@@ -24,7 +24,7 @@ try {
     $db = new SQLite3($dbPath);
     
     echo "<h1>🔧 sgiT Education - DB Fix</h1>";
-    echo "<style>body{font-family:'Segoe UI',sans-serif;padding:20px;max-width:800px;margin:0 auto;} 
+    echo "<style>body{font-family:'Space Grotesk',system-ui,sans-serif;padding:20px;max-width:800px;margin:0 auto;} 
           .stat{background:#f5f5f5;padding:15px;margin:10px 0;border-radius:8px;border-left:4px solid #43D240;}
           .fix{background:#E8F5E9;} .error{background:#FFEBEE;border-left-color:#F44336;}
           pre{background:#1E1E1E;color:#0F0;padding:15px;border-radius:8px;overflow-x:auto;}</style>";

@@ -100,7 +100,7 @@ $message = $_GET['msg'] ?? $message;
     <style>
         :root { --sgit-dark: #1A3503; --sgit-green: #43D240; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; padding: 20px; }
+        body { font-family: 'Space Grotesk', system-ui, sans-serif; background: #1a1a1a; color: white; padding: 20px; }
         .header { background: var(--sgit-dark); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .header h1 { font-size: 1.5em; display: flex; justify-content: space-between; }
         .header a { color: #888; text-decoration: none; font-size: 0.6em; }

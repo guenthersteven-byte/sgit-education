@@ -16,7 +16,7 @@ if (!file_exists($dbPath)) {
 
 echo "<h1>🔍 sgiT Education - DB Analyse</h1>";
 echo "<style>
-    body{font-family:'Segoe UI',sans-serif;padding:20px;max-width:1200px;margin:0 auto;background:#f5f5f5;} 
+    body{font-family:'Space Grotesk',system-ui,sans-serif;padding:20px;max-width:1200px;margin:0 auto;background:#f5f5f5;} 
     .card{background:white;padding:20px;margin:15px 0;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
     .stat{background:#f8f9fa;padding:12px;margin:8px 0;border-radius:8px;border-left:4px solid #43D240;}
     .warning{border-left-color:#ffc107;background:#fff8e1;}

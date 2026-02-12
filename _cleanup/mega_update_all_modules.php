@@ -241,7 +241,7 @@ foreach ($all_modules as $module => $questions) {
     <title>MEGA Update - Alle Module 1000+ Fragen</title>
     <style>
         body { 
-            font-family: 'Segoe UI', Arial; 
+            font-family: 'Space Grotesk', system-ui, sans-serif; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }

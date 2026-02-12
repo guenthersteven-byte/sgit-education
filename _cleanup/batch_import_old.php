@@ -298,7 +298,7 @@ if ($action === 'batch_import') {
         }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: #f5f5f5;
             padding: 20px;
         }

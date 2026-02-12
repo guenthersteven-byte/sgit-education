@@ -33,7 +33,7 @@ $moduleMapping = [
 // HTML Header
 echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>sgiT Import v2</title>";
 echo "<style>
-    body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+    body { font-family: 'Space Grotesk', system-ui, sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
     .container { max-width: 1000px; margin: 0 auto; }
     h1 { color: #43D240; }
     .module { background: #16213e; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #43D240; }
