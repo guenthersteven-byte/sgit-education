@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.52.0 | **Datum:** 12. Februar 2026 | **Module:** 21/21 ✅ | **Status:** PRODUCTION READY
+**Version:** 3.53.0 | **Datum:** 12. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
 
 ---
 
@@ -122,7 +122,7 @@ docker exec sgit-education-ollama ollama list
 
 ---
 
-## 📋 OFFENE ITEMS (4 Stück)
+## 📋 OFFENE ITEMS (5 Stück)
 
 ### 🔴 BUG-056: Poker River-Karte - OFFEN
 | Info | Details |
@@ -148,6 +148,12 @@ docker exec sgit-education-ollama ollama list
 | **Dateien** | `/wallet/wallet_admin.php`, neues `/api/btc_price.php` |
 | **Aufwand** | ~4-6h |
 
+### ⏳ TEST-002: Hausaufgaben-System v3.53.0 testen
+| Info | Details |
+|------|---------|
+| **Status** | Tests ausstehend |
+| **Zu testen** | 1) Mobile Kamera-Capture oeffnet Rueckkamera 2) 5MB Foto wird komprimiert 3) +15 SATs pro Upload 4) Filter nach Fach/Schuljahr 5) Tageslimit (11. Upload abgelehnt) 6) Achievement "Erste Hausaufgabe" 7) EXIF-Rotation 8) OCR-Text bei deutschem Text 9) Schulinfo speichern/laden 10) Nav-Link sichtbar |
+
 ### ⏳ TEST-001: Montagsmaler Fix verifizieren
 | Info | Details |
 |------|---------|
@@ -166,7 +172,8 @@ docker exec sgit-education-ollama ollama list
 | AI Generator | v11.1 | ✅ |
 | Bot-System | v1.5+ | ✅ |
 | Foxy Chatbot | v1.4 | ✅ |
-| WalletManager | v1.5 | ✅ |
+| WalletManager | v1.6 | ✅ |
+| HausaufgabenManager | v1.0 | ✅ |
 | Multiplayer-Theme | v1.0 | ✅ |
 | Hashed Auth System | v1.0 | ✅ |
 | Chess Theme (SVG) | v2.0 | ✅ |
@@ -227,6 +234,7 @@ docker exec sgit-education-ollama ollama list
 | MADN vs Computer | https://edu.sgit.space/madn_vs_computer.php |
 | Romme vs Computer | https://edu.sgit.space/romme_vs_computer.php |
 | Poker vs Computer | https://edu.sgit.space/poker_vs_computer.php |
+| Hausaufgaben | https://edu.sgit.space/hausaufgaben/ |
 
 ### Development (Lokal)
 | Bereich | URL |
@@ -313,6 +321,9 @@ ssh sgit-admin@192.168.200.128 "ls -lah /share/backups/sgit-edu/daily"
 | `/opt/education/assets/js/dame-pieces.js` | SVG Dame-Spielsteine (CI-Gruen) |
 | `/opt/education/assets/js/madn-pieces.js` | SVG MADN-Spielfiguren (4 Farben) |
 | `/opt/education/assets/js/poker-ai.js` | Poker KI-Engine (Hand-Evaluation) |
+| `/opt/education/hausaufgaben/` | Hausaufgaben-Upload-System (Manager, API, UI) |
+| `/opt/education/hausaufgaben/hausaufgaben.db` | Hausaufgaben-Datenbank (auto-created) |
+| `/opt/education/uploads/hausaufgaben/` | Upload-Verzeichnis (nach Kind/Schuljahr/Fach) |
 | `/opt/education/assets/css/chess-theme.css` | CI-konformes Schach-Design |
 | `/opt/education/schach_vs_computer.php` | Schach vs KI (Stockfish, 5 Stufen) |
 | `/opt/education/maumau_vs_computer.php` | Mau Mau vs KI (3 Stufen) |
@@ -325,7 +336,7 @@ ssh sgit-admin@192.168.200.128 "ls -lah /share/backups/sgit-edu/daily"
 
 ---
 
-## 🎓 MODULE ÜBERSICHT (21/21)
+## 🎓 MODULE ÜBERSICHT (22/22)
 
 ### Quiz-Module (18) - 4,904 Fragen
 Mathematik, Englisch, Lesen, Physik, Erdkunde, Wissenschaft, Geschichte, Computer, Chemie, Musik, Programmieren, Bitcoin, Finanzen, Kunst, Verkehr, Sport, Unnützes Wissen, Biologie
@@ -336,10 +347,11 @@ Mathematik, Englisch, Lesen, Physik, Erdkunde, Wissenschaft, Geschichte, Compute
 - CSV-Import: 3,720
 - Mit Erklärung: 3,710
 
-### Interaktive Module (3)
+### Interaktive Module (4)
 - ✏️ Zeichnen (v2.0 mit Ebenen, Brushes, Vorlagen)
 - 🧩 Logik & Rätsel (inkl. Schach-Puzzles, Sudoku)
 - 🍳 Kochen
+- 📝 Hausaufgaben (Upload, OCR, +15 SATs/Upload)
 
 ### Wallet-System
 - Total Sats verteilt: 12,082
@@ -411,6 +423,24 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ## 📋 VERSION HISTORY
 
+### v3.53.0 (12.02.2026) - HAUSAUFGABEN-UPLOAD SYSTEM
+- ✅ Neues Modul: Hausaufgaben-Fotos vom Handy hochladen (Kamera + Galerie)
+- ✅ Sortierung nach Fach (15 Faecher), Klassenstufe (1-13) und Schuljahr
+- ✅ Pro Upload +15 SATs (via creditSats, umgeht calculateReward)
+- ✅ Tesseract OCR: Text-Extraktion aus Fotos (Deutsch + Englisch)
+- ✅ EXIF-Rotation, Skalierung (max 1920px), JPEG-Kompression (85%)
+- ✅ Schulinfo-Banner: Klassenstufe + Schuljahr pro Kind speicherbar
+- ✅ Galerie mit Filter (Fach-Pills, Schuljahr-Dropdown)
+- ✅ Detail-Modal mit OCR-Text-Anzeige
+- ✅ 6 neue Achievements (homework-Kategorie): Erste HA, 10/50/100 Uploads, Allrounder, 7-Tage-Streak
+- ✅ WalletManager v1.6: creditSats(), current_grade + current_school_year Migrationen
+- ✅ Docker: Tesseract 5.5.1 (deu+eng) + EXIF Extension installiert
+- ✅ nginx: client_max_body_size 10m, camera=(self) Permission
+- ✅ Mobile-first Dark Theme, SATs-Animation nach Upload
+- ⏳ Tests ausstehend (Mobile-Kamera, Upload, OCR, Achievements, Filter)
+- **Neue Dateien:** HausaufgabenManager.php, upload.php, api.php, index.php, hausaufgaben.css, hausaufgaben.js (6 Dateien)
+- **Geaendert:** adaptive_learning.php, WalletManager.php, AchievementManager.php, Dockerfile, education.conf, security_headers.php, functions.php, version.php, .gitignore (9 Dateien)
+
 ### v3.52.0 (12.02.2026) - MULTIPLAYER KI-GEGNER + SVG REDESIGN
 - ✅ Alle 5 Multiplayer-Spiele mit KI-Gegner erweitert (Mau Mau, Dame, MADN, Romme, Poker)
 - ✅ SVG Spielkarten-Bibliothek (playing-cards.js): 52 Karten + Joker + Kartenrueckseite
@@ -468,6 +498,6 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 12.02.2026 - v3.52.0 Multiplayer KI-Gegner + SVG Redesign*
-*Alle Spiele mit KI-Gegner: Mau Mau, Dame, MADN, Romme, Poker + SVG-Grafiken*
-*Archivierte Items: 70+ Bugs, 20 TODOs, 10 Sessions*
+*Status-Report aktualisiert am 12.02.2026 - v3.53.0 Hausaufgaben-Upload System*
+*Neues Modul: Foto-Upload mit OCR, 15 Faecher, SATs-Rewards, 6 Achievements*
+*Tests ausstehend: Mobile-Kamera, Upload, OCR, Achievements, Filter*
