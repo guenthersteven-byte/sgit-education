@@ -431,6 +431,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             }
         }
     </style>
+    <script src="/assets/js/madn-pieces.js"></script>
 </head>
 <body class="mp-body">
     <div class="mp-container">
@@ -459,7 +460,8 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                 
                 <div class="mp-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2 class="mp-card__title">🎮 Neues Spiel</h2>
-                    <button class="mp-btn mp-btn--full" onclick="createGame()">Spiel erstellen</button>
+                    <button class="mp-btn mp-btn--full" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="mp-btn mp-btn--secondary mp-btn--full" style="margin-top: 10px;" onclick="location.href='madn_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
                 
                 <div class="mp-divider"><span>oder</span></div>
@@ -996,6 +998,14 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                     piece.className = `piece ${color}`;
                     piece.dataset.playerId = player.id;
                     piece.dataset.pieceIndex = pieceIdx;
+
+                    // SVG piece rendering
+                    if (typeof MADN_PIECE_SVGS !== 'undefined' && MADN_PIECE_SVGS[color]) {
+                        piece.style.background = `url('${MADN_PIECE_SVGS[color]}') center/contain no-repeat`;
+                        piece.style.borderRadius = '0';
+                        piece.style.border = 'none';
+                        piece.style.boxShadow = 'none';
+                    }
                     
                     let targetElement = null;
                     

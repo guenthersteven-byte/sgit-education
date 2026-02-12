@@ -40,6 +40,7 @@ if (SessionManager::isLoggedIn()) {
     <title>🎴 Rommé - sgiT Education</title>
     <!-- Zentrale Multiplayer CSS -->
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
+    <script src="/assets/js/playing-cards.js"></script>
     <style>
         /* ===========================================
            Rommé-Spezifische Styles
@@ -119,9 +120,9 @@ if (SessionManager::isLoggedIn()) {
         .pile-cards { position: relative; width: 70px; height: 100px; margin: 0 auto; }
         .pile-cards .card-back {
             position: absolute; width: 70px; height: 100px;
-            background: linear-gradient(135deg, #1a5f2a, #0d3015);
-            border-radius: 6px; border: 2px solid #2a7f3a;
+            border-radius: 6px;
             cursor: pointer;
+            background-size: cover; background-position: center;
         }
         .pile-cards .card-back:nth-child(2) { top: 2px; left: 2px; }
         .pile-cards .card-back:nth-child(3) { top: 4px; left: 4px; }
@@ -231,7 +232,8 @@ if (SessionManager::isLoggedIn()) {
                 
                 <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel</h2>
-                    <button class="btn full" onclick="createGame()">Spiel erstellen</button>
+                    <button class="btn full" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="btn secondary full" style="margin-top: 10px;" onclick="location.href='romme_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
                 
                 <div class="divider"><span>oder</span></div>
@@ -574,13 +576,34 @@ if (SessionManager::isLoggedIn()) {
             updateButtons();
         }
         
+        // Mapping: Romme API suit names -> playing-cards.js keys
+        const SUIT_TO_DE = { hearts: 'herz', diamonds: 'karo', clubs: 'kreuz', spades: 'pik' };
+        const VALUE_TO_DE = { 'A': 'ass', 'J': 'bube', 'Q': 'dame', 'K': 'koenig', 'JOKER': 'joker' };
+
+        function getCardSvgKey(card) {
+            if (card.value === 'JOKER') return 'joker_red';
+            const suit = SUIT_TO_DE[card.suit] || card.suit;
+            const val = VALUE_TO_DE[card.value] || card.value;
+            return `${suit}_${val}`;
+        }
+
         function renderCard(card, selected = false, clickable = false, small = false) {
             const isJoker = card.value === 'JOKER';
+            const w = small ? 50 : 60;
+            const h = small ? 75 : 90;
+
+            if (typeof PLAYING_CARD_SVGS !== 'undefined') {
+                const key = getCardSvgKey(card);
+                const src = PLAYING_CARD_SVGS[key] || PLAYING_CARD_SVGS.back;
+                return `<div class="card ${selected ? 'selected' : ''}" style="padding:0;border:none;background:none;box-shadow:none;width:${w}px;height:${h}px;"
+                            ${clickable ? `onclick="toggleCard('${card.id}')"` : ''}>
+                    <img src="${src}" style="width:100%;height:100%;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.3);" draggable="false">
+                </div>`;
+            }
+            // Fallback to unicode
             const colorClass = isJoker ? 'joker' : SUIT_COLORS[card.suit];
             const symbol = SUITS[card.suit];
-            const size = small ? 'style="width:50px;height:75px;font-size:0.6rem;"' : '';
-            
-            return `<div class="card ${colorClass} ${selected ? 'selected' : ''}" ${size}
+            return `<div class="card ${colorClass} ${selected ? 'selected' : ''}" style="width:${w}px;height:${h}px;"
                         ${clickable ? `onclick="toggleCard('${card.id}')"` : ''}>
                 <div class="corner">${card.value}<br>${symbol}</div>
                 <div class="center">${symbol}</div>
@@ -707,6 +730,13 @@ if (SessionManager::isLoggedIn()) {
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // SVG card back init
+        if (typeof PLAYING_CARD_SVGS !== 'undefined') {
+            document.querySelectorAll('.pile-cards .card-back').forEach(el => {
+                el.style.backgroundImage = `url('${PLAYING_CARD_SVGS.back}')`;
+            });
+        }
+
         document.getElementById('playerNameInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') setPlayerName(); });
         document.getElementById('gameCodeInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') joinGame(); });
     </script>

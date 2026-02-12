@@ -40,6 +40,7 @@ if (SessionManager::isLoggedIn()) {
     <title>🎰 Poker - sgiT Education</title>
     <!-- Zentrale Multiplayer CSS -->
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
+    <script src="/assets/js/playing-cards.js"></script>
     <style>
         /* ===========================================
            Poker-Spezifische Styles
@@ -283,7 +284,8 @@ if (SessionManager::isLoggedIn()) {
                         <label style="color: var(--text-muted); font-size: 0.9rem;">Buy-In (Chips)</label>
                         <input type="number" id="buyInInput" value="1000" min="100" step="100">
                     </div>
-                    <button class="btn full" onclick="createGame()">Spiel erstellen</button>
+                    <button class="btn full" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="btn secondary full" style="margin-top: 10px;" onclick="location.href='poker_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
                 
                 <div class="divider"><span>oder</span></div>
@@ -554,9 +556,27 @@ if (SessionManager::isLoggedIn()) {
             });
         }
         
+        // Mapping for SVG card keys
+        const POKER_SUIT_TO_DE = { hearts: 'herz', diamonds: 'karo', clubs: 'kreuz', spades: 'pik' };
+        const POKER_VALUE_TO_DE = { 'A': 'ass', 'J': 'bube', 'Q': 'dame', 'K': 'koenig' };
+
+        function getPokerCardKey(card) {
+            const suit = POKER_SUIT_TO_DE[card.suit] || card.suit;
+            const val = POKER_VALUE_TO_DE[card.value] || card.value;
+            return `${suit}_${val}`;
+        }
+
         function renderCard(card, large = false) {
-            const sizeClass = large ? 'large' : '';
-            return `<div class="card ${SUIT_COLORS[card.suit]} ${sizeClass}">
+            const w = large ? 70 : 45;
+            const h = large ? 100 : 65;
+            if (typeof PLAYING_CARD_SVGS !== 'undefined') {
+                const key = getPokerCardKey(card);
+                const src = PLAYING_CARD_SVGS[key] || PLAYING_CARD_SVGS.back;
+                return `<div class="card ${large ? 'large' : ''}" style="padding:0;border:none;background:none;box-shadow:none;width:${w}px;height:${h}px;">
+                    <img src="${src}" style="width:100%;height:100%;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.3);" draggable="false">
+                </div>`;
+            }
+            return `<div class="card ${SUIT_COLORS[card.suit]} ${large ? 'large' : ''}">
                 <div class="corner">${card.value}<br>${SUITS[card.suit]}</div>
                 <div class="center">${SUITS[card.suit]}</div>
                 <div class="corner corner-bottom">${card.value}<br>${SUITS[card.suit]}</div>

@@ -48,6 +48,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
     <title>🃏 Mau Mau - sgiT Education</title>
     <!-- Zentrale Multiplayer CSS -->
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
+    <script src="/assets/js/playing-cards.js"></script>
     <style>
         /* ===========================================
            Mau Mau-Spezifische Styles
@@ -140,7 +141,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         .opponent { background: var(--bg); border-radius: 12px; padding: 10px 15px; text-align: center; }
         .opponent.active { border: 2px solid var(--accent); }
         .opponent .cards { display: flex; gap: -10px; justify-content: center; margin-top: 5px; }
-        .card-back { width: 30px; height: 45px; background: linear-gradient(135deg, #2c3e50, #34495e); border-radius: 4px; border: 1px solid #555; margin-left: -15px; }
+        .card-back { width: 30px; height: 45px; border-radius: 4px; border: 1px solid #555; margin-left: -15px; background-size: cover; background-position: center; }
         .card-back:first-child { margin-left: 0; }
         
         .center-pile {
@@ -153,9 +154,9 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             border-radius: 20px;
         }
         .deck-pile, .discard-pile { position: relative; width: 80px; height: 120px; }
-        .deck-pile .card-back { width: 80px; height: 120px; cursor: pointer; position: absolute; }
-        .deck-pile .card-back:nth-child(2) { top: 2px; left: 2px; }
-        .deck-pile .card-back:nth-child(3) { top: 4px; left: 4px; }
+        .deck-pile img.deck-card { width: 80px; height: 120px; cursor: pointer; position: absolute; border-radius: 8px; }
+        .deck-pile img.deck-card:nth-child(2) { top: 2px; left: 2px; }
+        .deck-pile img.deck-card:nth-child(3) { top: 4px; left: 4px; }
         .deck-count { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: var(--text-muted); }
         
         /* Spielkarten - mit Animationen aus multiplayer-theme.css */
@@ -284,7 +285,8 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
                 
                 <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel</h2>
-                    <button class="btn" onclick="createGame()">Spiel erstellen</button>
+                    <button class="btn" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='maumau_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
                 
                 <div class="divider"><span>oder</span></div>
@@ -342,10 +344,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
                         
                         <!-- Mitte: Deck + Ablagestapel -->
                         <div class="center-pile">
-                            <div class="deck-pile" onclick="drawCards()">
-                                <div class="card-back"></div>
-                                <div class="card-back"></div>
-                                <div class="card-back"></div>
+                            <div class="deck-pile" onclick="drawCards()" id="deckPileContainer">
                                 <span class="deck-count" id="deckCount">32</span>
                             </div>
                             <div class="discard-pile" id="discardPile"></div>
@@ -586,7 +585,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             document.getElementById('opponents').innerHTML = opponents.map(p => `
                 <div class="opponent ${p.order === game.current_player ? 'active' : ''}">
                     <div>${p.avatar} ${escapeHtml(p.name)}</div>
-                    <div class="cards">${'<div class="card-back"></div>'.repeat(Math.min(p.card_count, 10))}</div>
+                    <div class="cards">${Array(Math.min(p.card_count, 10)).fill('<div class="card-back" style="background-image:url(\'' + PLAYING_CARD_SVGS.back + '\')"></div>').join('')}</div>
                     <div style="font-size: 0.8rem; color: var(--text-muted);">${p.card_count} Karten</div>
                 </div>
             `).join('');
@@ -612,15 +611,12 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         }
         
         function renderCard(card, playable = false, selected = false, index = -1) {
-            const symbol = SYMBOLS[card.color];
-            const colorClass = COLOR_CLASS[card.color];
-            const valueDisplay = card.value === 'bube' ? 'B' : card.value === 'dame' ? 'D' : card.value === 'koenig' ? 'K' : card.value === 'ass' ? 'A' : card.value;
-            
-            return `<div class="card ${colorClass} ${playable ? 'playable' : ''} ${selected ? 'selected' : ''}" 
+            const key = PLAYING_CARD_SVGS.getKey(card);
+            const src = PLAYING_CARD_SVGS[key] || PLAYING_CARD_SVGS.back;
+            return `<div class="card ${playable ? 'playable' : ''} ${selected ? 'selected' : ''}"
+                        style="padding:0;border:none;background:none;box-shadow:none;overflow:hidden;"
                         ${index >= 0 ? `onclick="selectCard(${index})"` : ''}>
-                <div class="corner">${valueDisplay}<br>${symbol}</div>
-                <div class="center-symbol">${symbol}</div>
-                <div class="corner corner-bottom">${valueDisplay}<br>${symbol}</div>
+                <img src="${src}" style="width:100%;height:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.3);" draggable="false">
             </div>`;
         }
         
@@ -717,6 +713,25 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // SVG deck pile init
+        function initDeckPile() {
+            const dp = document.getElementById('deckPileContainer');
+            if (dp && typeof PLAYING_CARD_SVGS !== 'undefined') {
+                const backSrc = PLAYING_CARD_SVGS.back;
+                const imgs = dp.querySelectorAll('img.deck-card');
+                if (imgs.length === 0) {
+                    for (let i = 0; i < 3; i++) {
+                        const img = document.createElement('img');
+                        img.src = backSrc;
+                        img.className = 'deck-card';
+                        img.draggable = false;
+                        dp.insertBefore(img, dp.firstChild);
+                    }
+                }
+            }
+        }
+        initDeckPile();
+
         // Enter-Listener
         document.getElementById('playerNameInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') setPlayerName(); });
         document.getElementById('gameCodeInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') joinGame(); });

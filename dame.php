@@ -43,13 +43,14 @@ if (SessionManager::isLoggedIn()) {
     <title>⚫ Dame - sgiT Education</title>
     <!-- Zentrale Multiplayer CSS -->
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
+    <script src="/assets/js/dame-pieces.js"></script>
     <style>
         /* ===========================================
            Dame-Spezifische Styles
            =========================================== */
         :root {
-            --light-square: #d4a76a;
-            --dark-square: #8b5a2b;
+            --light-square: #d4c8a0;
+            --dark-square: #2a5a0a;
         }
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -130,7 +131,7 @@ if (SessionManager::isLoggedIn()) {
             display: grid;
             grid-template-columns: repeat(8, 50px);
             grid-template-rows: repeat(8, 50px);
-            border: 4px solid #5d3a1a;
+            border: 4px solid #1a3503;
             border-radius: 4px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
@@ -257,7 +258,8 @@ if (SessionManager::isLoggedIn()) {
                 <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel</h2>
                     <p style="color: var(--text-muted); margin-bottom: 15px;">Du spielst mit ⚫ Schwarz (beginnst)</p>
-                    <button class="btn" onclick="createGame()">Spiel erstellen</button>
+                    <button class="btn" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='dame_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
                 
                 <div class="divider"><span>oder</span></div>
@@ -549,20 +551,30 @@ if (SessionManager::isLoggedIn()) {
                     // Figur?
                     const pos = `${row},${col}`;
                     if (board[pos]) {
-                        const piece = document.createElement('div');
-                        piece.className = `piece ${board[pos].color}`;
-                        if (board[pos].king) piece.classList.add('king');
-                        
-                        // Muss mit diesem Stein ziehen?
-                        if (game.must_capture_from === pos) {
-                            piece.classList.add('must-move');
+                        const piece = board[pos];
+                        if (typeof DAME_PIECE_SVGS !== 'undefined') {
+                            const img = document.createElement('img');
+                            img.style.cssText = 'width:40px;height:40px;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transition:all 0.2s;';
+                            img.draggable = false;
+                            if (piece.color === 'black') {
+                                img.src = piece.king ? DAME_PIECE_SVGS.blackKing : DAME_PIECE_SVGS.black;
+                            } else {
+                                img.src = piece.king ? DAME_PIECE_SVGS.greenKing : DAME_PIECE_SVGS.green;
+                            }
+                            if (game.must_capture_from === pos) {
+                                cell.style.boxShadow = '0 0 15px 5px rgba(231,76,60,0.8)';
+                            } else if (gameState.myTurn && piece.color === gameState.myColor) {
+                                img.style.animation = 'pulse 0.8s infinite';
+                            }
+                            cell.appendChild(img);
+                        } else {
+                            const pieceEl = document.createElement('div');
+                            pieceEl.className = `piece ${piece.color}`;
+                            if (piece.king) pieceEl.classList.add('king');
+                            if (game.must_capture_from === pos) pieceEl.classList.add('must-move');
+                            else if (gameState.myTurn && piece.color === gameState.myColor) pieceEl.classList.add('selectable');
+                            cell.appendChild(pieceEl);
                         }
-                        // Klickbar wenn mein Stein und mein Zug
-                        else if (gameState.myTurn && board[pos].color === gameState.myColor) {
-                            piece.classList.add('selectable');
-                        }
-                        
-                        cell.appendChild(piece);
                     }
                     
                     cell.onclick = () => handleCellClick(row, col);
