@@ -1,8 +1,9 @@
 /**
- * sgiT Education - Stockfish.js Loader v1.0
+ * sgiT Education - Stockfish.js Loader v1.1
  *
  * Laedt die Stockfish Chess Engine als Web Worker.
- * Verwendet CDN (jsdelivr) mit Fallback-Erkennung.
+ * Verwendet stockfish.js v10 (pure JS, kein WASM/SharedArrayBuffer noetig).
+ * Funktioniert auf allen Browsern ohne spezielle Server-Headers.
  *
  * Nutzung:
  *   const sf = new StockfishLoader();
@@ -29,42 +30,74 @@ class StockfishLoader {
             { name: 'Schwer',    skill: 15, depth: 10, moveTime: 1500, elo: '~1600' },
             { name: 'Meister',   skill: 20, depth: 16, moveTime: 3000, elo: '~2000' }
         ];
+
+        // CDN URLs - Fallback-Kette
+        this.cdnUrls = [
+            'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js',
+            'https://unpkg.com/stockfish.js@10.0.2/stockfish.js'
+        ];
     }
 
     init() {
+        return this._tryLoad(0);
+    }
+
+    _tryLoad(urlIndex) {
         return new Promise((resolve, reject) => {
+            if (urlIndex >= this.cdnUrls.length) {
+                reject(new Error('Stockfish konnte von keinem CDN geladen werden'));
+                return;
+            }
+
             try {
-                // Stockfish als Blob Worker von CDN laden
-                const workerCode = `importScripts('https://cdn.jsdelivr.net/npm/stockfish@16/src/stockfish-nnue-16-single.js');`;
+                const cdnUrl = this.cdnUrls[urlIndex];
+                console.log('Stockfish laden von:', cdnUrl);
+
+                const workerCode = `importScripts('${cdnUrl}');`;
                 const blob = new Blob([workerCode], { type: 'application/javascript' });
                 const workerUrl = URL.createObjectURL(blob);
 
                 this.worker = new Worker(workerUrl);
                 URL.revokeObjectURL(workerUrl);
 
+                let settled = false;
+
                 this.worker.onmessage = (e) => this._handleMessage(e.data);
                 this.worker.onerror = (e) => {
-                    console.error('Stockfish Worker Error:', e);
-                    if (this.onError) this.onError(e);
-                    if (!this.ready) reject(e);
+                    console.warn('Stockfish Worker Error (CDN ' + urlIndex + '):', e.message || e);
+                    if (!settled && !this.ready) {
+                        settled = true;
+                        this.worker.terminate();
+                        this.worker = null;
+                        // Naechsten CDN probieren
+                        this._tryLoad(urlIndex + 1).then(resolve).catch(reject);
+                    }
                 };
 
                 // UCI initialisieren
                 this.worker.postMessage('uci');
 
-                // Timeout fuer Init
+                // Timeout fuer Init (20s, CDN kann langsam sein)
                 const timeout = setTimeout(() => {
-                    if (!this.ready) {
-                        reject(new Error('Stockfish init timeout'));
+                    if (!settled && !this.ready) {
+                        settled = true;
+                        console.warn('Stockfish timeout (CDN ' + urlIndex + '), versuche naechsten...');
+                        this.worker.terminate();
+                        this.worker = null;
+                        this._tryLoad(urlIndex + 1).then(resolve).catch(reject);
                     }
-                }, 15000);
+                }, 20000);
 
                 this.onReady = () => {
-                    clearTimeout(timeout);
-                    resolve();
+                    if (!settled) {
+                        settled = true;
+                        clearTimeout(timeout);
+                        console.log('Stockfish bereit! (CDN ' + urlIndex + ')');
+                        resolve();
+                    }
                 };
             } catch (e) {
-                reject(e);
+                this._tryLoad(urlIndex + 1).then(resolve).catch(reject);
             }
         });
     }
