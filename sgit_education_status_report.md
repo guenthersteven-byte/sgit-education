@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.51.0 | **Datum:** 12. Februar 2026 | **Module:** 21/21 ✅ | **Status:** PRODUCTION READY
+**Version:** 3.52.0 | **Datum:** 12. Februar 2026 | **Module:** 21/21 ✅ | **Status:** PRODUCTION READY
 
 ---
 
@@ -171,6 +171,10 @@ docker exec sgit-education-ollama ollama list
 | Hashed Auth System | v1.0 | ✅ |
 | Chess Theme (SVG) | v2.0 | ✅ |
 | Stockfish.js Engine | v10.0 | ✅ |
+| Playing Cards SVG | v1.0 | ✅ |
+| Dame Pieces SVG | v1.0 | ✅ |
+| MADN Pieces SVG | v1.0 | ✅ |
+| Poker AI Engine | v1.0 | ✅ |
 
 ### Docker Container (Production)
 | Container | Status | Port |
@@ -182,17 +186,22 @@ docker exec sgit-education-ollama ollama list
 | sgit-voice-piper | ✅ Running | 10200 |
 | sgit-voice-qdrant | ✅ Running | 6333 |
 
-### Multiplayer-Spiele (8 Modi, 7 Spiele)
+### Multiplayer-Spiele (13 Modi, 7 Spiele)
 | Spiel | Version | Beschreibung |
 |-------|---------|-------------|
 | 🎨 Montagsmaler | v3.34.0 | Zeichnen & Raten |
-| 🎲 MADN | v3.46.0 | Mensch aergere Dich nicht |
-| 🃏 Mau Mau | v3.36.0 | Kartenspiel |
-| ⚫ Dame | v3.37.0 | Brettspiel |
+| 🎲 MADN PvP | v3.52.0 | Mensch aergere Dich nicht (SVG-Figuren) |
+| 🎲 MADN vs KI | v3.52.0 | 1-3 KI-Gegner, 3 Schwierigkeitsstufen |
+| 🃏 Mau Mau PvP | v3.52.0 | Kartenspiel (SVG-Karten) |
+| 🃏 Mau Mau vs KI | v3.52.0 | 3 Schwierigkeitsstufen |
+| ⚫ Dame PvP | v3.52.0 | Brettspiel (SVG-Steine, CI-Gruen) |
+| ⚫ Dame vs KI | v3.52.0 | Minimax + Alpha-Beta, 5 Stufen |
 | ♟️ Schach PvP | v3.51.0 | SVG-Figuren, CI-Theme |
 | ♟️ Schach vs KI | v3.51.0 | Stockfish.js, 5 Schwierigkeitsstufen |
-| 🎴 Rommé | v3.39.0 | Kartenspiel |
-| 🎰 Poker | v3.40.0 | Texas Hold'em |
+| 🎴 Rommé PvP | v3.52.0 | Kartenspiel (SVG-Karten) |
+| 🎴 Rommé vs KI | v3.52.0 | Meld-Finding KI, 3 Stufen |
+| 🎰 Poker PvP | v3.52.0 | Texas Hold'em (SVG-Karten) |
+| 🎰 Poker vs KI | v3.52.0 | 2-4 KI-Gegner, 3 Stufen |
 
 ---
 
@@ -213,6 +222,11 @@ docker exec sgit-education-ollama ollama list
 | Schach PvP | https://edu.sgit.space/schach_pvp.php |
 | Schach vs Computer | https://edu.sgit.space/schach_vs_computer.php |
 | Schach Hub | https://edu.sgit.space/schach/index.php |
+| Mau Mau vs Computer | https://edu.sgit.space/maumau_vs_computer.php |
+| Dame vs Computer | https://edu.sgit.space/dame_vs_computer.php |
+| MADN vs Computer | https://edu.sgit.space/madn_vs_computer.php |
+| Romme vs Computer | https://edu.sgit.space/romme_vs_computer.php |
+| Poker vs Computer | https://edu.sgit.space/poker_vs_computer.php |
 
 ### Development (Lokal)
 | Bereich | URL |
@@ -295,8 +309,17 @@ ssh sgit-admin@192.168.200.128 "ls -lah /share/backups/sgit-edu/daily"
 | `/opt/education/logs/auth_audit.log` | Auth-Audit-Log |
 | `/opt/education/assets/js/stockfish/` | Stockfish.js Engine (1.6MB, lokal gehostet) |
 | `/opt/education/assets/js/chess-pieces.js` | SVG Staunton-Schachfiguren (12 Stueck) |
+| `/opt/education/assets/js/playing-cards.js` | SVG Spielkarten-Bibliothek (52+Joker) |
+| `/opt/education/assets/js/dame-pieces.js` | SVG Dame-Spielsteine (CI-Gruen) |
+| `/opt/education/assets/js/madn-pieces.js` | SVG MADN-Spielfiguren (4 Farben) |
+| `/opt/education/assets/js/poker-ai.js` | Poker KI-Engine (Hand-Evaluation) |
 | `/opt/education/assets/css/chess-theme.css` | CI-konformes Schach-Design |
 | `/opt/education/schach_vs_computer.php` | Schach vs KI (Stockfish, 5 Stufen) |
+| `/opt/education/maumau_vs_computer.php` | Mau Mau vs KI (3 Stufen) |
+| `/opt/education/dame_vs_computer.php` | Dame vs KI (Minimax, 5 Stufen) |
+| `/opt/education/madn_vs_computer.php` | MADN vs 1-3 KI-Gegner |
+| `/opt/education/romme_vs_computer.php` | Romme vs KI (Meld-Finding) |
+| `/opt/education/poker_vs_computer.php` | Poker vs 2-4 KI-Gegner |
 | `/usr/local/bin/backup-education-to-nas.sh` | Backup-Script |
 | `/var/log/backup-education.log` | Backup-Log |
 
@@ -388,6 +411,22 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ## 📋 VERSION HISTORY
 
+### v3.52.0 (12.02.2026) - MULTIPLAYER KI-GEGNER + SVG REDESIGN
+- ✅ Alle 5 Multiplayer-Spiele mit KI-Gegner erweitert (Mau Mau, Dame, MADN, Romme, Poker)
+- ✅ SVG Spielkarten-Bibliothek (playing-cards.js): 52 Karten + Joker + Kartenrueckseite
+- ✅ SVG Dame-Spielsteine (dame-pieces.js): CI-Gruen + Schwarz, Krone fuer Damen
+- ✅ SVG MADN-Spielfiguren (madn-pieces.js): 4 Farben als Kegel-Pins
+- ✅ Poker KI-Engine (poker-ai.js): Hand-Evaluation, Pot Odds, Bet-Decisions
+- ✅ Mau Mau vs KI: 3 Schwierigkeitsstufen (Zufall, Sonderkarten-Prio, Kartenzaehlen)
+- ✅ Dame vs KI: 5 Stufen (Zufall bis Minimax+Alpha-Beta Tiefe 7)
+- ✅ MADN vs KI: 1-3 KI-Gegner, 3 Stufen (Zufall, Priorisierung, Gefahrenbewertung)
+- ✅ Romme vs KI: 3 Stufen (Zufall, Meld-Finding, Vorausplanung)
+- ✅ Poker vs KI: 2-4 KI-Gegner, 3 Stufen (Loose-Passive, Tight-Aggressive, Advanced)
+- ✅ Alle PvP-Spiele: SVG-Grafiken + "Gegen Computer" Button in Lobby
+- ✅ Dame PvP: CI-Gruen Board-Redesign (#2a5a0a/#d4c8a0)
+- **Neue Dateien:** playing-cards.js, dame-pieces.js, madn-pieces.js, poker-ai.js, maumau_vs_computer.php, dame_vs_computer.php, madn_vs_computer.php, romme_vs_computer.php, poker_vs_computer.php (9 Dateien, 6.173 Zeilen)
+- **Geaendert:** maumau.php, dame.php, madn.php, romme.php, poker.php, includes/version.php
+
 ### v3.51.0 (12.02.2026) - SCHACH KI + VISUAL REDESIGN
 - ✅ Neuer Modus: Schach vs Computer (Stockfish.js v10, 5 Schwierigkeitsstufen)
 - ✅ SVG Staunton-Schachfiguren ersetzen Unicode-Text (chess-pieces.js)
@@ -429,6 +468,6 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 12.02.2026 - v3.51.0 Schach KI + Visual Redesign*
-*Schach: SVG-Figuren, Stockfish.js KI, 5 Schwierigkeitsstufen, CI-konformes Design*
+*Status-Report aktualisiert am 12.02.2026 - v3.52.0 Multiplayer KI-Gegner + SVG Redesign*
+*Alle Spiele mit KI-Gegner: Mau Mau, Dame, MADN, Romme, Poker + SVG-Grafiken*
 *Archivierte Items: 70+ Bugs, 20 TODOs, 10 Sessions*
