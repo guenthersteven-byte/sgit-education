@@ -21,12 +21,34 @@ require_once dirname(__DIR__) . '/includes/version.php';
 $userAge = $_SESSION['user_age'] ?? 10;
 $userName = $_SESSION['child_name'] ?? 'Schach-Fan';
 
+// Spiel-Modi
+$gameModes = [
+    'pvp' => [
+        'name' => 'Gegen Spieler',
+        'icon' => '👥',
+        'description' => 'Spiele Schach gegen einen Freund online!',
+        'min_age' => 5, 'max_age' => 99,
+        'sats' => '10-50',
+        'ready' => true,
+        'url' => '/schach_pvp.php'
+    ],
+    'computer' => [
+        'name' => 'Gegen Computer',
+        'icon' => '🤖',
+        'description' => 'Spiele gegen die KI mit 5 Schwierigkeitsstufen!',
+        'min_age' => 5, 'max_age' => 99,
+        'sats' => '5-25',
+        'ready' => true,
+        'url' => '/schach_vs_computer.php'
+    ]
+];
+
 // Puzzle-Kategorien nach Schwierigkeit
 $categories = [
     'grundlagen' => [
         'name' => 'Wie ziehen Figuren?',
         'icon' => '📚',
-        'description' => 'Lerne die Grundzüge aller Schachfiguren kennen!',
+        'description' => 'Lerne die Grundzuege aller Schachfiguren kennen!',
         'min_age' => 5, 'max_age' => 99,
         'sats' => '5-15',
         'ready' => true
@@ -34,15 +56,15 @@ $categories = [
     'matt1' => [
         'name' => 'Matt in 1 Zug',
         'icon' => '♚',
-        'description' => 'Setze den König mit einem einzigen Zug schachmatt!',
+        'description' => 'Setze den Koenig mit einem einzigen Zug schachmatt!',
         'min_age' => 6, 'max_age' => 99,
         'sats' => '10-25',
         'ready' => true
     ],
     'matt2' => [
-        'name' => 'Matt in 2 Zügen',
+        'name' => 'Matt in 2 Zuegen',
         'icon' => '♛',
-        'description' => 'Plane voraus und setze den König in 2 Zügen matt!',
+        'description' => 'Plane voraus und setze den Koenig in 2 Zuegen matt!',
         'min_age' => 10, 'max_age' => 99,
         'sats' => '20-40',
         'ready' => true
@@ -50,7 +72,7 @@ $categories = [
     'taktik' => [
         'name' => 'Taktik-Training',
         'icon' => '⚔️',
-        'description' => 'Lerne Gabel, Spieß, Fesselung und mehr!',
+        'description' => 'Lerne Gabel, Spiess, Fesselung und mehr!',
         'min_age' => 8, 'max_age' => 99,
         'sats' => '15-35',
         'ready' => true
@@ -161,8 +183,39 @@ $availableCategories = array_filter($categories, function($c) use ($userAge) {
             width: 20px;
             height: 20px;
         }
-        .board-preview .light { background: #e8d4a8; }
-        .board-preview .dark { background: #b58863; }
+        .board-preview .light { background: #2a5a0a; }
+        .board-preview .dark { background: #1A3503; }
+
+        /* Spielmodus-Karten */
+        .game-mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .game-mode-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(67, 210, 64, 0.3);
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            display: block;
+        }
+        .game-mode-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 25px rgba(67, 210, 64, 0.25);
+        }
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 15px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -181,6 +234,26 @@ $availableCategories = array_filter($categories, function($c) use ($userAge) {
             </div>
         </header>
         
+        <!-- Spielmodi -->
+        <h3 class="section-title">🎮 Spielen</h3>
+        <div class="game-mode-grid">
+            <?php foreach ($gameModes as $key => $mode):
+                $available = $userAge >= $mode['min_age'] && $userAge <= $mode['max_age'];
+            ?>
+            <a class="game-mode-card" href="<?php echo $mode['url']; ?>">
+                <div class="category-icon"><?php echo $mode['icon']; ?></div>
+                <div class="category-name"><?php echo $mode['name']; ?></div>
+                <div class="category-desc"><?php echo $mode['description']; ?></div>
+                <div class="category-meta">
+                    <span>⭐ <?php echo $mode['sats']; ?> Sats</span>
+                    <span><?php echo $mode['min_age']; ?>+ Jahre</span>
+                </div>
+            </a>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Puzzle-Kategorien -->
+        <h3 class="section-title">🧩 Training & Puzzles</h3>
         <div class="category-grid">
             <?php foreach ($categories as $key => $cat): 
                 $available = $userAge >= $cat['min_age'] && $userAge <= $cat['max_age'];

@@ -41,16 +41,11 @@ if (SessionManager::isLoggedIn()) {
     <title>♟️ Schach - sgiT Education</title>
     <!-- Zentrale Multiplayer CSS -->
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
+    <link rel="stylesheet" href="/assets/css/chess-theme.css">
     <style>
         /* ===========================================
            Schach PvP-Spezifische Styles
            =========================================== */
-        :root {
-            --light-sq: #f0d9b5;
-            --dark-sq: #b58863;
-            --highlight: rgba(67, 210, 64, 0.5);
-            --check: rgba(231, 76, 60, 0.6);
-        }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
@@ -58,7 +53,7 @@ if (SessionManager::isLoggedIn()) {
             color: var(--mp-text);
             margin: 0; padding: 0;
         }
-        .container { max-width: 1000px; margin: 0 auto; padding: 15px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
         
         .header {
             display: flex; justify-content: space-between; align-items: center;
@@ -104,129 +99,45 @@ if (SessionManager::isLoggedIn()) {
         .player-slot.filled { border-style: solid; border-color: var(--accent); }
         .player-slot .piece { font-size: 2rem; margin-bottom: 5px; }
         
-        /* Game */
-        .game-container { display: grid; grid-template-columns: 1fr 250px; gap: 20px; }
+        /* Game - Board/Cell/Piece Styles kommen aus chess-theme.css */
+        .game-container { display: grid; grid-template-columns: 1fr 270px; gap: 24px; }
         @media (max-width: 800px) { .game-container { grid-template-columns: 1fr; } }
-        
-        .board-area { background: var(--card-bg); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        .board {
-            display: grid;
-            grid-template-columns: repeat(8, 50px);
-            grid-template-rows: repeat(8, 50px);
-            border: 4px solid #5d4e37;
-            border-radius: 4px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-        
-        .cell {
-            width: 50px; height: 50px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: relative; font-size: 2.2rem;
-            user-select: none;
-        }
-        .cell.light { background: var(--light-sq); }
-        .cell.dark { background: var(--dark-sq); }
-        .cell.selected { box-shadow: inset 0 0 0 4px var(--mp-accent); }
-        .cell.valid-move { animation: mp-fieldPulse 1s ease infinite; }
-        .cell.valid-move::after {
-            content: ''; position: absolute;
-            width: 18px; height: 18px; background: var(--highlight); border-radius: 50%;
-        }
-        .cell.capture-move::after {
-            width: 44px; height: 44px; background: transparent;
-            border: 4px solid var(--highlight); border-radius: 50%;
-        }
-        .cell.check { background: var(--check) !important; animation: mp-shake 0.3s ease; }
-        .cell.last-move { background: rgba(255, 255, 0, 0.3); }
-        
-        .piece { cursor: pointer; transition: var(--mp-transition); }
-        .piece:hover { transform: scale(1.1); }
-        .piece.moving { animation: mp-pieceMove 0.4s ease; }
-        .piece.captured { animation: mp-pieceCapture 0.5s ease forwards; }
-        
-        /* BUG-055 FIX: Deutliche Unterscheidung Weiß vs Schwarz */
-        .piece.white { 
-            color: #FFFFFF;
-            text-shadow: 
-                -1px -1px 0 #333,
-                1px -1px 0 #333,
-                -1px 1px 0 #333,
-                1px 1px 0 #333,
-                0 0 3px #333;
-        }
-        .piece.black { 
-            color: #1a1a1a;
-            text-shadow: 
-                -1px -1px 0 #888,
-                1px -1px 0 #888,
-                -1px 1px 0 #888,
-                1px 1px 0 #888,
-                0 0 2px #aaa;
-        }
-        
-        .coord { position: absolute; font-size: 0.65rem; color: #666; font-weight: bold; }
-        .coord.file { bottom: 2px; right: 4px; }
-        .coord.rank { top: 2px; left: 4px; }
-        .cell.light .coord { color: var(--dark-sq); }
-        .cell.dark .coord { color: var(--light-sq); }
-        
+
         /* Sidebar */
         .sidebar { display: flex; flex-direction: column; gap: 15px; }
-        .info-card { background: var(--card-bg); border-radius: 12px; padding: 15px; }
-        .info-card h3 { color: var(--accent); margin-bottom: 10px; font-size: 1rem; }
-        
-        .turn-info { text-align: center; padding: 15px; background: var(--bg); border-radius: 10px; }
-        .turn-info.my-turn { border: 2px solid var(--accent); }
+        .info-card h3 { color: var(--mp-accent); margin-bottom: 10px; font-size: 1.05rem; }
+
+        .turn-info { text-align: center; padding: 16px; background: rgba(0,0,0,0.25); border-radius: 12px; }
+        .turn-info.my-turn { border: 2px solid var(--mp-accent); box-shadow: 0 0 15px rgba(67, 210, 64, 0.15); }
         .turn-info.check { border: 2px solid #e74c3c; animation: pulse-red 1s infinite; }
         @keyframes pulse-red { 50% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); } }
-        .turn-info .label { font-size: 0.85rem; color: var(--text-muted); }
-        .turn-info .name { font-size: 1.2rem; font-weight: bold; margin-top: 5px; }
-        
-        .player-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; }
-        .player-row.active { border: 2px solid var(--accent); }
-        .player-row .piece-icon { font-size: 1.5rem; margin-right: 10px; }
+        .turn-info .label { font-size: 0.9rem; color: #a0a0a0; }
+        .turn-info .name { font-size: 1.3rem; font-weight: bold; margin-top: 6px; }
+
+        .player-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px; background: rgba(0,0,0,0.25); border-radius: 10px; margin-bottom: 8px;
+        }
+        .player-row.active { border: 2px solid var(--mp-accent); box-shadow: 0 0 10px rgba(67, 210, 64, 0.1); }
+        .player-row .piece-icon { font-size: 1.6rem; margin-right: 10px; }
         
         /* Promotion Modal */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 25px; text-align: center; }
-        .modal h2 { margin-bottom: 20px; color: var(--accent); }
+        .modal-content { background: rgba(30, 58, 8, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(67, 210, 64, 0.3); border-radius: 16px; padding: 30px; text-align: center; }
+        .modal h2 { margin-bottom: 20px; color: var(--mp-accent); }
         .promo-choice { display: flex; gap: 15px; justify-content: center; }
-        .promo-btn { width: 60px; height: 60px; font-size: 2.5rem; border: 3px solid var(--accent); border-radius: 10px; cursor: pointer; background: var(--bg); }
-        .promo-btn:hover { transform: scale(1.1); background: var(--card-bg); }
+        .promo-btn { width: 72px; height: 72px; border: 3px solid var(--mp-accent); border-radius: 14px; cursor: pointer; background: rgba(0,0,0,0.3); transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .promo-btn:hover { transform: scale(1.12); background: rgba(67, 210, 64, 0.15); box-shadow: 0 0 15px rgba(67, 210, 64, 0.2); }
         
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; }
         .toast.success { background: var(--accent); color: var(--primary); }
         .toast.error { background: #e74c3c; color: white; }
         .toast.info { background: var(--card-bg); border: 2px solid var(--mp-accent); }
         
-        /* Mobile Optimierung */
-        @media (max-width: 500px) {
-            .board-area { padding: 10px; }
-            .board {
-                grid-template-columns: repeat(8, 40px);
-                grid-template-rows: repeat(8, 40px);
-            }
-            .cell {
-                width: 40px;
-                height: 40px;
-                font-size: 1.8rem;
-            }
+        /* Mobile - Responsive Groessen kommen aus chess-theme.css */
+        @media (max-width: 550px) {
             .sidebar { gap: 10px; }
-            .info-card { padding: 10px; }
-        }
-        
-        @media (max-width: 380px) {
-            .board {
-                grid-template-columns: repeat(8, 35px);
-                grid-template-rows: repeat(8, 35px);
-            }
-            .cell {
-                width: 35px;
-                height: 35px;
-                font-size: 1.5rem;
-            }
         }
     </style>
 </head>
@@ -245,8 +156,26 @@ if (SessionManager::isLoggedIn()) {
             <div class="lobby-container">
                 <div style="font-size: 4rem; margin-bottom: 10px;">♟️</div>
                 <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Schach</h1>
-                <p style="color: var(--text-muted); margin-bottom: 25px;">Das königliche Spiel für 2 Spieler</p>
+                <p style="color: var(--text-muted); margin-bottom: 25px;">Das koenigliche Spiel</p>
+
+                <!-- Moduswahl -->
+                <div class="lobby-card" id="modeCard">
+                    <h2>Spielmodus</h2>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn" onclick="document.getElementById('modeCard').style.display='none'; document.getElementById('pvpCards').style.display='block';" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">👥</div>
+                            <div style="font-weight: 600;">Gegen Spieler</div>
+                            <div style="font-size: 0.8rem; color: var(--mp-primary); opacity: 0.8; margin-top: 4px;">2 Spieler online</div>
+                        </button>
+                        <a href="/schach_vs_computer.php" class="btn secondary" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; text-decoration: none;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">🤖</div>
+                            <div style="font-weight: 600;">Gegen Computer</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">KI mit 5 Stufen</div>
+                        </a>
+                    </div>
+                </div>
                 
+                <div id="pvpCards" style="display: none;">
                 <div class="lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2>👤 Dein Name</h2>
                     <div class="input-group">
@@ -271,6 +200,7 @@ if (SessionManager::isLoggedIn()) {
                     </div>
                     <button class="btn secondary" onclick="joinGame()">Beitreten →</button>
                 </div>
+                </div><!-- /pvpCards -->
             </div>
         </div>
         
@@ -353,6 +283,7 @@ if (SessionManager::isLoggedIn()) {
         </div>
     </div>
     
+    <script src="/assets/js/chess-pieces.js"></script>
     <script>
         const API_URL = '/api/schach_pvp.php';
         const POLL_INTERVAL = 800;
@@ -596,12 +527,14 @@ if (SessionManager::isLoggedIn()) {
                         cell.classList.add(board[sq] ? 'capture-move' : 'valid-move');
                     }
                     
-                    // Figur
+                    // Figur (SVG)
                     if (board[sq]) {
-                        const span = document.createElement('span');
-                        span.className = `piece ${board[sq][0] === 'w' ? 'white' : 'black'}`;
-                        span.textContent = PIECES[board[sq]];
-                        cell.appendChild(span);
+                        const img = document.createElement('img');
+                        img.className = 'piece-img';
+                        img.src = CHESS_PIECE_SVGS[board[sq]];
+                        img.alt = board[sq];
+                        img.draggable = false;
+                        cell.appendChild(img);
                     }
                     
                     cell.onclick = () => handleCellClick(sq);
@@ -757,8 +690,8 @@ if (SessionManager::isLoggedIn()) {
             const choices = document.getElementById('promoChoices');
             const prefix = gameState.myColor === 'white' ? 'w' : 'b';
             
-            choices.innerHTML = ['Q', 'R', 'B', 'N'].map(p => 
-                `<button class="promo-btn" onclick="promoteTo('${p}')">${PIECES[prefix + p]}</button>`
+            choices.innerHTML = ['Q', 'R', 'B', 'N'].map(p =>
+                `<button class="promo-btn" onclick="promoteTo('${p}')"><img src="${CHESS_PIECE_SVGS[prefix + p]}" alt="${p}" draggable="false"></button>`
             ).join('');
             
             modal.classList.add('active');
