@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.53.3 | **Datum:** 13. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
+**Version:** 3.53.4 | **Datum:** 13. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
 
 ---
 
@@ -423,6 +423,17 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 ---
 
 ## 📋 VERSION HISTORY
+
+### v3.53.4 (13.02.2026) - DIFFICULTY FILTER & FRAGEN-QUALITAET
+- Altersbasierter Schwierigkeitsfilter: 5-6J=Diff1, 7-8J=Diff2, 9-10J=Diff3, 11-12J=Diff4, 13+=alle
+- Difficulty-Filter in ALLEN 4 Fallback-Schritten (SCHRITT 1-4) der Fragenauswahl
+- SCHRITT 3 Fallback begrenzt auf max userAge+3 (Kinder bekommen keine Erwachsenen-Fragen)
+- 9 defekte Fragen deaktiviert (falsche Antworten, Antwort nicht in Optionen, KI-Muell)
+- Vorher: 5-Jaehriger konnte 3716 Fragen bekommen (inkl. Difficulty 5, age_min 18)
+- Nachher: 5-Jaehriger bekommt max 749 Fragen (nur Difficulty 1, age_min<=8)
+- Davon 391 altersgerecht (SCHRITT 1), Rest ueber kontrollierte Fallbacks
+- Aktive Fragen: 3716 (vorher 3725)
+- **Geaendert:** adaptive_learning.php (PHP Queries + Bindings), questions.db (9 deaktiviert)
 
 ### v3.53.3 (13.02.2026) - TTS VORLESE-FUNKTION
 - Text-to-Speech fuer alle Quiz-Fragen via Web Speech API (Browser-nativ, kein Server-Load)
