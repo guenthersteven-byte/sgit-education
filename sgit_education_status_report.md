@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.53.0 | **Datum:** 12. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
+**Version:** 3.53.2 | **Datum:** 13. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
 
 ---
 
@@ -23,8 +23,8 @@ Admin:          http://localhost:8080/admin_v4.php
 Plattform:      http://localhost:8080/adaptive_learning.php
 ```
 
-**Technologie:** PHP 8.3, SQLite (WAL), Docker/nginx/PHP-FPM, Ollama (Gemma2:2b)  
-**Branding:** #1A3503 (Dunkelgrün), #43D240 (Neon-Grün)
+**Technologie:** PHP 8.3, SQLite (WAL), Docker/nginx/PHP-FPM, Ollama (Gemma2:2b)
+**Branding:** #1A3503 (Dunkelgrün), #43D240 (Neon-Grün), Font: Space Grotesk
 
 ---
 
@@ -41,6 +41,7 @@ Plattform:      http://localhost:8080/adaptive_learning.php
 | **Resources** | 16GB RAM, 4 CPU Cores, 40GB Disk (erweitert 19.01.2026 für Voice AI) |
 | **Docker** | v29.1.3 + Compose v3.0.0 |
 | **SSL** | ✅ Let's Encrypt via NPM |
+| **Security Headers** | CSP, HSTS, X-Frame-Options, X-XSS-Protection (v3.53.2) |
 | **Monitoring** | ✅ Uptime Kuma (60s heartbeat) |
 | **Backup** | ✅ Täglich 03:00 → QNAP NAS via rsync |
 | **Migration** | 21.12.2025 15:20 (von Notebook .113 → Proxmox .145) |
@@ -67,7 +68,7 @@ pct exec 105 -- bash -c 'cd /opt/education && git fetch origin main && git check
 # Oder: Alle tracked Files aktualisieren:
 pct exec 105 -- bash -c 'cd /opt/education && git fetch origin main && git reset --hard origin/main'
 ```
-**Hinweis:** Git Repo seit 12.02.2026 initialisiert in /opt/education (remote: GitHub)
+**Hinweis:** Git Repo in /opt/education (remote: GitHub). questions.db ist NICHT im Git (seit 13.02.2026 aus Tracking entfernt).
 
 ### Docker Befehle (Production)
 ```bash
@@ -98,7 +99,7 @@ docker exec sgit-education-ollama ollama list
 | Info | Details |
 |------|---------|
 | **Status** | ✅ PRODUCTION (21.12.2025 21:20) |
-| **Methode** | Bcrypt-Hashing (60 chars) |
+| **Methode** | Bcrypt-Hashing (60 chars), Legacy-Klartext entfernt (13.02.2026) |
 | **Migration** | v3.47.0 (Klartext) → v3.48.0 (Hash) |
 | **Dateien** | auth_config.php, auth_functions.php |
 | **Admin Password** | In Bitwarden (Collection: sgit.space) |
@@ -312,7 +313,7 @@ ssh sgit-admin@192.168.200.128 "ls -lah /share/backups/sgit-edu/daily"
 | `/opt/education/includes/auth_config.php` | Passwort-Hash (NICHT in Git!) |
 | `/opt/education/includes/auth_functions.php` | Auth-Bibliothek |
 | `/opt/education/AI/config/ollama_model.txt` | AI-Modell Konfiguration |
-| `/opt/education/AI/data/questions.db` | Fragen-Datenbank (4,904) |
+| `/opt/education/AI/data/questions.db` | Fragen-Datenbank (3,725 aktiv / 4,904 gesamt) |
 | `/opt/education/wallet/*.db` | Wallet-Datenbanken |
 | `/opt/education/logs/auth_audit.log` | Auth-Audit-Log |
 | `/opt/education/assets/js/stockfish/` | Stockfish.js Engine (1.6MB, lokal gehostet) |
@@ -342,8 +343,8 @@ ssh sgit-admin@192.168.200.128 "ls -lah /share/backups/sgit-edu/daily"
 Mathematik, Englisch, Lesen, Physik, Erdkunde, Wissenschaft, Geschichte, Computer, Chemie, Musik, Programmieren, Bitcoin, Finanzen, Kunst, Verkehr, Sport, Unnützes Wissen, Biologie
 
 **Fragen-Statistik:**
-- Gesamt: 4,904 Fragen
-- AI-generiert: 1,178
+- Gesamt: 4,904 Fragen (3,725 aktiv nach Cleanup 13.02.2026)
+- AI-generiert: 1,178 (alle deaktiviert - Qualitaetsprobleme)
 - CSV-Import: 3,720
 - Mit Erklärung: 3,710
 
@@ -423,6 +424,28 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ## 📋 VERSION HISTORY
 
+### v3.53.2 (13.02.2026) - SECURITY & QUALITY HARDENING
+- Legacy-Klartext-Passwort komplett aus auth_config.php entfernt (inkl. Kommentare)
+- Comic Sans MS durch Space Grotesk ersetzt (CI-konform)
+- Doppelte Navigation entfernt (Hausaufgaben-Kachel, Dashboard-Link)
+- Security Headers in nginx: CSP, HSTS, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
+- Session Cookie: secure-Flag auf true (statt isset HTTPS) fuer NPM Reverse Proxy
+- SQLite PRAGMA foreign_keys=ON hinzugefuegt (referentielle Integritaet)
+- Alle DB-Pragmas verifiziert: foreign_keys=1, busy_timeout=5000, cache_size=64MB, journal_mode=WAL
+- **Geaendert:** auth_config.php, style.css, adaptive_learning.php, education.conf, security.php, db_config.php (6 Dateien)
+
+### v3.53.1 (13.02.2026) - FRAGEN-DB CLEANUP
+- 1.132 fehlerhafte Fragen deaktiviert (is_active=0):
+  - 647 auto_generator mit Buchstaben-Antworten (A/B/C/D statt Text)
+  - 473 ai_generated mit Formatproblemen (Englisch-Mix, Nonsens-Antworten)
+  - 12 csv_import mit Buchstaben-Antworten
+- 13 Unicode-Encoding-Probleme in Options gefixt (u00e4 -> ae etc.)
+- questions.db aus Git-Tracking entfernt (.gitignore)
+- Backup: questions.db.bak.post_cleanup_20260213
+- 1 Frage mit Metadaten in Options gefixt (ID 4588: Schwierigkeitsgrad als Option)
+- 2 weitere fehlerhafte Fragen deaktiviert (doppelte Optionen, unsinnige Antworten)
+- **Verbleibend:** 3.725 aktive Fragen in 19 Modulen
+
 ### v3.53.0 (12.02.2026) - HAUSAUFGABEN-UPLOAD SYSTEM
 - ✅ Neues Modul: Hausaufgaben-Fotos vom Handy hochladen (Kamera + Galerie)
 - ✅ Sortierung nach Fach (15 Faecher), Klassenstufe (1-13) und Schuljahr
@@ -498,6 +521,6 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 12.02.2026 - v3.53.0 Hausaufgaben-Upload System*
+*Status-Report aktualisiert am 13.02.2026 - v3.53.2 Security & Quality Hardening*
 *Neues Modul: Foto-Upload mit OCR, 15 Faecher, SATs-Rewards, 6 Achievements*
 *Tests ausstehend: Mobile-Kamera, Upload, OCR, Achievements, Filter*
