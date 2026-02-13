@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.53.2 | **Datum:** 13. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
+**Version:** 3.53.3 | **Datum:** 13. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
 
 ---
 
@@ -23,7 +23,7 @@ Admin:          http://localhost:8080/admin_v4.php
 Plattform:      http://localhost:8080/adaptive_learning.php
 ```
 
-**Technologie:** PHP 8.3, SQLite (WAL), Docker/nginx/PHP-FPM, Ollama (Gemma2:2b)
+**Technologie:** PHP 8.3, SQLite (WAL), Docker/nginx/PHP-FPM, Ollama (Gemma2:2b)  
 **Branding:** #1A3503 (Dunkelgrün), #43D240 (Neon-Grün), Font: Space Grotesk
 
 ---
@@ -424,6 +424,15 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ## 📋 VERSION HISTORY
 
+### v3.53.3 (13.02.2026) - TTS VORLESE-FUNKTION
+- Text-to-Speech fuer alle Quiz-Fragen via Web Speech API (Browser-nativ, kein Server-Load)
+- Lautsprecher-Button (SVG) neben jeder Frage zum manuellen Vorlesen
+- Auto-Vorlesen: Jede neue Frage wird automatisch auf Deutsch vorgelesen (Frage + Antwortoptionen)
+- Auto-Vorlesen Toggle im Quiz-Header (Einstellung in localStorage gespeichert)
+- Deutsche Stimme bevorzugt, Sprechgeschwindigkeit 0.85x
+- Sprache stoppt automatisch beim Quiz-Schliessen
+- **Geaendert:** adaptive_learning.php (CSS + HTML + JS)
+
 ### v3.53.2 (13.02.2026) - SECURITY & QUALITY HARDENING
 - Legacy-Klartext-Passwort komplett aus auth_config.php entfernt (inkl. Kommentare)
 - Comic Sans MS durch Space Grotesk ersetzt (CI-konform)
@@ -521,6 +530,6 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 13.02.2026 - v3.53.2 Security & Quality Hardening*
+*Status-Report aktualisiert am 13.02.2026 - v3.53.3 TTS Vorlese-Funktion*
 *Neues Modul: Foto-Upload mit OCR, 15 Faecher, SATs-Rewards, 6 Achievements*
 *Tests ausstehend: Mobile-Kamera, Upload, OCR, Achievements, Filter*
