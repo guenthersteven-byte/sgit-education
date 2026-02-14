@@ -80,6 +80,12 @@ try {
     echo json_encode($result, JSON_UNESCAPED_UNICODE);
 } catch (Exception $e) {
     error_log("Upload Error: " . $e->getMessage());
+    error_log("Upload Error Stack: " . $e->getTraceAsString());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Serverfehler beim Upload']);
+
+    // In development mode, show detailed error
+    $isDev = (error_reporting() & E_ALL) === E_ALL;
+    $errorMsg = $isDev ? $e->getMessage() : 'Serverfehler beim Upload';
+
+    echo json_encode(['success' => false, 'error' => $errorMsg]);
 }

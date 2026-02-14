@@ -187,6 +187,24 @@ class HausaufgabenManager {
      * @return array {success, upload_id, sats_earned, file_path, message, ocr_text}
      */
     public function processUpload(int $childId, array $file, string $subject, int $gradeLevel, string $schoolYear, string $description = ''): array {
+        // Check if GD extension is loaded
+        if (!extension_loaded('gd')) {
+            error_log("HausaufgabenManager: PHP GD extension not loaded - cannot process images");
+            return ['success' => false, 'error' => 'Bildverarbeitung nicht verfuegbar. Bitte Administrator kontaktieren.'];
+        }
+
+        // Check if upload base directory exists and is writable
+        if (!is_dir(self::UPLOAD_BASE)) {
+            if (!@mkdir(self::UPLOAD_BASE, 0755, true)) {
+                error_log("HausaufgabenManager: Cannot create upload directory: " . self::UPLOAD_BASE);
+                return ['success' => false, 'error' => 'Upload-Verzeichnis nicht verfuegbar'];
+            }
+        }
+        if (!is_writable(self::UPLOAD_BASE)) {
+            error_log("HausaufgabenManager: Upload directory not writable: " . self::UPLOAD_BASE);
+            return ['success' => false, 'error' => 'Upload-Verzeichnis nicht beschreibbar'];
+        }
+
         // Validierung
         if (!self::isValidSubject($subject)) {
             return ['success' => false, 'error' => 'Ungueltiges Fach'];
@@ -224,7 +242,13 @@ class HausaufgabenManager {
         $yearDir = str_replace('/', '-', $schoolYear);
         $uploadDir = self::UPLOAD_BASE . "/{$childId}/{$yearDir}/{$subject}";
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+            if (!@mkdir($uploadDir, 0755, true)) {
+                imagedestroy($processed['image']);
+                $lastError = error_get_last();
+                $errorMsg = $lastError ? $lastError['message'] : 'Unbekannter Fehler';
+                error_log("HausaufgabenManager: Cannot create directory {$uploadDir}: {$errorMsg}");
+                return ['success' => false, 'error' => 'Upload-Verzeichnis konnte nicht erstellt werden'];
+            }
         }
 
         $filename = date('Y-m-d_His') . '_' . bin2hex(random_bytes(3)) . '.jpg';
@@ -361,6 +385,12 @@ class HausaufgabenManager {
      * @return array {success, image (GdImage), error}
      */
     private function processImage(string $tmpPath): array {
+        // Check if GD library is available
+        if (!extension_loaded('gd')) {
+            error_log("HausaufgabenManager: PHP GD extension not loaded");
+            return ['success' => false, 'error' => 'Bildverarbeitung nicht verfuegbar (GD Extension fehlt)'];
+        }
+
         $imageInfo = @getimagesize($tmpPath);
         if (!$imageInfo) {
             return ['success' => false, 'error' => 'Kein gueltiges Bild'];
@@ -384,6 +414,9 @@ class HausaufgabenManager {
         }
 
         if (!$image) {
+            $lastError = error_get_last();
+            $errorMsg = $lastError ? $lastError['message'] : 'Unbekannter Fehler';
+            error_log("HausaufgabenManager: Image creation failed - " . $errorMsg);
             return ['success' => false, 'error' => 'Bild konnte nicht geladen werden'];
         }
 
