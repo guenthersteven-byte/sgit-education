@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.54.0 | **Datum:** 14. Februar 2026 | **Module:** 22/22 | **Status:** PRODUCTION
+**Version:** 3.56.0 | **Datum:** 14. Februar 2026 | **Module:** 22/22 | **Status:** PRODUCTION
 
 ---
 
@@ -23,8 +23,8 @@ Admin:          http://localhost:8080/admin_v4.php
 Plattform:      http://localhost:8080/adaptive_learning.php
 ```
 
-**Technologie:** PHP 8.3, SQLite (WAL), Docker/nginx/PHP-FPM, Ollama (Gemma2:2b)  
-**Branding:** #1A3503 (Dunkelgrün), #43D240 (Neon-Grün), Font: Space Grotesk
+**Technologie:** PHP 8.3, SQLite (WAL), Docker/nginx/PHP-FPM
+**Branding:** #1A3503 (Dunkelgruen), #43D240 (Neon-Gruen), Font: Space Grotesk
 
 ---
 
@@ -75,7 +75,7 @@ pct exec 105 -- bash -c 'cd /opt/education && git fetch origin main && git reset
 # Ins Container-Directory
 cd /opt/education/docker
 
-# Status prüfen
+# Status pruefen
 docker ps
 
 # Container neu starten
@@ -86,9 +86,6 @@ docker logs sgit-education-php --tail 50
 
 # In PHP-Container
 docker exec -it sgit-education-php bash
-
-# Ollama Modell prüfen
-docker exec sgit-education-ollama ollama list
 ```
 
 ---
@@ -172,7 +169,7 @@ docker exec sgit-education-ollama ollama list
 | Adaptive Learning | v6.1 | ✅ |
 | AI Generator | v11.1 | ✅ |
 | Bot-System | v1.5+ | ✅ |
-| Foxy Chatbot | v1.4 | ✅ |
+| Foxy Chatbot | v3.0 (DB-only) | Running |
 | WalletManager | v1.6 | ✅ |
 | HausaufgabenManager | v1.0 | ✅ |
 | Multiplayer-Theme | v1.0 | ✅ |
@@ -187,12 +184,13 @@ docker exec sgit-education-ollama ollama list
 ### Docker Container (Production)
 | Container | Status | Port |
 |-----------|--------|------|
-| sgit-education-nginx | ✅ Running | 8080 |
-| sgit-education-php | ✅ Running | 9000 |
-| sgit-education-ollama | ✅ Running | 11434 |
-| sgit-voice-whisper | ✅ Running | 9001 |
-| sgit-voice-piper | ✅ Running | 10200 |
-| sgit-voice-qdrant | ✅ Running | 6333 |
+| sgit-education-nginx | Running | 8080 |
+| sgit-education-php | Running | 9000 |
+| sgit-voice-whisper | Running | 9001 |
+| sgit-voice-piper | Running | 10200 |
+| sgit-voice-qdrant | Running | 6333 |
+
+**Entfernt (v3.55.0):** Ollama Container + 6.2GB Models (Disk 69% -> 30%)
 
 ### Multiplayer-Spiele (13 Modi, 7 Spiele)
 | Spiel | Version | Beschreibung |
@@ -256,9 +254,10 @@ docker exec sgit-education-ollama ollama list
 ### Technische Constraints
 - **SQLite** (NICHT MySQL!) mit WAL-Modus
 - **Docker/nginx/PHP-FPM** - Port 8080 (intern), NPM Proxy extern
-- **Ollama** mit Gemma2:2b (Standard, 1.6GB)
+- **Ollama entfernt** (v3.55.0) - Foxy nutzt jetzt DB-only Matching
+- **TTS:** Web Speech API (Browser-nativ, kein Server-Load)
 - Zentrale Version: `/includes/version.php`
-- **VPN MTU:** 1280 (wichtig für Verbindung!)
+- **VPN MTU:** 1280 (wichtig fuer Verbindung!)
 
 ### Production Docker-Befehle
 ```bash
@@ -282,11 +281,8 @@ docker logs sgit-education-php --tail 50
 # PHP Container betreten
 docker exec -it sgit-education-php bash
 
-# Hash generieren (für Passwort-Änderung)
+# Hash generieren (fuer Passwort-Aenderung)
 docker exec -it sgit-education-php php -r "echo password_hash('NEUES_PASSWORT', PASSWORD_DEFAULT) . PHP_EOL;"
-
-# Ollama Modell prüfen
-docker exec sgit-education-ollama ollama list
 ```
 
 ### Backup Commands
@@ -312,8 +308,7 @@ ssh sgit-admin@192.168.200.128 "ls -lah /share/backups/sgit-edu/daily"
 | `/opt/education/includes/version.php` | Zentrale Versionsverwaltung |
 | `/opt/education/includes/auth_config.php` | Passwort-Hash (NICHT in Git!) |
 | `/opt/education/includes/auth_functions.php` | Auth-Bibliothek |
-| `/opt/education/AI/config/ollama_model.txt` | AI-Modell Konfiguration |
-| `/opt/education/AI/data/questions.db` | Fragen-Datenbank (3,725 aktiv / 4,904 gesamt) |
+| `/opt/education/AI/data/questions.db` | Fragen-Datenbank (3,716 aktiv / 4,904 gesamt) |
 | `/opt/education/wallet/*.db` | Wallet-Datenbanken |
 | `/opt/education/logs/auth_audit.log` | Auth-Audit-Log |
 | `/opt/education/assets/js/stockfish/` | Stockfish.js Engine (1.6MB, lokal gehostet) |
@@ -394,15 +389,14 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 - VIP-Whitelist für Jane (direkte Weiterleitung)
 - Affirmative/Negative Erkennung ("Ja"/"Nein" Konversationsfluss)
 
-### Voice AI Stack ✅ INSTALLIERT (19.01.2026)
+### Voice AI Stack (19.01.2026, aktualisiert 14.02.2026)
 | Komponente | Software | Port | Status |
 |------------|----------|------|--------|
-| Whisper STT | onerahmet/openai-whisper-asr-webservice | 9001 | ✅ Running |
-| Piper TTS | rhasspy/wyoming-piper (de_DE-thorsten) | 10200 | ⏸️ Nicht genutzt |
-| Qdrant | qdrant/qdrant (Vector DB) | 6333 | ⏸️ Nicht genutzt |
-| Ollama | qwen2:0.5b (für Tests) | 11434 | ⏸️ Nicht genutzt |
+| Whisper STT | onerahmet/openai-whisper-asr-webservice | 9001 | Running |
+| Piper TTS | rhasspy/wyoming-piper (de_DE-thorsten-high) | 10200 | Running |
+| Qdrant | qdrant/qdrant (Vector DB) | 6333 | Running |
 
-**Hinweis:** LLM (Ollama) wurde wegen CPU-Last auf Intel N100 durch Keyword-Matching ersetzt.
+**Ollama ENTFERNT** (v3.55.0): Container, Volume (6.2GB), Images geloescht. Disk 69% -> 30%.
 
 ### Telegram Bot
 - **Bot:** @sgit_voice_bot
@@ -423,6 +417,46 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 ---
 
 ## 📋 VERSION HISTORY
+
+### v3.56.0 (14.02.2026) - TTS VORLESEN-FUNKTION (WEB SPEECH API)
+- Text-to-Speech fuer alle Quiz-Fragen via Web Speech API (Browser-nativ, kein Server-Load)
+- Vorlesen-Button (Lautsprecher-Icon) neben jeder Frage zum manuellen Vorlesen
+- Auto-Vorlesen: Jede neue Frage wird automatisch auf Deutsch vorgelesen (Standard: AN)
+- Auto-Vorlesen Toggle im Quiz-Header (Checkbox)
+- Erklaerung wird nach Antwort vorgelesen ("Richtig!" / "Falsch! Die richtige Antwort ist...")
+- Deutsche Stimme bevorzugt, Sprechgeschwindigkeit 0.9x
+- Sprache stoppt automatisch beim Quiz-Schliessen oder naechste Frage laden
+- Touch-optimiert: Button 56px auf Mobile fuer Kinderhaende
+- Sprechanimation: Button pulsiert gruen waehrend des Vorlesens
+- **Geaendert:** adaptive_learning.php (CSS + HTML + JS), includes/version.php
+
+### v3.55.0 (14.02.2026) - MULTIPLAYER GAME HUB + OLLAMA REMOVAL
+- **Multiplayer Game Hub:** multiplayer.php komplett redesigned als kindgerechter Spiele-Hub
+  - 3 Kategorien: Brettspiele, Kartenspiele, Kreativ & Quiz
+  - Grosse bunte Game-Cards mit Emoji-Icons, Hover-Animationen
+  - Direkte "Gegen Freunde" / "Gegen Computer" Buttons auf jeder Karte
+  - Touch-optimiert: min 56px Targets, responsive Grid
+- **CSS Deduplizierung:** ~1050 Zeilen redundantes Inline-CSS aus 7 Spielen entfernt
+  - Gemeinsame Styles in assets/css/multiplayer-theme.css verschoben
+  - Lobby, Buttons, Header, Input-Gruppen, Player-Slots vereinheitlicht
+- **Shared PHP Header:** includes/game_header.php fuer alle 7 Multiplayer-Spiele
+- **Ollama komplett entfernt:** Container, Volume (6.2GB), Images geloescht
+  - Disk-Nutzung CT 105: 69% (26GB) -> 30% (12GB)
+  - docker-compose.yml: Ollama Service, Volume, Env-Vars entfernt
+- **Foxy Chatbot v3.0 (DB-only):** ClippyChat.php komplett umgeschrieben
+  - Alle Ollama/AI-Aufrufe entfernt
+  - Chat: Trigger-Word-Matching aus foxy_responses DB
+  - Explain: questions.explanation Feld aus questions DB
+  - Hint: Elimination-Workflow (entfernt falsche Antworten)
+  - Ask: Keyword-Suche in questions DB
+  - Status: mode "database" (kein AI-Modell mehr)
+- **Statistics-Optimierung:** statistics.php komplett ueberarbeitet
+  - 42 Altersgruppen -> 9 sinnvolle Gruppen (ab 5, ab 6, ... ab 18+)
+  - Fehlende Modul-Icons ergaenzt (Sport, Finanzen, Kochen, etc.)
+  - Foxy-Tags: Dark Theme fixes
+  - Chart.js: Dark Theme Defaults, Prozent-Tooltips
+- **Geaendert:** multiplayer.php, 7 Spiele (dame, madn, maumau, poker, montagsmaler, schach_pvp, romme), clippy/ClippyChat.php, statistics.php, docker/docker-compose.yml, includes/version.php
+- **Neu:** includes/game_header.php, assets/css/multiplayer-theme.css
 
 ### v3.54.0 (14.02.2026) - BUGFIXES, SECURITY-AUDIT, FRAGEN-QUALITAET, BRANDING
 
@@ -458,11 +492,10 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 - style.css (alt, Comic Sans) wird von keiner Seite mehr verwendet
 
 **CT 105 Live-Status:**
-- Alle 6 Docker-Container laufen (nginx, php, ollama, whisper, qdrant, piper)
-- Disk-Warnung: 87% belegt (33G/40G, nur 5GB frei) → Cleanup oder Erweiterung noetig
-- CPU/RAM: Minimal (657 MiB / 16 GiB = 4%)
-- 4 Ollama-Modelle geladen (gemma2:2b, mistral:7b, qwen2:0.5b, nomic-embed-text)
-- Git-Deploy: Commit 8517256 deployed via git pull
+- 5 Docker-Container laufen (nginx, php, whisper, qdrant, piper) - Ollama entfernt in v3.55.0
+- Disk: 30% belegt (12GB/40GB) - nach Ollama-Removal (vorher 69%)
+- CPU/RAM: Minimal (~4%)
+- Git-Deploy: Commit 9687b22 + pct push fuer v3.56.0
 
 **Geaendert:** HausaufgabenManager.php, upload.php, profil/index.php, 6 neue Scripts
 **Erstellt:** insert_quality_questions.py, analyze_questions.py, fix_letter_answers.py, delete_broken_questions.py, check_gd.php, QUESTION_QUALITY_REPORT.md, FINDINGS_SUMMARY.md
@@ -584,6 +617,5 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 13.02.2026 - v3.53.3 TTS Vorlese-Funktion*
-*Neues Modul: Foto-Upload mit OCR, 15 Faecher, SATs-Rewards, 6 Achievements*
-*Tests ausstehend: Mobile-Kamera, Upload, OCR, Achievements, Filter*
+*Status-Report aktualisiert am 14.02.2026 - v3.56.0 TTS Vorlesen + Multiplayer Hub + Ollama Removal*
+*Ollama entfernt (Disk 69%->30%), Foxy DB-only v3.0, Web Speech API TTS fuer Kinder*

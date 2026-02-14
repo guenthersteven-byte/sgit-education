@@ -1207,6 +1207,60 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             color: #fff;
             min-height: 60px;
         }
+        /* TTS Vorlesen */
+        .question-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .question-row .question-text {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .tts-btn {
+            background: none;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--accent);
+            margin-top: 2px;
+        }
+        .tts-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: scale(1.1);
+        }
+        .tts-btn.speaking {
+            background: var(--accent);
+            color: #fff;
+            animation: tts-pulse 1s ease-in-out infinite;
+        }
+        @keyframes tts-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .tts-auto-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #aaa;
+            cursor: pointer;
+            user-select: none;
+        }
+        .tts-auto-toggle input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+        }
         .loading {
             text-align: center;
             padding: 20px;
@@ -1848,6 +1902,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 flex-direction: column;
                 text-align: center;
             }
+            .tts-btn {
+                width: 56px;
+                height: 56px;
+                min-width: 56px;
+                font-size: 26px;
+            }
         }
         
         /* ========================================
@@ -2182,6 +2242,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 <div class="session-info">
                     <div class="session-label">Diese Session:</div>
                     <div class="session-value" id="sessionScore">0 Punkte</div>
+                    <label class="tts-auto-toggle" title="Fragen automatisch vorlesen">
+                        <input type="checkbox" id="ttsAutoRead" checked> Auto-Vorlesen
+                    </label>
                 </div>
             </div>
             
@@ -2191,11 +2254,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 </div>
             </div>
             
-            <div class="question-text" id="questionText">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Lade Frage...</p>
+            <div class="question-row">
+                <div class="question-text" id="questionText">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Lade Frage...</p>
+                    </div>
                 </div>
+                <button class="tts-btn" id="ttsBtn" onclick="speakQuestion()" title="Frage vorlesen">&#x1f50a;</button>
             </div>
             
             <div class="options-grid" id="optionsContainer"></div>
@@ -2343,6 +2409,46 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         let currentExplanation = '';
         let currentQuestionId = 0;  // TODO-006: Für Flagging
         let lastSessionData = null;
+
+        // ================================================================
+        // TTS / Vorlesen (Web Speech API)
+        // ================================================================
+        let ttsSupported = 'speechSynthesis' in window;
+
+        function speakText(text) {
+            if (!ttsSupported || !text) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            // Deutsche Stimme bevorzugen
+            const voices = window.speechSynthesis.getVoices();
+            const deVoice = voices.find(v => v.lang.startsWith('de'));
+            if (deVoice) utterance.voice = deVoice;
+            const btn = document.getElementById('ttsBtn');
+            if (btn) btn.classList.add('speaking');
+            utterance.onend = () => { if (btn) btn.classList.remove('speaking'); };
+            utterance.onerror = () => { if (btn) btn.classList.remove('speaking'); };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakQuestion() {
+            const el = document.getElementById('questionText');
+            if (el) speakText(el.textContent);
+        }
+
+        function stopSpeaking() {
+            if (ttsSupported) window.speechSynthesis.cancel();
+            const btn = document.getElementById('ttsBtn');
+            if (btn) btn.classList.remove('speaking');
+        }
+
+        // Voices laden (werden async geladen in manchen Browsern)
+        if (ttsSupported) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        }
         
         // ================================================================
         // 🦊 BUG-045: Joker Pro User (Datenbank statt localStorage)
@@ -2517,8 +2623,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         
         function closeQuiz() {
+            stopSpeaking();
             document.getElementById('quizModal').classList.remove('active');
-            
+
             // 🦊 Foxy Quiz-Kontext löschen
             if (typeof clearFoxyQuizContext === 'function') {
                 clearFoxyQuizContext();
@@ -2532,10 +2639,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
         }
         
         function loadQuestion() {
+            stopSpeaking();
             // 🦊 Joker für diese Frage zurücksetzen
             jokerUsedThisQuestion = false;
             updateJokerDisplay();
-            
+
             document.getElementById('optionsContainer').innerHTML = '';
             document.getElementById('feedback').innerHTML = '';
             document.getElementById('explanation').style.display = 'none';
@@ -2561,6 +2669,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                         currentExplanation = data.explanation || '';
                         currentQuestionId = data.question_id || 0;  // TODO-006: Für Flagging
                         document.getElementById('questionText').textContent = data.question;
+                        // Auto-Vorlesen wenn aktiviert
+                        if (document.getElementById('ttsAutoRead') && document.getElementById('ttsAutoRead').checked) {
+                            speakText(data.question);
+                        }
                         document.getElementById('sessionScore').textContent = data.session_score + ' Punkte';
                         document.getElementById('moduleTotal').textContent = 'Gesamt: ' + data.module_total + ' Punkte';
                         updateProgress(data.questions_done);
@@ -2628,6 +2740,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                         explanationDiv.innerHTML = `<span class="explanation-icon">${icon}</span>${currentExplanation}`;
                         explanationDiv.className = data.correct ? 'explanation' : 'explanation wrong';
                         explanationDiv.style.display = 'block';
+                        // Erklärung vorlesen
+                        if (document.getElementById('ttsAutoRead') && document.getElementById('ttsAutoRead').checked) {
+                            const prefix = data.correct ? 'Richtig! ' : 'Falsch! Die richtige Antwort ist ' + currentAnswer + '. ';
+                            speakText(prefix + currentExplanation);
+                        }
+                    } else if (document.getElementById('ttsAutoRead') && document.getElementById('ttsAutoRead').checked) {
+                        speakText(data.correct ? 'Richtig!' : 'Falsch! Die richtige Antwort ist ' + currentAnswer);
                     }
                     
                     // 🦊 Foxy über Antwort informieren (für Explain-Feature)
