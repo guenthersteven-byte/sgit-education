@@ -245,7 +245,7 @@ class HausaufgabenManager {
         if ($safeChildId <= 0) {
             return ['success' => false, 'error' => 'Ungueltige Child-ID'];
         }
-        if (!in_array($subject, self::SUBJECTS)) {
+        if (!array_key_exists($subject, self::SUBJECTS)) {
             return ['success' => false, 'error' => 'Ungueltiges Fach'];
         }
         $uploadDir = self::UPLOAD_BASE . "/{$safeChildId}/{$yearDir}/{$subject}";
