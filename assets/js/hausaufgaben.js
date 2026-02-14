@@ -119,13 +119,12 @@ const HausaufgabenApp = {
         }
 
         const subject = document.getElementById('hw-subject').value;
-        const gradeLevel = document.getElementById('hw-grade-level').value;
-        const schoolYear = document.getElementById('hw-school-year').value;
+        const gradeLevel = document.getElementById('hw-school-grade').value;
+        const schoolYear = document.getElementById('hw-school-year-input').value;
         const description = document.getElementById('hw-description').value;
 
         if (!subject) { this.showError('Bitte waehle ein Fach'); return; }
-        if (!gradeLevel) { this.showError('Bitte waehle eine Klassenstufe'); return; }
-        if (!schoolYear) { this.showError('Bitte waehle ein Schuljahr'); return; }
+        if (!gradeLevel || !schoolYear) { this.showError('Bitte zuerst Schulinfo oben speichern'); return; }
 
         const formData = new FormData();
         formData.append('photo', this.selectedFile);
@@ -453,12 +452,6 @@ const HausaufgabenApp = {
                     display.querySelector('.grade-chip').textContent = grade + '. Klasse';
                     display.querySelector('.year-chip').textContent = year;
                 }
-
-                // Upload-Formular Defaults setzen
-                const gradeSelect = document.getElementById('hw-grade-level');
-                const yearSelect = document.getElementById('hw-school-year');
-                if (gradeSelect) gradeSelect.value = grade;
-                if (yearSelect) yearSelect.value = year;
             } else {
                 this.showError(data.error || 'Speichern fehlgeschlagen');
             }

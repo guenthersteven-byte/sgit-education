@@ -164,26 +164,6 @@ $subjects = HausaufgabenManager::SUBJECTS;
                     </div>
                 </div>
 
-                <div class="hw-form-row">
-                    <div class="field">
-                        <label for="hw-grade-level">Klasse *</label>
-                        <select id="hw-grade-level" required>
-                            <option value="">Klasse...</option>
-                            <?php for ($i = 1; $i <= 13; $i++): ?>
-                            <option value="<?php echo $i; ?>" <?php echo ($currentGrade == $i) ? 'selected' : ''; ?>><?php echo $i; ?>.</option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="hw-school-year">Schuljahr *</label>
-                        <select id="hw-school-year" required>
-                            <?php foreach ($schoolYears as $sy): ?>
-                            <option value="<?php echo $sy; ?>" <?php echo (($currentSchoolYear ?? $defaultSchoolYear) === $sy) ? 'selected' : ''; ?>><?php echo $sy; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-
                 <div>
                     <label for="hw-description">Notiz (optional)</label>
                     <textarea id="hw-description" rows="2" placeholder="z.B. Seite 42, Aufgabe 3..."></textarea>
