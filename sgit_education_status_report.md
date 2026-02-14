@@ -418,7 +418,9 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ## 📋 VERSION HISTORY
 
-### v3.56.0 (14.02.2026) - TTS VORLESEN-FUNKTION (WEB SPEECH API)
+### v3.56.0 (14.02.2026) - TTS VORLESEN + EINHEITLICHE SPIELMODUS-LOBBY
+
+**TTS Vorlesen-Funktion (Web Speech API):**
 - Text-to-Speech fuer alle Quiz-Fragen via Web Speech API (Browser-nativ, kein Server-Load)
 - Vorlesen-Button (Lautsprecher-Icon) neben jeder Frage zum manuellen Vorlesen
 - Auto-Vorlesen: Jede neue Frage wird automatisch auf Deutsch vorgelesen (Standard: AN)
@@ -428,7 +430,15 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 - Sprache stoppt automatisch beim Quiz-Schliessen oder naechste Frage laden
 - Touch-optimiert: Button 56px auf Mobile fuer Kinderhaende
 - Sprechanimation: Button pulsiert gruen waehrend des Vorlesens
-- **Geaendert:** adaptive_learning.php (CSS + HTML + JS), includes/version.php
+
+**Einheitliche Spielmodus-Lobby (Schach-Pattern):**
+- Alle 5 Multiplayer-Spiele (Poker, Dame, MADN, Mau Mau, Romme) auf Schach-Design umgestellt
+- Spielmodus-Card mit zwei nebeneinander Buttons: "Gegen Spieler" / "Gegen Computer"
+- PvP-Flow (Name/Erstellen/Beitreten) erst nach Klick auf "Gegen Spieler" sichtbar
+- "Gegen Computer" linkt direkt zur jeweiligen _vs_computer.php Seite
+- Konsistentes Look & Feel ueber alle Multiplayer-Spiele
+
+- **Geaendert:** adaptive_learning.php, poker.php, dame.php, madn.php, maumau.php, romme.php, includes/version.php
 
 ### v3.55.0 (14.02.2026) - MULTIPLAYER GAME HUB + OLLAMA REMOVAL
 - **Multiplayer Game Hub:** multiplayer.php komplett redesigned als kindgerechter Spiele-Hub
@@ -617,5 +627,5 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 14.02.2026 - v3.56.0 TTS Vorlesen + Multiplayer Hub + Ollama Removal*
-*Ollama entfernt (Disk 69%->30%), Foxy DB-only v3.0, Web Speech API TTS fuer Kinder*
+*Status-Report aktualisiert am 14.02.2026 - v3.56.0 TTS Vorlesen + Einheitliche Spielmodus-Lobby*
+*Alle Multiplayer-Lobbys auf Schach-Pattern, Web Speech API TTS, Ollama entfernt (Disk 69%->30%)*
