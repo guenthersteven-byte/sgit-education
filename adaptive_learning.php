@@ -274,59 +274,14 @@ if (!$needsLogin) {
  */
 if (isset($_POST['action']) && $_POST['action'] == 'login') {
     header('Content-Type: application/json');
-    
-    $name = trim($_POST['name'] ?? '');
-    $age = intval($_POST['age'] ?? 0);
-    
-    if (empty($name)) {
-        echo json_encode(['success' => false, 'error' => 'Bitte gib deinen Namen ein!']);
-        exit;
-    }
-    
-    if ($age < 5 || $age > 99) {
-        echo json_encode(['success' => false, 'error' => 'Du musst mindestens 5 Jahre alt sein!']);
-        exit;
-    }
-    
-    // Prüfen ob Kind im Wallet-System existiert
-    $walletChild = null;
-    if (isset($walletMgr)) {
-        $walletChild = $walletMgr->getChildByName($name);
-    }
-    
-    if ($walletChild) {
-        // User ist im Wallet registriert → PIN-Login erforderlich
-        echo json_encode([
-            'success' => false,
-            'wallet_user' => true,
-            'message' => 'Bitte nutze den Wallet-Login mit PIN!',
-            'redirect' => 'wallet/login.php?redirect=' . urlencode($_SERVER['PHP_SELF'])
-        ]);
-    } else {
-        // Einfacher Login für nicht-registrierte User
-        $_SESSION['user_name'] = $name;
-        $_SESSION['user_age'] = $age;
-        // KONSISTENTE user_id basierend auf Name+Alter (geräteübergreifend!)
-        $_SESSION['user_id'] = 'user_' . substr(md5(strtolower(trim($name)) . '_' . intval($age)), 0, 12);
-        $_SESSION['module_scores'] = [];
-        $_SESSION['total_score'] = 0;
-        $_SESSION['user_level'] = [
-            'level' => 1,
-            'name' => 'Baby',
-            'icon' => '👶',
-            'points' => 3
-        ];
-        
-        // WICHTIG: Für nicht-Wallet-User wallet_child_id NICHT setzen
-        unset($_SESSION['wallet_child_id']);
-        
-        walletDebugLog("Normaler Login (kein Wallet-User)", ['name' => $name, 'age' => $age]);
-        
-        echo json_encode([
-            'success' => true,
-            'wallet_linked' => false
-        ]);
-    }
+
+    // Gast-Login deaktiviert - nur Wallet-Login mit PIN erlaubt
+    echo json_encode([
+        'success' => false,
+        'wallet_user' => true,
+        'message' => 'Bitte nutze den Wallet-Login mit PIN!',
+        'redirect' => 'wallet/login.php?redirect=' . urlencode($_SERVER['PHP_SELF'])
+    ]);
     exit;
 }
 
@@ -2031,7 +1986,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
     <!-- Login Modal -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <img src="assets/images/base_icon_transparent_background.png" alt="sgiT" style="width: 80px; height: 80px; margin: 0 auto 20px; display: block;">
+            <img src="assets/images/base_icon_transparent_background.png" alt="sgiT" style="width: 100px; height: auto; margin: 0 auto 20px; display: block;">
             <div class="login-title">sgiT Education</div>
             <div class="login-subtitle">Adaptive Learning</div>
             
@@ -2348,35 +2303,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             }, duration);
         }
         
-        // Login
-        function doLogin() {
-            const name = document.getElementById('userName').value.trim();
-            const age = parseInt(document.getElementById('userAge').value);
-            const errorDiv = document.getElementById('loginError');
-            
-            const formData = new FormData();
-            formData.append('action', 'login');
-            formData.append('name', name);
-            formData.append('age', age);
-            
-            fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else if (data.wallet_user && data.redirect) {
-                    // User ist im Wallet registriert → Weiterleitung zum PIN-Login
-                    alert(data.message);
-                    window.location.href = data.redirect;
-                } else {
-                    errorDiv.textContent = data.error;
-                    errorDiv.style.display = 'block';
-                }
-            });
-        }
+        // Gast-Login entfernt (14.02.2026) - nur noch Wallet-Login mit PIN
         
         function logout() {
             let message;
