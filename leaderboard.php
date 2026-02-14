@@ -190,7 +190,8 @@ if (file_exists($walletDb)) {
         $totalAchievements = $db->query("SELECT COUNT(*) FROM wallet_achievements")->fetchColumn();
         
     } catch (Exception $e) {
-        $error = $e->getMessage();
+        error_log("Leaderboard Error: " . $e->getMessage());
+        $error = 'Ein Fehler ist aufgetreten';
     }
 }
 

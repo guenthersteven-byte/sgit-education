@@ -95,9 +95,10 @@ try {
     $stmt->execute([$userId, $filename, $tutorial, $baseSats]);
     
 } catch (PDOException $e) {
+    error_log("Save Drawing Error: " . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'error' => 'Datenbankfehler: ' . $e->getMessage()
+        'error' => 'Datenbankfehler'
     ]);
     exit;
 }

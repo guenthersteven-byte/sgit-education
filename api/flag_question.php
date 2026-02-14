@@ -277,7 +277,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             
         } catch (Exception $e) {
             $db->rollBack();
-            echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+            error_log("Flag Question Edit Error: " . $e->getMessage());
+            echo json_encode(['success' => false, 'error' => 'Datenbankfehler. Bitte versuche es erneut.']);
             exit;
         }
     }

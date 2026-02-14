@@ -53,7 +53,8 @@ function errorResponse(string $message, int $statusCode = 400): void {
 try {
     $wallet = new WalletManager();
 } catch (Exception $e) {
-    errorResponse('Wallet-System nicht initialisiert: ' . $e->getMessage(), 500);
+    error_log("Wallet API Init Error: " . $e->getMessage());
+    errorResponse('Wallet-System nicht initialisiert', 500);
 }
 
 // ============================================================================
@@ -231,7 +232,8 @@ switch ($action) {
                 'unlocked' => $unlocked
             ]);
         } catch (Exception $e) {
-            errorResponse('Achievement-System Fehler: ' . $e->getMessage(), 500);
+            error_log("Achievement API Error: " . $e->getMessage());
+            errorResponse('Achievement-System Fehler', 500);
         }
         break;
     
@@ -255,7 +257,8 @@ switch ($action) {
                 'progress' => $progress
             ]);
         } catch (Exception $e) {
-            errorResponse('Achievement-System Fehler: ' . $e->getMessage(), 500);
+            error_log("Achievement API Error: " . $e->getMessage());
+            errorResponse('Achievement-System Fehler', 500);
         }
         break;
     
@@ -287,7 +290,8 @@ switch ($action) {
                 'total_reward' => array_sum(array_column($newlyUnlocked, 'reward_sats'))
             ]);
         } catch (Exception $e) {
-            errorResponse('Achievement-System Fehler: ' . $e->getMessage(), 500);
+            error_log("Achievement API Error: " . $e->getMessage());
+            errorResponse('Achievement-System Fehler', 500);
         }
         break;
     
@@ -325,7 +329,8 @@ switch ($action) {
                     : 'Keine neuen Achievements'
             ]);
         } catch (Exception $e) {
-            errorResponse('Achievement-System Fehler: ' . $e->getMessage(), 500);
+            error_log("Achievement API Error: " . $e->getMessage());
+            errorResponse('Achievement-System Fehler', 500);
         }
         break;
     

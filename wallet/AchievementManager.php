@@ -602,7 +602,7 @@ class AchievementManager {
         } catch (Exception $e) {
             $this->db->exec("ROLLBACK");
             error_log("AchievementManager::unlock Error: " . $e->getMessage());
-            return ['success' => false, 'error' => $e->getMessage()];
+            return ['success' => false, 'error' => 'Ein Fehler ist aufgetreten'];
         }
     }
     

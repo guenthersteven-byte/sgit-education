@@ -69,8 +69,9 @@ try {
             echo json_encode(['error' => 'Unknown action']);
     }
 } catch (Exception $e) {
+    error_log("MADN API Error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => 'Ein Fehler ist aufgetreten']);
 }
 
 $db->close();

@@ -75,8 +75,9 @@ try {
                 ['create', 'join', 'status', 'draw', 'guess', 'next', 'words', 'leave']]);
     }
 } catch (Exception $e) {
+    error_log("Montagsmaler API Error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => 'Ein Fehler ist aufgetreten']);
 }
 
 $db->close();

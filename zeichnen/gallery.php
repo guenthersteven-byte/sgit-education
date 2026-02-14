@@ -48,7 +48,8 @@ if (isset($_POST['delete_id'])) {
             echo json_encode(['success' => false, 'error' => 'Nicht gefunden']);
         }
     } catch (Exception $e) {
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        error_log("Gallery Delete Error: " . $e->getMessage());
+        echo json_encode(['success' => false, 'error' => 'Ein Fehler ist aufgetreten']);
     }
     exit;
 }

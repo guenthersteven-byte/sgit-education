@@ -109,9 +109,10 @@ try {
     ]);
     
 } catch (PDOException $e) {
+    error_log("Zeichnen Save Error: " . $e->getMessage());
     echo json_encode([
-        'success' => false, 
-        'error' => 'Datenbankfehler: ' . $e->getMessage()
+        'success' => false,
+        'error' => 'Datenbankfehler'
     ]);
 }
 

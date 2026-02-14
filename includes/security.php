@@ -118,6 +118,9 @@ function csrf_field() {
  */
 function secure_session_start() {
     if (session_status() === PHP_SESSION_NONE) {
+        // Session-Timeout: 30 Minuten Inaktivitaet
+        ini_set('session.gc_maxlifetime', 1800);
+
         // Sichere Cookie-Einstellungen
         session_set_cookie_params([
             'lifetime' => 0,
@@ -129,6 +132,14 @@ function secure_session_start() {
         ]);
         session_start();
     }
+
+    // Inaktivitaets-Timeout pruefen (30 Minuten)
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > 1800) {
+        session_unset();
+        session_destroy();
+        session_start();
+    }
+    $_SESSION['last_activity'] = time();
 }
 
 /**

@@ -72,9 +72,9 @@ require_once __DIR__ . '/includes/rate_limiter.php';
 initSession();
 
 // ============================================================================
-// DEBUG MODE - Setze auf true für Diagnose
+// DEBUG MODE - Setze auf true fuer Diagnose
 // ============================================================================
-define('WALLET_DEBUG', true);
+define('WALLET_DEBUG', false);
 
 function walletDebugLog($message, $data = null) {
     if (!WALLET_DEBUG) return;
@@ -822,7 +822,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
                 }
                 
             } catch (Exception $e) {
-                $walletError = "Exception: " . $e->getMessage();
+                error_log("Adaptive Learning Wallet Reward Error: " . $e->getMessage());
+                $walletError = "Ein Fehler ist aufgetreten";
                 walletDebugLog("EXCEPTION bei Wallet-Reward", [
                     'message' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()

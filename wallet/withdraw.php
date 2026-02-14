@@ -108,7 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_withdraw'])) 
             $message = "Auszahlungsanfrage über $amount Sats wurde eingereicht! Deine Eltern müssen diese noch genehmigen.";
             
         } catch (Exception $e) {
-            $error = 'Fehler: ' . $e->getMessage();
+            error_log("Withdraw Request Error: " . $e->getMessage());
+            $error = 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
         }
     }
 }

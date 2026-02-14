@@ -65,7 +65,8 @@ if (file_exists($questionsDb)) {
         }
         
     } catch (Exception $e) {
-        $stats['questions']['error'] = $e->getMessage();
+        error_log("Statistics Questions Error: " . $e->getMessage());
+        $stats['questions']['error'] = 'Datenbankfehler';
     }
 }
 

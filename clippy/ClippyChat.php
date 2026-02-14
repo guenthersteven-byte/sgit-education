@@ -666,7 +666,8 @@ PROMPT;
                 'top_category' => $topCategory['category'] ?? 'N/A'
             ];
         } catch (Exception $e) {
-            return ['error' => $e->getMessage()];
+            error_log("ClippyChat::getChatStats Error: " . $e->getMessage());
+            return ['error' => 'Ein Fehler ist aufgetreten'];
         }
     }
 }

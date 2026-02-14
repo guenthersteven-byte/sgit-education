@@ -619,7 +619,7 @@ class WalletManager {
         } catch (Exception $e) {
             $this->db->exec("ROLLBACK");
             error_log("WalletManager::deleteChild Error: " . $e->getMessage());
-            return ['success' => false, 'error' => $e->getMessage()];
+            return ['success' => false, 'error' => 'Ein Fehler ist aufgetreten'];
         }
     }
     
@@ -802,7 +802,7 @@ class WalletManager {
             return [
                 'success' => false,
                 'sats' => 0,
-                'error' => 'Datenbankfehler: ' . $e->getMessage()
+                'error' => 'Datenbankfehler'
             ];
         }
     }
@@ -901,7 +901,7 @@ class WalletManager {
             return [
                 'success' => false,
                 'sats' => 0,
-                'error' => 'Datenbankfehler: ' . $e->getMessage()
+                'error' => 'Datenbankfehler'
             ];
         }
     }
@@ -1316,7 +1316,8 @@ class WalletManager {
             
         } catch (Exception $e) {
             $this->db->exec("ROLLBACK");
-            return ['success' => false, 'error' => $e->getMessage()];
+            error_log("WalletManager::spendSats Error: " . $e->getMessage());
+            return ['success' => false, 'error' => 'Ein Fehler ist aufgetreten'];
         }
     }
 }

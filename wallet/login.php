@@ -39,7 +39,8 @@ try {
     $wallet = new WalletManager();
     $children = $wallet->getChildWallets();
 } catch (Exception $e) {
-    $error = 'Systemfehler: ' . $e->getMessage();
+    error_log("Login Wallet Error: " . $e->getMessage());
+    $error = 'Systemfehler. Bitte versuche es erneut.';
 }
 
 // ============================================================================

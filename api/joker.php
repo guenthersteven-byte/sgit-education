@@ -45,7 +45,8 @@ try {
     $db = new PDO("sqlite:$dbPath");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'error' => 'DB-Fehler: ' . $e->getMessage()]);
+    error_log("Joker API DB Error: " . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => 'Datenbankfehler. Bitte versuche es erneut.']);
     exit;
 }
 
