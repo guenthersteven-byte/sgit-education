@@ -146,11 +146,12 @@ docker exec -it sgit-education-php bash
 | **Dateien** | `/wallet/wallet_admin.php`, neues `/api/btc_price.php` |
 | **Aufwand** | ~4-6h |
 
-### ⏳ TEST-002: Hausaufgaben-System v3.53.0 testen
+### ⏳ TEST-002: Hausaufgaben-System testen (teilweise erledigt)
 | Info | Details |
 |------|---------|
-| **Status** | Tests ausstehend |
-| **Zu testen** | 1) Mobile Kamera-Capture oeffnet Rueckkamera 2) 5MB Foto wird komprimiert 3) +15 SATs pro Upload 4) Filter nach Fach/Schuljahr 5) Tageslimit (11. Upload abgelehnt) 6) Achievement "Erste Hausaufgabe" 7) EXIF-Rotation 8) OCR-Text bei deutschem Text 9) Schulinfo speichern/laden 10) Nav-Link sichtbar |
+| **Status** | Teilweise getestet (14.02.2026) |
+| **Erledigt** | ✅ Schulinfo speichern/laden, ✅ +15 SATs pro Upload, ✅ Galerie + Filter, ✅ Fach-Auswahl |
+| **Offen** | 1) Mobile Kamera-Capture 2) 5MB Komprimierung 3) Tageslimit 4) Achievement 5) EXIF-Rotation 6) OCR-Text |
 
 ### ⏳ TEST-001: Montagsmaler Fix verifizieren
 | Info | Details |
@@ -440,6 +441,13 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 - **Geaendert:** adaptive_learning.php, poker.php, dame.php, madn.php, maumau.php, romme.php, includes/version.php
 
+**Hausaufgaben-Bugfixes (v3.56.0):**
+- DB-Berechtigungen: hausaufgaben/ Verzeichnis war root:root, gefixt auf www-data
+- Doppelte Klasse/Schuljahr-Auswahl aus Upload-Formular entfernt (nutzt jetzt Schulinfo-Banner)
+- "Ungueltiges Fach" Fix: in_array() gegen Values statt Keys geaendert zu array_key_exists()
+- WalletManager::updateChildWallet() Return-Type Fix (SQLite3Result vs bool)
+- **Geaendert:** HausaufgabenManager.php, WalletManager.php, hausaufgaben/index.php, assets/js/hausaufgaben.js
+
 ### v3.55.0 (14.02.2026) - MULTIPLAYER GAME HUB + OLLAMA REMOVAL
 - **Multiplayer Game Hub:** multiplayer.php komplett redesigned als kindgerechter Spiele-Hub
   - 3 Kategorien: Brettspiele, Kartenspiele, Kreativ & Quiz
@@ -627,5 +635,5 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 14.02.2026 - v3.56.0 TTS Vorlesen + Einheitliche Spielmodus-Lobby*
-*Alle Multiplayer-Lobbys auf Schach-Pattern, Web Speech API TTS, Ollama entfernt (Disk 69%->30%)*
+*Status-Report aktualisiert am 14.02.2026 - v3.56.0 TTS + Lobby-Redesign + Hausaufgaben-Bugfixes*
+*Spielmodus-Lobby, Web Speech API TTS, Hausaufgaben Upload gefixt (DB-Perm, Fach-Validierung, Return-Type)*
