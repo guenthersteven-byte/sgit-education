@@ -123,7 +123,7 @@ function secure_session_start() {
             'lifetime' => 0,
             'path' => '/',
             'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']),
+            'secure' => true,  // Immer true (NPM Reverse Proxy terminiert SSL)
             'httponly' => true,
             'samesite' => 'Strict'
         ]);

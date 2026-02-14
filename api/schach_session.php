@@ -3,7 +3,7 @@
  * Schach Session Update API
  * Speichert Fortschritt und vergibt Sats
  */
-session_start();
+require_once __DIR__ . '/_security.php';
 header('Content-Type: application/json');
 
 require_once dirname(__DIR__) . '/wallet/WalletManager.php';

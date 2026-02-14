@@ -15,6 +15,7 @@
 
 require_once __DIR__ . '/WalletManager.php';
 require_once __DIR__ . '/SessionManager.php';
+require_once __DIR__ . '/../includes/rate_limiter.php';
 
 // Bereits eingeloggt? Redirect zur Lernplattform
 if (SessionManager::isLoggedIn()) {
@@ -45,15 +46,21 @@ try {
 // LOGIN VERARBEITEN
 // ============================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
+    // Rate-Limiting: Max 5 Login-Versuche pro 5 Minuten
+    $rateCheck = RateLimiter::check('login_' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'), 5, 300);
+    if (!$rateCheck['allowed']) {
+        $error = 'Zu viele Login-Versuche. Bitte warte ' . $rateCheck['reset_in'] . ' Sekunden.';
+    }
+
     $childId = (int) ($_POST['child_id'] ?? 0);
     $pin = $_POST['pin'] ?? '';
-    
-    if ($childId <= 0) {
-        $error = 'Bitte wähle deinen Namen aus!';
-    } elseif (strlen($pin) !== 4) {
+
+    if (!$error && $childId <= 0) {
+        $error = 'Bitte waehle deinen Namen aus!';
+    } elseif (!$error && strlen($pin) !== 4) {
         $error = 'Bitte gib deine 4-stellige PIN ein!';
         $selectedChild = $childId;
-    } else {
+    } elseif (!$error) {
         // PIN verifizieren
         if ($wallet->verifyPin($childId, $pin)) {
             $child = $wallet->getChildWallet($childId);

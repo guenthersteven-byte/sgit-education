@@ -16,10 +16,8 @@
  * @date 2025-12-12
  */
 
+require_once __DIR__ . '/_security.php';
 header('Content-Type: application/json');
-
-// Session für User-ID
-session_start();
 
 // Wallet-User ID aus Session holen - WICHTIG: Gleiche Session-Keys wie adaptive_learning.php!
 $walletUserId = $_SESSION['wallet_child_id'] ?? null;
