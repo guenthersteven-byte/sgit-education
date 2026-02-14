@@ -128,57 +128,61 @@ if (isset($_GET['logout'])) {
     <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         body {
             font-family: 'Space Grotesk', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1A3503 0%, #2d5a06 100%);
+            background: linear-gradient(135deg, #0a1a02 0%, #1A3503 50%, #0d2201 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #e0e0e0;
         }
-        
+
         .container {
-            background: white;
+            background: rgba(20, 53, 13, 0.6);
+            border: 1px solid rgba(67, 210, 64, 0.15);
             border-radius: 25px;
             padding: 40px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
         }
-        
+
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         .header .logo {
             font-size: 60px;
             margin-bottom: 10px;
         }
-        
+
         .header h1 {
-            color: #1A3503;
+            color: #43D240;
             font-size: 24px;
             margin-bottom: 5px;
         }
-        
+
         .header p {
-            color: #666;
+            color: #999;
             font-size: 14px;
         }
-        
+
         .error {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            color: #ff6b6b;
             padding: 12px 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
             text-align: center;
         }
-        
+
         /* User Selection */
         .user-grid {
             display: grid;
@@ -186,109 +190,112 @@ if (isset($_GET['logout'])) {
             gap: 15px;
             margin-bottom: 25px;
         }
-        
+
         .user-card {
             position: relative;
             cursor: pointer;
         }
-        
+
         .user-card input {
             position: absolute;
             opacity: 0;
         }
-        
+
         .user-card .card-inner {
-            background: #f8f9fa;
-            border: 3px solid transparent;
+            background: rgba(26, 53, 3, 0.5);
+            border: 2px solid rgba(67, 210, 64, 0.15);
             border-radius: 15px;
             padding: 20px 15px;
             text-align: center;
             transition: all 0.3s;
         }
-        
+
         .user-card input:checked + .card-inner {
             border-color: #43D240;
-            background: #d4edda;
+            background: rgba(67, 210, 64, 0.15);
             transform: scale(1.05);
         }
-        
+
         .user-card .card-inner:hover {
-            border-color: #43D240;
+            border-color: rgba(67, 210, 64, 0.5);
             transform: scale(1.02);
         }
-        
+
         .user-card .avatar {
             font-size: 48px;
             margin-bottom: 10px;
         }
-        
+
         .user-card .name {
             font-weight: 600;
-            color: #1A3503;
+            color: #e0e0e0;
             font-size: 14px;
             margin-bottom: 5px;
         }
-        
+
         .user-card .sats {
             font-size: 12px;
             color: #f7931a;
             font-weight: 600;
         }
-        
+
         .user-card .streak {
             font-size: 11px;
-            color: #666;
+            color: #888;
         }
-        
+
         /* PIN Section */
         .pin-section {
             display: none;
             margin-bottom: 25px;
             padding: 20px;
-            background: #f8f9fa;
+            background: rgba(26, 53, 3, 0.5);
+            border: 1px solid rgba(67, 210, 64, 0.15);
             border-radius: 15px;
         }
-        
+
         .pin-section.show {
             display: block;
             animation: slideDown 0.3s ease;
         }
-        
+
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .pin-section h3 {
             text-align: center;
-            color: #1A3503;
+            color: #43D240;
             margin-bottom: 15px;
             font-size: 16px;
         }
-        
+
         .pin-container {
             display: flex;
             gap: 10px;
             justify-content: center;
         }
-        
+
         .pin-container input {
             width: 55px;
             height: 65px;
             text-align: center;
             font-size: 28px;
             font-weight: bold;
-            border: 2px solid #ddd;
+            border: 2px solid rgba(67, 210, 64, 0.3);
             border-radius: 12px;
             transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
         }
-        
+
         .pin-container input:focus {
             border-color: #43D240;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(67, 210, 64, 0.1);
+            box-shadow: 0 0 0 4px rgba(67, 210, 64, 0.15);
         }
-        
+
         /* Buttons */
         .btn {
             display: block;
@@ -302,63 +309,66 @@ if (isset($_GET['logout'])) {
             transition: all 0.3s;
             text-decoration: none;
             text-align: center;
+            font-family: inherit;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #43D240, #3ab837);
             color: white;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(67, 210, 64, 0.4);
         }
-        
+
         .btn-primary:disabled {
-            background: #ccc;
+            background: rgba(67, 210, 64, 0.2);
+            color: #666;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
         .btn-secondary {
-            background: #f8f9fa;
-            color: #1A3503;
+            background: rgba(67, 210, 64, 0.1);
+            border: 1px solid rgba(67, 210, 64, 0.3);
+            color: #43D240;
             margin-top: 10px;
         }
-        
+
         .btn-secondary:hover {
-            background: #e9ecef;
+            background: rgba(67, 210, 64, 0.2);
         }
-        
+
         .divider {
             text-align: center;
             margin: 25px 0;
-            color: #999;
+            color: #666;
             font-size: 13px;
         }
-        
+
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
         }
-        
+
         .empty-state .icon {
             font-size: 60px;
             margin-bottom: 15px;
         }
-        
+
         .empty-state h2 {
-            color: #1A3503;
+            color: #43D240;
             margin-bottom: 10px;
         }
-        
+
         .empty-state p {
-            color: #666;
+            color: #999;
             margin-bottom: 20px;
         }
-        
+
         /* Quick Links */
         .quick-links {
             display: flex;
@@ -366,15 +376,15 @@ if (isset($_GET['logout'])) {
             gap: 20px;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid rgba(67, 210, 64, 0.1);
         }
-        
+
         .quick-links a {
-            color: #1A3503;
+            color: #888;
             text-decoration: none;
             font-size: 13px;
         }
-        
+
         .quick-links a:hover {
             color: #43D240;
         }
