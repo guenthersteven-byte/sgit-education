@@ -34,4 +34,12 @@ if (!headers_sent()) {
 
     // Permissions Policy
     header('Permissions-Policy: geolocation=(), microphone=(self), camera=(self)');
+
+    // HSTS - Browser soll nur HTTPS nutzen (1 Jahr)
+    // Sicher weil NPM Reverse Proxy immer SSL terminiert
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
+    // Cross-Origin Isolation
+    header('Cross-Origin-Opener-Policy: same-origin');
+    header('Cross-Origin-Resource-Policy: same-origin');
 }

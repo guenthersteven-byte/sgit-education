@@ -47,10 +47,24 @@ try {
 // LOGIN VERARBEITEN
 // ============================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
-    // Rate-Limiting: Max 5 Login-Versuche pro 5 Minuten
-    $rateCheck = RateLimiter::check('login_' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'), 5, 300);
-    if (!$rateCheck['allowed']) {
-        $error = 'Zu viele Login-Versuche. Bitte warte ' . $rateCheck['reset_in'] . ' Sekunden.';
+    // IP-basiertes Rate-Limiting (file-based, ueberlebt Session-Clear)
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $lockFile = sys_get_temp_dir() . '/edu_login_' . md5($ip) . '.json';
+    $lockData = file_exists($lockFile) ? json_decode(file_get_contents($lockFile), true) : null;
+    if ($lockData && $lockData['count'] >= 10 && (time() - $lockData['time']) < 900) {
+        $waitSec = 900 - (time() - $lockData['time']);
+        $error = 'Account gesperrt. Bitte warte ' . ceil($waitSec / 60) . ' Minuten.';
+        error_log(sprintf('[SECURITY] IP lockout active: %s | Attempts: %d', $ip, $lockData['count']));
+    }
+
+    // Session-basiertes Rate-Limiting: Max 5 Versuche pro 5 Minuten
+    if (!$error) {
+        $rateCheck = RateLimiter::check('login_' . $ip, 5, 300);
+        if (!$rateCheck['allowed']) {
+            $error = 'Zu viele Login-Versuche. Bitte warte ' . $rateCheck['reset_in'] . ' Sekunden.';
+            error_log(sprintf('[SECURITY] Rate limit hit: login | IP: %s | Attempts: %d',
+                $ip, $rateCheck['count'] ?? 0));
+        }
     }
 
     $childId = (int) ($_POST['child_id'] ?? 0);
@@ -68,7 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
             
             if ($child) {
                 SessionManager::login($child);
-                
+                // Login erfolgreich: IP-Lockout zuruecksetzen
+                if (file_exists($lockFile)) { @unlink($lockFile); }
+
                 // Redirect zur Lernplattform (Open-Redirect-Schutz)
                 $redirect = $_GET['redirect'] ?? '../adaptive_learning.php';
                 if (preg_match('#^https?://#i', $redirect) || str_contains($redirect, '//')) {
@@ -80,8 +96,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                 $error = 'User nicht gefunden.';
             }
         } else {
-            $error = '❌ Falsche PIN! Versuche es nochmal.';
+            $error = 'Falsche PIN! Versuche es nochmal.';
             $selectedChild = $childId;
+            error_log(sprintf('[SECURITY] Failed login: child_id=%d | IP: %s',
+                $childId, $ip));
+            // IP-Lockout-Counter erhoehen (file-based)
+            $lockData = file_exists($lockFile) ? json_decode(file_get_contents($lockFile), true) : null;
+            if (!$lockData || (time() - ($lockData['time'] ?? 0)) >= 900) {
+                $lockData = ['count' => 1, 'time' => time()];
+            } else {
+                $lockData['count']++;
+            }
+            file_put_contents($lockFile, json_encode($lockData), LOCK_EX);
         }
     }
 }

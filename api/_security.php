@@ -45,6 +45,8 @@ if (in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'DELETE', 'PATCH'])) {
     // Forms die csrf_field() nutzen senden den Token explizit mit.
     if ($csrfToken && isset($_SESSION['csrf_token'])) {
         if (!hash_equals($_SESSION['csrf_token'], $csrfToken)) {
+            error_log(sprintf('[SECURITY] CSRF token mismatch | IP: %s | URI: %s',
+                $_SERVER['REMOTE_ADDR'] ?? 'unknown', $_SERVER['REQUEST_URI'] ?? 'unknown'));
             http_response_code(403);
             header('Content-Type: application/json');
             echo json_encode([

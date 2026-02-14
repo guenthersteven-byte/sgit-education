@@ -135,6 +135,9 @@ function secure_session_start() {
 
     // Inaktivitaets-Timeout pruefen (30 Minuten)
     if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > 1800) {
+        $userId = $_SESSION['wallet_child_id'] ?? 'unknown';
+        error_log(sprintf('[SECURITY] Session timeout: user=%s | IP: %s',
+            $userId, $_SERVER['REMOTE_ADDR'] ?? 'unknown'));
         session_unset();
         session_destroy();
         session_start();
