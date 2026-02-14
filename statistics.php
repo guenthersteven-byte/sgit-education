@@ -215,7 +215,7 @@ $botPassRate = ($stats['bots'] && $stats['bots']['tests'] > 0)
             margin-bottom: 24px;
         }
         .stat-card {
-            background: var(--card-bg);
+            background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px 16px;
@@ -241,7 +241,7 @@ $botPassRate = ($stats['bots'] && $stats['bots']['tests'] > 0)
 
         /* Section */
         .section {
-            background: var(--card-bg);
+            background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
@@ -399,7 +399,7 @@ $botPassRate = ($stats['bots'] && $stats['bots']['tests'] > 0)
         @media (max-width: 768px) { .bot-stats { grid-template-columns: repeat(2, 1fr); } }
 
         /* Sub-heading */
-        .sub-heading { margin: 0 0 12px 0; color: var(--primary); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .sub-heading { margin: 0 0 12px 0; color: var(--accent); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
         footer {
             text-align: center;

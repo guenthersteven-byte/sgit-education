@@ -116,118 +116,129 @@ $minDate = date('Y-m-d', strtotime('-99 years'));  // Kein Maximalalter
     <link rel="stylesheet" href="/assets/css/fonts.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         body {
             font-family: 'Space Grotesk', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1A3503 0%, #2d5a06 100%);
+            background: linear-gradient(135deg, #0d1a02 0%, #1A3503 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #e0e0e0;
         }
-        
+
         .container {
-            background: white;
+            background: rgba(20, 53, 13, 0.6);
+            border: 1px solid rgba(67, 210, 64, 0.15);
+            backdrop-filter: blur(10px);
             border-radius: 25px;
             padding: 40px;
             max-width: 450px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
-        
+
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         .header .logo {
             font-size: 60px;
             margin-bottom: 10px;
         }
-        
+
         .header h1 {
-            color: #1A3503;
+            color: #ffffff;
             font-size: 24px;
             margin-bottom: 5px;
         }
-        
+
         .header p {
-            color: #666;
+            color: #aaaaaa;
             font-size: 14px;
         }
-        
+
         .error {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(220, 53, 69, 0.4);
             padding: 12px 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
         }
-        
+
         .success {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(40, 167, 69, 0.2);
+            color: #6cff6c;
+            border: 1px solid rgba(40, 167, 69, 0.4);
             padding: 12px 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #1A3503;
+            color: #e0e0e0;
             font-weight: 600;
             font-size: 14px;
         }
-        
+
         .form-group input {
             width: 100%;
             padding: 14px 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(67, 210, 64, 0.3);
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
         }
-        
+
         .form-group input:focus {
             border-color: #43D240;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(67, 210, 64, 0.1);
+            box-shadow: 0 0 0 4px rgba(67, 210, 64, 0.15);
         }
-        
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
         .form-group input[type="number"] {
             -moz-appearance: textfield;
         }
-        
+
         .form-group input::-webkit-outer-spin-button,
         .form-group input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        
+
         /* Avatar Picker */
         .avatar-picker {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 10px;
         }
-        
+
         .avatar-picker label {
             cursor: pointer;
             display: block;
         }
-        
+
         .avatar-picker input {
             display: none;
         }
-        
+
         .avatar-picker span {
             display: flex;
             align-items: center;
@@ -235,25 +246,27 @@ $minDate = date('Y-m-d', strtotime('-99 years'));  // Kein Maximalalter
             width: 50px;
             height: 50px;
             font-size: 28px;
-            border: 3px solid #e0e0e0;
+            border: 3px solid rgba(67, 210, 64, 0.2);
             border-radius: 50%;
             transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.2);
         }
-        
+
         .avatar-picker input:checked + span {
             border-color: #43D240;
-            background: #d4edda;
+            background: rgba(67, 210, 64, 0.2);
             transform: scale(1.1);
         }
-        
+
         .avatar-picker span:hover {
             border-color: #43D240;
             transform: scale(1.05);
         }
-        
+
         /* Age Info */
         .age-info {
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(67, 210, 64, 0.2);
             border-radius: 10px;
             padding: 12px 15px;
             margin-top: 10px;
@@ -261,53 +274,56 @@ $minDate = date('Y-m-d', strtotime('-99 years'));  // Kein Maximalalter
             align-items: center;
             gap: 10px;
         }
-        
+
         .age-info.show {
             display: flex;
         }
-        
+
         .age-info .icon {
             font-size: 24px;
         }
-        
+
         .age-info .text {
             font-size: 13px;
-            color: #555;
+            color: #aaaaaa;
         }
-        
+
         .age-info .level {
             font-weight: bold;
         }
-        
+
         /* PIN Input */
         .pin-container {
             display: flex;
             gap: 10px;
             justify-content: center;
         }
-        
+
         .pin-container input {
             width: 50px;
             height: 60px;
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(67, 210, 64, 0.3);
             border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
         }
-        
+
         .pin-container input:focus {
             border-color: #43D240;
             outline: none;
+            box-shadow: 0 0 0 4px rgba(67, 210, 64, 0.15);
         }
-        
+
         /* Hidden full PIN fields */
         .pin-hidden {
             position: absolute;
             opacity: 0;
             pointer-events: none;
         }
-        
+
         /* Buttons */
         .btn {
             display: block;
@@ -320,34 +336,35 @@ $minDate = date('Y-m-d', strtotime('-99 years'));  // Kein Maximalalter
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #43D240, #3ab837);
             color: white;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(67, 210, 64, 0.4);
         }
-        
+
         .btn-secondary {
-            background: #f8f9fa;
-            color: #1A3503;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e0e0e0;
+            border: 1px solid rgba(67, 210, 64, 0.2);
             margin-top: 10px;
         }
-        
+
         .btn-secondary:hover {
-            background: #e9ecef;
+            background: rgba(255, 255, 255, 0.15);
         }
-        
+
         .divider {
             text-align: center;
             margin: 25px 0;
-            color: #999;
+            color: #888;
             font-size: 13px;
         }
-        
+
         /* Quick Links */
         .quick-links {
             display: flex;
@@ -355,36 +372,38 @@ $minDate = date('Y-m-d', strtotime('-99 years'));  // Kein Maximalalter
             gap: 20px;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid rgba(67, 210, 64, 0.15);
         }
-        
+
         .quick-links a {
-            color: #1A3503;
+            color: #aaaaaa;
             text-decoration: none;
             font-size: 13px;
         }
-        
+
         .quick-links a:hover {
             color: #43D240;
         }
-        
+
         /* Date Input Styling */
         input[type="date"] {
             position: relative;
+            color-scheme: dark;
         }
-        
+
         input[type="date"]::-webkit-calendar-picker-indicator {
             cursor: pointer;
             padding: 5px;
             margin-right: -5px;
+            filter: invert(1);
         }
-        
+
         /* Responsive */
         @media (max-width: 480px) {
             .container {
                 padding: 30px 20px;
             }
-            
+
             .avatar-picker {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -454,7 +473,7 @@ $minDate = date('Y-m-d', strtotime('-99 years'));  // Kein Maximalalter
         <!-- PIN -->
         <div class="form-group">
             <label>🔐 Wähle eine 4-stellige PIN</label>
-            <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+            <p style="font-size: 12px; color: #888; margin-bottom: 10px;">
                 Damit nur DU an deine Sats kommst!
             </p>
             <div class="pin-container">
@@ -531,7 +550,7 @@ birthdateInput.addEventListener('change', function() {
         } else if (age <= 16) {
             ageIcon.textContent = '🌳';
             ageLevel.textContent = 'Fortgeschritten';
-            ageLevel.style.color = '#1A3503';
+            ageLevel.style.color = '#43D240';
         } else {
             ageIcon.textContent = '🎓';
             ageLevel.textContent = 'Experte';
