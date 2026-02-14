@@ -559,12 +559,13 @@ class WalletManager {
         
         $sql = "UPDATE child_wallets SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        
+
         foreach ($values as $key => $value) {
             $stmt->bindValue($key, $value);
         }
-        
-        return $stmt->execute();
+
+        $result = $stmt->execute();
+        return $result !== false;
     }
     
     /**
