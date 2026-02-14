@@ -268,6 +268,12 @@ function showLoginPage($error = null) {
         .q-card .q-actions button { padding: 4px 12px; border-radius: 6px; border: none; font-size: 0.8rem; cursor: pointer; }
         .q-card .q-actions .btn-remove { background: rgba(220, 53, 69, 0.3); color: #ff6b6b; }
         .q-card.removed { opacity: 0.3; }
+        .q-quality { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .q-score { font-size: 0.75rem; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+        .q-score.high { background: rgba(40,167,69,0.25); color: #6cff6c; }
+        .q-score.medium { background: rgba(243,156,18,0.25); color: #f5c842; }
+        .q-score.low { background: rgba(220,53,69,0.25); color: #ff6b6b; }
+        .q-warning { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: rgba(243,156,18,0.15); color: #f5c842; border: 1px solid rgba(243,156,18,0.3); }
 
         .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(67,210,64,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -567,6 +573,8 @@ function showLoginPage($error = null) {
                     if (data.cost_estimate) {
                         infoText += ' | ~' + data.cost_estimate;
                     }
+                    const avgScore = Math.round(data.questions.reduce((s, q) => s + (q.quality_score ?? 100), 0) / data.questions.length);
+                    infoText += ' | Qualitaet: ' + avgScore + '%';
                     info.textContent = infoText;
                 } else {
                     preview.innerHTML = '<div style="color:#ff6b6b;padding:16px;">' + (data.error || 'Keine Fragen generiert') + '</div>';
@@ -587,7 +595,15 @@ function showLoginPage($error = null) {
                     ...q.wrong.map(w => ({ text: w, cls: 'wrong' }))
                 ].sort(() => Math.random() - 0.5);
 
+                const score = q.quality_score ?? 100;
+                const scoreCls = score >= 85 ? 'high' : (score >= 55 ? 'medium' : 'low');
+                const warnings = q.quality_warnings || [];
+
                 return `<div class="q-card" id="qcard-${i}">
+                    <div class="q-quality">
+                        <span class="q-score ${scoreCls}">${score}%</span>
+                        ${warnings.map(w => `<span class="q-warning">${escHtml(w)}</span>`).join('')}
+                    </div>
                     <div class="q-text">${i + 1}. ${escHtml(q.question)}</div>
                     <div class="q-answers">
                         ${answers.map(a => `<div class="q-answer ${a.cls}">${a.cls === 'correct' ? '&#10003; ' : ''}${escHtml(a.text)}</div>`).join('')}
