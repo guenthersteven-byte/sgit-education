@@ -1,6 +1,6 @@
 # sgiT Education Platform - Status Report
 
-**Version:** 3.53.4 | **Datum:** 13. Februar 2026 | **Module:** 22/22 ✅ | **Status:** PRODUCTION READY
+**Version:** 3.54.0 | **Datum:** 14. Februar 2026 | **Module:** 22/22 | **Status:** PRODUCTION
 
 ---
 
@@ -423,6 +423,49 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 ---
 
 ## 📋 VERSION HISTORY
+
+### v3.54.0 (14.02.2026) - BUGFIXES, SECURITY-AUDIT, FRAGEN-QUALITAET, BRANDING
+
+**Hausaufgaben-Upload Fix:**
+- Root Cause: `uploads/hausaufgaben/` Verzeichnis gehoerte root:root statt www-data:www-data
+- PHP konnte keine Dateien schreiben → 500 Internal Server Error
+- Fix: Ownership korrigiert + GD Extension Check + besseres Error-Logging in upload.php und HausaufgabenManager.php
+
+**Fragen-Qualitaet (4.856 aktive Fragen):**
+- 671 Buchstaben-Antworten (A/B/C/D) automatisch auf Textantworten korrigiert
+- 15 kaputte KI-generierte Fragen deaktiviert (Templates, Nonsense, falsche Fakten)
+- 89 neue handkuratierte Fragen eingefuegt (44 Sport + 45 Unnuetzes Wissen)
+  - Faktengepruefte, korrekte Antworten mit Erklaerungen
+  - 4 Altersgruppen: 5-8, 8-11, 11-14, 14+ Jahre
+  - Source: manual_curated, Model: claude-opus-4
+- Analyse-Scripts erstellt: analyze_questions.py, fix_letter_answers.py, delete_broken_questions.py
+- Sport: 140 → 184 aktive Fragen | Unnuetzes Wissen: 132 → 177 aktive Fragen
+
+**Security-Audit (22 Findings):**
+- 6 KRITISCH: SQL-Injection in HausaufgabenManager (Zeile 651), DB-Dateien ohne .htaccess-Schutz,
+  Session-Fixation (fehlende session_regenerate_id), Hardcoded Legacy-Passwort, Path-Traversal-Risiko,
+  Shell-Injection-Haertung bei Tesseract OCR
+- 8 HOCH: Fehlende CSRF-Protection bei APIs, schwache PIN-Komplexitaet (4 Digits),
+  kein Rate-Limiting bei Login, XSS-Risiko bei Quiz-Ausgabe, Directory-Listing,
+  fehlende Security-Headers in APIs, CSP unsafe-inline, Docker-Pfade hardcoded
+- 5 MITTEL: Open Redirect bei Login, Session-Timeout fehlt, kein Security-Logging,
+  Input-Validation Birthdate, unverschluesselte Backups
+- 3 NIEDRIG: Error-Reporting in Production, SameSite-Cookie inkonsistent, HEIC-Support ohne ImageMagick
+
+**Branding-Konsistenz:**
+- profil/index.php komplett umgeschrieben: Comic Sans + Light Theme → Space Grotesk + Dark Theme
+- Alle 22+ Seiten jetzt einheitlich: Dark Theme, Space Grotesk, #1A3503/#43D240
+- style.css (alt, Comic Sans) wird von keiner Seite mehr verwendet
+
+**CT 105 Live-Status:**
+- Alle 6 Docker-Container laufen (nginx, php, ollama, whisper, qdrant, piper)
+- Disk-Warnung: 87% belegt (33G/40G, nur 5GB frei) → Cleanup oder Erweiterung noetig
+- CPU/RAM: Minimal (657 MiB / 16 GiB = 4%)
+- 4 Ollama-Modelle geladen (gemma2:2b, mistral:7b, qwen2:0.5b, nomic-embed-text)
+- Git-Deploy: Commit 8517256 deployed via git pull
+
+**Geaendert:** HausaufgabenManager.php, upload.php, profil/index.php, 6 neue Scripts
+**Erstellt:** insert_quality_questions.py, analyze_questions.py, fix_letter_answers.py, delete_broken_questions.py, check_gd.php, QUESTION_QUALITY_REPORT.md, FINDINGS_SUMMARY.md
 
 ### v3.53.4 (13.02.2026) - DIFFICULTY FILTER & FRAGEN-QUALITAET
 - Altersbasierter Schwierigkeitsfilter: 5-6J=Diff1, 7-8J=Diff2, 9-10J=Diff3, 11-12J=Diff4, 13+=alle
