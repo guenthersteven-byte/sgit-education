@@ -1942,19 +1942,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             padding: 4px 10px;
             border-radius: 6px;
         }
-        .btc-dashboard-link {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 6px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .btc-dashboard-link:hover {
-            background: rgba(255,255,255,0.35);
-        }
-        
+
         @media (max-width: 768px) {
             .main-nav {
                 flex-direction: column;
@@ -2038,18 +2026,17 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             </a>
             <?php endif; ?>
         </div>
-        
+
         <?php if ($walletEnabled): ?>
         <div class="nav-btc-group">
             <span class="btc-warning">⚠️ TEST-SATS</span>
-            <a href="wallet/child_dashboard.php" class="btc-dashboard-link">🏆 Dashboard</a>
             <?php if ($btcPrice > 0): ?>
             <span class="btc-price">₿ $<?php echo number_format($btcPrice); ?></span>
             <?php endif; ?>
         </div>
         <?php endif; ?>
     </nav>
-    
+
     <!-- Header -->
     <div class="header">
         <div class="logo-section">
@@ -2175,12 +2162,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <div>Kochen <span style="font-size: 10px; color: var(--accent);">NEU!</span></div>
         </div>
         
-        <!-- Hausaufgaben -->
-        <div class="module-card" onclick="window.location.href='hausaufgaben/'" style="border: 2px dashed var(--accent);">
-            <div class="module-icon">📝</div>
-            <div>Hausaufgaben <span style="font-size: 10px; color: var(--accent);">NEU!</span></div>
-        </div>
-
         <!-- Multiplayer -->
         <div class="module-card multiplayer-card" onclick="window.location.href='/multiplayer.php'" style="border: 2px solid #E86F2C; background: linear-gradient(135deg, rgba(232,111,44,0.15), rgba(255,140,66,0.1));">
             <div class="module-icon">⚔️</div>

@@ -8,7 +8,6 @@
 # Startet die komplette Entwicklungsumgebung:
 # - nginx (Webserver)
 # - PHP-FPM 8.3 (Application)
-# - Ollama (AI/LLM) - Optional
 #
 # USAGE:
 #   docker-compose up -d          # Starten
@@ -61,32 +60,6 @@ services:
     environment:
       - APP_ENV=development
       - APP_DEBUG=true
-      - OLLAMA_HOST=ollama
-      - OLLAMA_PORT=11434
-      - OLLAMA_MODEL=llama3.2:latest
-    networks:
-      - sgit-education-network
-    restart: unless-stopped
-
-  # ==========================================================================
-  # OLLAMA - AI/LLM Server (Optional)
-  # ==========================================================================
-  # Auskommentieren wenn Ollama auf dem Host läuft
-  ollama:
-    image: ollama/ollama:latest
-    container_name: sgit-education-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - sgit-education-ollama:/root/.ollama                      # Models persistent
-    # GPU Support (NVIDIA) - auskommentieren wenn keine GPU
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
     networks:
       - sgit-education-network
     restart: unless-stopped
@@ -97,10 +70,3 @@ services:
 networks:
   sgit-education-network:
     driver: bridge
-
-# ============================================================================
-# VOLUMES - Persistente Daten
-# ============================================================================
-volumes:
-  sgit-education-ollama:
-    name: sgit-education-ollama-models

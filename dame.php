@@ -1,39 +1,17 @@
 <?php
 /**
  * ============================================================================
- * sgiT Education - Dame v1.0
+ * sgiT Education - Dame v1.1
  * ============================================================================
- * 
- * Klassisches Brettspiel für 2 Spieler
+ *
+ * Klassisches Brettspiel fuer 2 Spieler
  *
  * @author sgiT Solution Engineering & IT Services
- * @version 1.0
+ * @version 1.1
  * ============================================================================
  */
 
-session_start();
-require_once 'includes/version.php';
-require_once __DIR__ . '/wallet/SessionManager.php';
-
-// User-Daten aus SessionManager (MUSS für Multiplayer!)
-$userName = '';
-$userAge = 10;
-$walletChildId = 0;
-$userAvatar = '😀';
-
-if (SessionManager::isLoggedIn()) {
-    $childData = SessionManager::getChild();
-    if ($childData) {
-        $walletChildId = $childData['id'];
-        $userName = $childData['name'];
-        $userAvatar = $childData['avatar'] ?? '😀';
-        $userAge = $childData['age'] ?? 10;
-    }
-} elseif (isset($_SESSION['wallet_child_id'])) {
-    $walletChildId = $_SESSION['wallet_child_id'];
-    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
-    $userAvatar = $_SESSION['avatar'] ?? '😀';
-}
+require_once __DIR__ . '/includes/game_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -45,88 +23,18 @@ if (SessionManager::isLoggedIn()) {
     <link rel="stylesheet" href="/assets/css/multiplayer-theme.css">
     <script src="/assets/js/dame-pieces.js"></script>
     <style>
-        /* ===========================================
-           Dame-Spezifische Styles
-           =========================================== */
+        /* Dame-Spezifische Styles (Shared Styles via multiplayer-theme.css) */
         :root {
             --light-square: #d4c8a0;
             --dark-square: #2a5a0a;
         }
-        body { 
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
-            min-height: 100vh;
-            color: var(--mp-text);
-            margin: 0; padding: 0;
-        }
-        .container { max-width: 1000px; margin: 0 auto; padding: 15px; }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: var(--mp-bg-card);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .header h1 { font-size: 1.4rem; }
-        .header h1 span { color: var(--mp-accent); }
-        .back-link { color: var(--mp-accent); text-decoration: none; }
-        
-        .screen { display: none; }
-        .screen.active { display: block; }
-        
-        /* Lobby */
-        .lobby-container { max-width: 500px; margin: 30px auto; text-align: center; }
-        .lobby-card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .lobby-card h2 { color: var(--accent); margin-bottom: 15px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 1rem;
-        }
-        .input-group input:focus { outline: none; border-color: var(--accent); }
-        .game-code-input { font-size: 1.5rem !important; text-align: center; letter-spacing: 8px; text-transform: uppercase; }
-        
-        .btn {
-            background: var(--accent);
-            color: var(--primary);
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-        }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn.secondary { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
-        
-        .divider { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--text-muted); opacity: 0.3; }
-        .divider span { padding: 0 15px; }
-        
-        .game-code-display { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .game-code { font-size: 2.5rem; font-weight: bold; color: var(--accent); letter-spacing: 8px; font-family: monospace; }
-        
-        .players-waiting { display: flex; gap: 20px; justify-content: center; margin: 20px 0; }
-        .player-slot { background: var(--bg); border: 2px dashed var(--text-muted); border-radius: 12px; padding: 20px; text-align: center; min-width: 150px; }
-        .player-slot.filled { border-style: solid; border-color: var(--accent); }
-        .player-slot .color-icon { font-size: 2rem; margin-bottom: 5px; }
-        
-        /* Game */
+
+        /* Game Layout */
         .game-container { display: grid; grid-template-columns: 1fr 250px; gap: 20px; }
         @media (max-width: 800px) { .game-container { grid-template-columns: 1fr; } }
-        
-        .board-area { background: var(--card-bg); border-radius: 16px; padding: 20px; display: flex; justify-content: center; }
-        
+
+        .board-area { background: var(--mp-bg-card); border-radius: 16px; padding: 20px; display: flex; justify-content: center; }
+
         .board {
             display: grid;
             grid-template-columns: repeat(8, 50px);
@@ -135,41 +43,25 @@ if (SessionManager::isLoggedIn()) {
             border-radius: 4px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-        
+
         .cell {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative;
         }
         .cell.light { background: var(--light-square); }
         .cell.dark { background: var(--dark-square); }
         .cell.selected { box-shadow: inset 0 0 0 3px var(--mp-accent); }
         .cell.valid-move { animation: mp-fieldPulse 1s ease infinite; }
         .cell.valid-move::after {
-            content: '';
-            width: 20px;
-            height: 20px;
-            background: var(--mp-accent-glow);
-            border-radius: 50%;
-            position: absolute;
+            content: ''; width: 20px; height: 20px;
+            background: var(--mp-accent-glow); border-radius: 50%; position: absolute;
         }
-        .cell.capture-move::after {
-            background: rgba(231, 76, 60, 0.6);
-            width: 30px;
-            height: 30px;
-        }
-        
+        .cell.capture-move::after { background: rgba(231, 76, 60, 0.6); width: 30px; height: 30px; }
+
         .piece {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            position: relative;
-            transition: var(--mp-transition);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            position: relative; transition: var(--mp-transition);
             box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
         .piece:hover { transform: scale(1.1); }
@@ -178,175 +70,144 @@ if (SessionManager::isLoggedIn()) {
         .piece.black { background: linear-gradient(135deg, #2c2c2c, #1a1a1a); border: 3px solid #444; }
         .piece.white { background: linear-gradient(135deg, #f5f5f5, #d0d0d0); border: 3px solid #999; }
         .piece.king::after {
-            content: '👑';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.2rem;
+            content: '\1F451'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 1.2rem;
         }
         .piece.selectable { animation: pulse 0.8s infinite; }
         @keyframes pulse { 50% { transform: scale(1.1); } }
         .piece.must-move { box-shadow: 0 0 15px 5px rgba(231, 76, 60, 0.8); }
-        
-        /* Sidebar */
-        .sidebar { display: flex; flex-direction: column; gap: 15px; }
-        .info-card { background: var(--card-bg); border-radius: 12px; padding: 15px; }
-        .info-card h3 { color: var(--accent); margin-bottom: 10px; font-size: 1rem; }
-        
-        .turn-info { text-align: center; padding: 15px; background: var(--bg); border-radius: 10px; }
-        .turn-info.my-turn { border: 2px solid var(--accent); }
-        .turn-info .label { font-size: 0.85rem; color: var(--text-muted); }
-        .turn-info .name { font-size: 1.2rem; font-weight: bold; margin-top: 5px; }
-        
-        .score-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; }
-        .score-row.active { border: 2px solid var(--accent); }
-        
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; }
-        .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: #e74c3c; color: white; }
-        .toast.info { background: var(--mp-bg-card); border: 2px solid var(--mp-accent); }
-        
-        /* Mobile Optimierung */
+
+        /* Mobile Board */
         @media (max-width: 500px) {
             .board-area { padding: 10px; }
-            .board {
-                grid-template-columns: repeat(8, 38px);
-                grid-template-rows: repeat(8, 38px);
-            }
+            .board { grid-template-columns: repeat(8, 38px); grid-template-rows: repeat(8, 38px); }
             .cell { width: 38px; height: 38px; }
             .piece { width: 30px; height: 30px; }
-            .sidebar { gap: 10px; }
-            .info-card { padding: 10px; }
         }
-        
         @media (max-width: 380px) {
-            .board {
-                grid-template-columns: repeat(8, 32px);
-                grid-template-rows: repeat(8, 32px);
-            }
+            .board { grid-template-columns: repeat(8, 32px); grid-template-rows: repeat(8, 32px); }
             .cell { width: 32px; height: 32px; }
             .piece { width: 26px; height: 26px; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
+<body class="mp-game-body">
+    <div class="mp-game-container">
+        <div class="mp-game-header">
             <div>
-                <a href="multiplayer.php" class="back-link">← Multiplayer</a>
-                <h1>⚫ <span>Dame</span></h1>
+                <a href="multiplayer.php" class="mp-game-header__back">&larr; Spiele-Hub</a>
+                <h1>&#x26AB; <span>Dame</span></h1>
             </div>
             <span><?php echo $userAvatar . ' ' . htmlspecialchars($userName ?: 'Gast'); ?></span>
         </div>
-        
+
         <!-- LOBBY -->
-        <div id="lobbyScreen" class="screen active">
-            <div class="lobby-container">
-                <div style="font-size: 4rem; margin-bottom: 10px;">⚫</div>
+        <div id="lobbyScreen" class="mp-game-screen active">
+            <div class="mp-game-lobby">
+                <div style="font-size: 4rem; margin-bottom: 10px;">&#x26AB;</div>
                 <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Dame</h1>
-                <p style="color: var(--text-muted); margin-bottom: 25px;">Das klassische Brettspiel für 2 Spieler</p>
-                
-                <div class="lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
-                    <h2>👤 Dein Name</h2>
-                    <div class="input-group">
+                <p style="color: var(--mp-text-muted); margin-bottom: 25px;">Das klassische Brettspiel f&uuml;r 2 Spieler</p>
+
+                <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
+                    <h2>&#x1F464; Dein Name</h2>
+                    <div class="mp-lobby-input-group">
                         <input type="text" id="playerNameInput" placeholder="Name..." maxlength="20">
                     </div>
-                    <button class="btn" onclick="setPlayerName()">Weiter →</button>
+                    <button class="mp-game-btn" onclick="setPlayerName()">Weiter &rarr;</button>
                 </div>
-                
-                <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
-                    <h2>🎮 Neues Spiel</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Du spielst mit ⚫ Schwarz (beginnst)</p>
-                    <button class="btn" onclick="createGame()">👥 Gegen Mitspieler</button>
-                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='dame_vs_computer.php'">🤖 Gegen Computer</button>
+
+                <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+                    <h2>&#x1F3AE; Neues Spiel</h2>
+                    <p style="color: var(--mp-text-muted); margin-bottom: 15px;">Du spielst mit &#x26AB; Schwarz (beginnst)</p>
+                    <button class="mp-game-btn" onclick="createGame()">&#x1F465; Gegen Mitspieler</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 10px;" onclick="location.href='dame_vs_computer.php'">&#x1F916; Gegen Computer</button>
                 </div>
-                
-                <div class="divider"><span>oder</span></div>
-                
-                <div class="lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
-                    <h2>🔗 Beitreten</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Du spielst mit ⚪ Weiß</p>
-                    <div class="input-group">
-                        <input type="text" id="gameCodeInput" class="game-code-input" placeholder="CODE" maxlength="6">
+
+                <div class="mp-game-divider"><span>oder</span></div>
+
+                <div class="mp-lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+                    <h2>&#x1F517; Beitreten</h2>
+                    <p style="color: var(--mp-text-muted); margin-bottom: 15px;">Du spielst mit &#x26AA; Wei&szlig;</p>
+                    <div class="mp-lobby-input-group">
+                        <input type="text" id="gameCodeInput" class="mp-lobby-code-input" placeholder="CODE" maxlength="6">
                     </div>
-                    <button class="btn secondary" onclick="joinGame()">Beitreten →</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" onclick="joinGame()">Beitreten &rarr;</button>
                 </div>
             </div>
         </div>
         
         <!-- WAITING -->
-        <div id="waitingScreen" class="screen">
-            <div class="lobby-container">
-                <div class="game-code-display">
-                    <p style="color: var(--text-muted);">Spiel-Code</p>
-                    <div class="game-code" id="displayCode">------</div>
+        <div id="waitingScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-code-display">
+                    <p style="color: var(--mp-text-muted);">Spiel-Code</p>
+                    <div class="mp-lobby-code" id="displayCode">------</div>
                 </div>
-                
-                <div class="lobby-card">
-                    <h2>👥 Spieler</h2>
-                    <div class="players-waiting" id="playersWaiting">
-                        <div class="player-slot"><div class="color-icon">⚫</div>Wartet...</div>
-                        <div class="player-slot"><div class="color-icon">⚪</div>Wartet...</div>
+
+                <div class="mp-lobby-card">
+                    <h2>&#x1F465; Spieler</h2>
+                    <div class="mp-lobby-players" id="playersWaiting">
+                        <div class="mp-lobby-player-slot"><div class="color-icon">&#x26AB;</div>Wartet...</div>
+                        <div class="mp-lobby-player-slot"><div class="color-icon">&#x26AA;</div>Wartet...</div>
                     </div>
                 </div>
-                
+
                 <div id="hostControls" style="display: none;">
-                    <button class="btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten</button>
+                    <button class="mp-game-btn" onclick="startGame()" id="startBtn" disabled>&#x25B6;&#xFE0F; Spiel starten</button>
                 </div>
-                <p id="waitingMsg" style="color: var(--text-muted); display: none;">⏳ Warte auf Host...</p>
-                <button class="btn secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
+                <p id="waitingMsg" style="color: var(--mp-text-muted); display: none;">&#x23F3; Warte auf Host...</p>
+                <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 15px;" onclick="leaveGame()">&#x1F6AA; Verlassen</button>
             </div>
         </div>
         
         <!-- GAME -->
-        <div id="gameScreen" class="screen">
+        <div id="gameScreen" class="mp-game-screen">
             <div class="game-container">
                 <div class="board-area">
                     <div class="board" id="board"></div>
                 </div>
-                
-                <div class="sidebar">
-                    <div class="info-card">
-                        <div class="turn-info" id="turnInfo">
+
+                <div class="mp-game-sidebar">
+                    <div class="mp-info-card">
+                        <div class="mp-turn-info" id="turnInfo">
                             <div class="label">Am Zug:</div>
                             <div class="name" id="currentPlayerName">---</div>
                         </div>
                     </div>
                     
-                    <div class="info-card">
-                        <h3>📊 Steine</h3>
-                        <div class="score-row" id="blackScore">
-                            <span>⚫ Schwarz</span>
+                    <div class="mp-info-card">
+                        <h3>&#x1F4CA; Steine</h3>
+                        <div class="mp-score-row" id="blackScore">
+                            <span>&#x26AB; Schwarz</span>
                             <span id="blackCount">12</span>
                         </div>
-                        <div class="score-row" id="whiteScore">
-                            <span>⚪ Weiß</span>
+                        <div class="mp-score-row" id="whiteScore">
+                            <span>&#x26AA; Wei&szlig;</span>
                             <span id="whiteCount">12</span>
                         </div>
                     </div>
-                    
-                    <div class="info-card">
-                        <h3>📜 Regeln</h3>
-                        <ul style="font-size: 0.85rem; color: var(--text-muted); list-style: none;">
-                            <li>↗️ Diagonal vorwärts ziehen</li>
-                            <li>💥 Über Gegner springen = schlagen</li>
-                            <li>⚠️ Schlagzwang!</li>
-                            <li>👑 Am Ende = Dame (kann rückwärts)</li>
+
+                    <div class="mp-info-card">
+                        <h3>&#x1F4DC; Regeln</h3>
+                        <ul style="font-size: 0.85rem; color: var(--mp-text-muted); list-style: none;">
+                            <li>&#x2197;&#xFE0F; Diagonal vorw&auml;rts ziehen</li>
+                            <li>&#x1F4A5; &Uuml;ber Gegner springen = schlagen</li>
+                            <li>&#x26A0;&#xFE0F; Schlagzwang!</li>
+                            <li>&#x1F451; Am Ende = Dame (kann r&uuml;ckw&auml;rts)</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- RESULT -->
-        <div id="resultScreen" class="screen">
-            <div class="lobby-container">
-                <div class="lobby-card" style="border: 3px solid var(--accent);">
-                    <div style="font-size: 5rem;">🏆</div>
+        <div id="resultScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-card" style="border: 3px solid var(--mp-accent);">
+                    <div style="font-size: 5rem;">&#x1F3C6;</div>
                     <h1 style="margin: 20px 0;" id="winnerText">Gewinner!</h1>
-                    <button class="btn" onclick="location.reload()">🔄 Neues Spiel</button>
-                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">← Zurück</button>
+                    <button class="mp-game-btn" onclick="location.reload()">&#x1F504; Neues Spiel</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">&larr; Spiele-Hub</button>
                 </div>
             </div>
         </div>
@@ -375,7 +236,7 @@ if (SessionManager::isLoggedIn()) {
         let currentBoard = {};
         
         function showScreen(name) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.mp-game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(name + 'Screen').classList.add('active');
         }
         
@@ -497,12 +358,12 @@ if (SessionManager::isLoggedIn()) {
             const white = players.find(p => p.color === 'white');
             
             document.getElementById('playersWaiting').innerHTML = `
-                <div class="player-slot ${black ? 'filled' : ''}">
-                    <div class="color-icon">⚫</div>
+                <div class="mp-lobby-player-slot ${black ? 'filled' : ''}">
+                    <div class="color-icon">\u26AB</div>
                     ${black ? `${black.avatar} ${escapeHtml(black.player_name)}` : 'Wartet...'}
                 </div>
-                <div class="player-slot ${white ? 'filled' : ''}">
-                    <div class="color-icon">⚪</div>
+                <div class="mp-lobby-player-slot ${white ? 'filled' : ''}">
+                    <div class="color-icon">\u26AA</div>
                     ${white ? `${white.avatar} ${escapeHtml(white.player_name)}` : 'Wartet...'}
                 </div>
             `;
@@ -515,7 +376,7 @@ if (SessionManager::isLoggedIn()) {
             // Turn Info
             const currentPlayer = data.players.find(p => p.color === game.current_player);
             const turnInfo = document.getElementById('turnInfo');
-            turnInfo.className = 'turn-info' + (gameState.myTurn ? ' my-turn' : '');
+            turnInfo.className = 'mp-turn-info' + (gameState.myTurn ? ' my-turn' : '');
             document.getElementById('currentPlayerName').innerHTML = currentPlayer 
                 ? `${game.current_player === 'black' ? '⚫' : '⚪'} ${escapeHtml(currentPlayer.player_name)}`
                 : '---';
@@ -523,8 +384,8 @@ if (SessionManager::isLoggedIn()) {
             // Scores
             document.getElementById('blackCount').textContent = data.piece_count.black;
             document.getElementById('whiteCount').textContent = data.piece_count.white;
-            document.getElementById('blackScore').className = 'score-row' + (game.current_player === 'black' ? ' active' : '');
-            document.getElementById('whiteScore').className = 'score-row' + (game.current_player === 'white' ? ' active' : '');
+            document.getElementById('blackScore').className = 'mp-score-row' + (game.current_player === 'black' ? ' active' : '');
+            document.getElementById('whiteScore').className = 'mp-score-row' + (game.current_player === 'white' ? ' active' : '');
             
             // Board rendern
             const boardEl = document.getElementById('board');
@@ -684,7 +545,7 @@ if (SessionManager::isLoggedIn()) {
         
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
+            toast.className = 'mp-game-toast show ' + type;
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);

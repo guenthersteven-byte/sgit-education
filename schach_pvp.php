@@ -1,37 +1,9 @@
 <?php
 /**
- * ============================================================================
- * sgiT Education - Schach PvP v1.0
- * ============================================================================
- * 
- * Schach Multiplayer für 2 Spieler
- *
- * @author sgiT Solution Engineering & IT Services
- * @version 1.0
- * ============================================================================
+ * sgiT Education - Schach PvP v1.1
+ * @version 1.1
  */
-
-session_start();
-require_once 'includes/version.php';
-require_once __DIR__ . '/wallet/SessionManager.php';
-
-// User-Daten aus SessionManager (MUSS für Multiplayer!)
-$userName = '';
-$walletChildId = 0;
-$userAvatar = '😀';
-
-if (SessionManager::isLoggedIn()) {
-    $childData = SessionManager::getChild();
-    if ($childData) {
-        $walletChildId = $childData['id'];
-        $userName = $childData['name'];
-        $userAvatar = $childData['avatar'] ?? '😀';
-    }
-} elseif (isset($_SESSION['wallet_child_id'])) {
-    $walletChildId = $_SESSION['wallet_child_id'];
-    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
-    $userAvatar = $_SESSION['avatar'] ?? '😀';
-}
+require_once __DIR__ . '/includes/game_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -46,81 +18,24 @@ if (SessionManager::isLoggedIn()) {
         /* ===========================================
            Schach PvP-Spezifische Styles
            =========================================== */
-        body {
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
-            min-height: 100vh;
-            color: var(--mp-text);
-            margin: 0; padding: 0;
-        }
-        .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
-        
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: var(--mp-bg-card); border-radius: 12px; margin-bottom: 20px;
-        }
-        .header h1 { font-size: 1.4rem; }
-        .header h1 span { color: var(--mp-accent); }
-        .back-link { color: var(--mp-accent); text-decoration: none; }
-        
-        .screen { display: none; }
-        .screen.active { display: block; }
-        
-        /* Lobby */
-        .lobby-container { max-width: 500px; margin: 30px auto; text-align: center; }
-        .lobby-card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .lobby-card h2 { color: var(--accent); margin-bottom: 15px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group input {
-            width: 100%; padding: 12px; border: 2px solid transparent; border-radius: 10px;
-            background: var(--bg); color: var(--text); font-size: 1rem;
-        }
-        .input-group input:focus { outline: none; border-color: var(--accent); }
-        .game-code-input { font-size: 1.5rem !important; text-align: center; letter-spacing: 8px; text-transform: uppercase; }
-        
-        .btn {
-            background: var(--accent); color: var(--primary); border: none;
-            padding: 14px 28px; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%;
-        }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn.secondary { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
-        .btn.danger { background: #c0392b; }
-        
-        .divider { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--text-muted); opacity: 0.3; }
-        .divider span { padding: 0 15px; }
-        
-        .game-code-display { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .game-code { font-size: 2.5rem; font-weight: bold; color: var(--accent); letter-spacing: 8px; font-family: monospace; }
-        
-        .players-waiting { display: flex; gap: 20px; justify-content: center; margin: 20px 0; }
-        .player-slot { background: var(--bg); border: 2px dashed var(--text-muted); border-radius: 12px; padding: 20px; text-align: center; min-width: 150px; }
-        .player-slot.filled { border-style: solid; border-color: var(--accent); }
-        .player-slot .piece { font-size: 2rem; margin-bottom: 5px; }
-        
-        /* Game - Board/Cell/Piece Styles kommen aus chess-theme.css */
+
+        /* Game Container */
         .game-container { display: grid; grid-template-columns: 1fr 270px; gap: 24px; }
         @media (max-width: 800px) { .game-container { grid-template-columns: 1fr; } }
 
-        /* Sidebar */
-        .sidebar { display: flex; flex-direction: column; gap: 15px; }
-        .info-card h3 { color: var(--mp-accent); margin-bottom: 10px; font-size: 1.05rem; }
-
-        .turn-info { text-align: center; padding: 16px; background: rgba(0,0,0,0.25); border-radius: 12px; }
-        .turn-info.my-turn { border: 2px solid var(--mp-accent); box-shadow: 0 0 15px rgba(67, 210, 64, 0.15); }
-        .turn-info.check { border: 2px solid #e74c3c; animation: pulse-red 1s infinite; }
+        /* Turn Info */
+        .mp-turn-info.my-turn { border: 2px solid var(--mp-accent); box-shadow: 0 0 15px rgba(67, 210, 64, 0.15); }
+        .mp-turn-info.check { border: 2px solid #e74c3c; animation: pulse-red 1s infinite; }
         @keyframes pulse-red { 50% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); } }
-        .turn-info .label { font-size: 0.9rem; color: #a0a0a0; }
-        .turn-info .name { font-size: 1.3rem; font-weight: bold; margin-top: 6px; }
 
+        /* Player Row */
         .player-row {
             display: flex; align-items: center; justify-content: space-between;
             padding: 12px; background: rgba(0,0,0,0.25); border-radius: 10px; margin-bottom: 8px;
         }
         .player-row.active { border: 2px solid var(--mp-accent); box-shadow: 0 0 10px rgba(67, 210, 64, 0.1); }
         .player-row .piece-icon { font-size: 1.6rem; margin-right: 10px; }
-        
+
         /* Promotion Modal */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
         .modal.active { display: flex; }
@@ -129,121 +44,119 @@ if (SessionManager::isLoggedIn()) {
         .promo-choice { display: flex; gap: 15px; justify-content: center; }
         .promo-btn { width: 72px; height: 72px; border: 3px solid var(--mp-accent); border-radius: 14px; cursor: pointer; background: rgba(0,0,0,0.3); transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
         .promo-btn:hover { transform: scale(1.12); background: rgba(67, 210, 64, 0.15); box-shadow: 0 0 15px rgba(67, 210, 64, 0.2); }
-        
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; }
-        .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: #e74c3c; color: white; }
-        .toast.info { background: var(--card-bg); border: 2px solid var(--mp-accent); }
-        
+
+        /* Danger Button */
+        .mp-game-btn.danger { background: #c0392b; }
+
         /* Mobile - Responsive Groessen kommen aus chess-theme.css */
         @media (max-width: 550px) {
-            .sidebar { gap: 10px; }
+            .mp-game-sidebar { gap: 10px; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
+<body class="mp-game-body">
+    <div class="mp-game-container">
+        <div class="mp-game-header">
             <div>
-                <a href="multiplayer.php" class="back-link">← Multiplayer</a>
+                <a href="multiplayer.php" class="mp-game-header__back">← Spiele-Hub</a>
                 <h1>♟️ <span>Schach</span></h1>
             </div>
             <span><?php echo $userAvatar . ' ' . htmlspecialchars($userName ?: 'Gast'); ?></span>
         </div>
         
         <!-- LOBBY -->
-        <div id="lobbyScreen" class="screen active">
-            <div class="lobby-container">
+        <div id="lobbyScreen" class="mp-game-screen active">
+            <div class="mp-game-lobby">
                 <div style="font-size: 4rem; margin-bottom: 10px;">♟️</div>
                 <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Schach</h1>
-                <p style="color: var(--text-muted); margin-bottom: 25px;">Das koenigliche Spiel</p>
+                <p style="color: var(--mp-text-muted); margin-bottom: 25px;">Das koenigliche Spiel</p>
 
                 <!-- Moduswahl -->
-                <div class="lobby-card" id="modeCard">
+                <div class="mp-lobby-card" id="modeCard">
                     <h2>Spielmodus</h2>
                     <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                        <button class="btn" onclick="document.getElementById('modeCard').style.display='none'; document.getElementById('pvpCards').style.display='block';" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px;">
+                        <button class="mp-game-btn" onclick="document.getElementById('modeCard').style.display='none'; document.getElementById('pvpCards').style.display='block';" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px;">
                             <div style="font-size: 2rem; margin-bottom: 8px;">👥</div>
                             <div style="font-weight: 600;">Gegen Spieler</div>
                             <div style="font-size: 0.8rem; color: var(--mp-primary); opacity: 0.8; margin-top: 4px;">2 Spieler online</div>
                         </button>
-                        <a href="/schach_vs_computer.php" class="btn secondary" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; text-decoration: none;">
+                        <a href="/schach_vs_computer.php" class="mp-game-btn mp-game-btn--secondary" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; text-decoration: none;">
                             <div style="font-size: 2rem; margin-bottom: 8px;">🤖</div>
                             <div style="font-weight: 600;">Gegen Computer</div>
                             <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">KI mit 5 Stufen</div>
                         </a>
                     </div>
                 </div>
-                
+
                 <div id="pvpCards" style="display: none;">
-                <div class="lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
+                <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2>👤 Dein Name</h2>
-                    <div class="input-group">
+                    <div class="mp-lobby-input-group">
                         <input type="text" id="playerNameInput" placeholder="Name..." maxlength="20">
                     </div>
-                    <button class="btn" onclick="setPlayerName()">Weiter →</button>
+                    <button class="mp-game-btn" onclick="setPlayerName()">Weiter →</button>
                 </div>
-                
-                <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+
+                <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Du spielst mit ♔ Weiß (beginnst)</p>
-                    <button class="btn" onclick="createGame()">Spiel erstellen</button>
+                    <p style="color: var(--mp-text-muted); margin-bottom: 15px;">Du spielst mit ♔ Weiß (beginnst)</p>
+                    <button class="mp-game-btn" onclick="createGame()">Spiel erstellen</button>
                 </div>
-                
-                <div class="divider"><span>oder</span></div>
-                
-                <div class="lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+
+                <div class="mp-game-divider"><span>oder</span></div>
+
+                <div class="mp-lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🔗 Beitreten</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Du spielst mit ♚ Schwarz</p>
-                    <div class="input-group">
-                        <input type="text" id="gameCodeInput" class="game-code-input" placeholder="CODE" maxlength="6">
+                    <p style="color: var(--mp-text-muted); margin-bottom: 15px;">Du spielst mit ♚ Schwarz</p>
+                    <div class="mp-lobby-input-group">
+                        <input type="text" id="gameCodeInput" class="mp-lobby-code-input" placeholder="CODE" maxlength="6">
                     </div>
-                    <button class="btn secondary" onclick="joinGame()">Beitreten →</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" onclick="joinGame()">Beitreten →</button>
                 </div>
                 </div><!-- /pvpCards -->
             </div>
         </div>
         
         <!-- WAITING -->
-        <div id="waitingScreen" class="screen">
-            <div class="lobby-container">
-                <div class="game-code-display">
-                    <p style="color: var(--text-muted);">Spiel-Code</p>
-                    <div class="game-code" id="displayCode">------</div>
+        <div id="waitingScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-code-display">
+                    <p style="color: var(--mp-text-muted);">Spiel-Code</p>
+                    <div class="mp-lobby-code" id="displayCode">------</div>
                 </div>
-                
-                <div class="lobby-card">
+
+                <div class="mp-lobby-card">
                     <h2>👥 Spieler</h2>
-                    <div class="players-waiting" id="playersWaiting">
-                        <div class="player-slot"><div class="piece">♔</div>Wartet...</div>
-                        <div class="player-slot"><div class="piece">♚</div>Wartet...</div>
+                    <div class="mp-lobby-players" id="playersWaiting">
+                        <div class="mp-lobby-player-slot"><div class="piece">♔</div>Wartet...</div>
+                        <div class="mp-lobby-player-slot"><div class="piece">♚</div>Wartet...</div>
                     </div>
                 </div>
-                
+
                 <div id="hostControls" style="display: none;">
-                    <button class="btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten</button>
+                    <button class="mp-game-btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten</button>
                 </div>
-                <p id="waitingMsg" style="color: var(--text-muted); display: none;">⏳ Warte auf Host...</p>
-                <button class="btn secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
+                <p id="waitingMsg" style="color: var(--mp-text-muted); display: none;">⏳ Warte auf Host...</p>
+                <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
             </div>
         </div>
         
         <!-- GAME -->
-        <div id="gameScreen" class="screen">
+        <div id="gameScreen" class="mp-game-screen">
             <div class="game-container">
                 <div class="board-area">
                     <div class="board" id="board"></div>
                 </div>
-                
-                <div class="sidebar">
-                    <div class="info-card">
-                        <div class="turn-info" id="turnInfo">
+
+                <div class="mp-game-sidebar">
+                    <div class="mp-info-card">
+                        <div class="mp-turn-info" id="turnInfo">
                             <div class="label">Am Zug:</div>
                             <div class="name" id="currentPlayerName">---</div>
                         </div>
                     </div>
-                    
-                    <div class="info-card">
+
+                    <div class="mp-info-card">
                         <h3>👥 Spieler</h3>
                         <div class="player-row" id="whitePlayer">
                             <span><span class="piece-icon">♔</span> <span class="pname">Weiß</span></span>
@@ -252,23 +165,23 @@ if (SessionManager::isLoggedIn()) {
                             <span><span class="piece-icon">♚</span> <span class="pname">Schwarz</span></span>
                         </div>
                     </div>
-                    
-                    <div class="info-card">
-                        <button class="btn danger" onclick="resignGame()">🏳️ Aufgeben</button>
+
+                    <div class="mp-info-card">
+                        <button class="mp-game-btn danger" onclick="resignGame()">🏳️ Aufgeben</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- RESULT -->
-        <div id="resultScreen" class="screen">
-            <div class="lobby-container">
-                <div class="lobby-card" style="border: 3px solid var(--accent);">
+        <div id="resultScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-card" style="border: 3px solid var(--mp-accent);">
                     <div style="font-size: 5rem;" id="resultIcon">🏆</div>
                     <h1 style="margin: 20px 0;" id="winnerText">Gewinner!</h1>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;" id="winReason"></p>
-                    <button class="btn" onclick="location.reload()">🔄 Neues Spiel</button>
-                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">← Zurück</button>
+                    <p style="color: var(--mp-text-muted); margin-bottom: 20px;" id="winReason"></p>
+                    <button class="mp-game-btn" onclick="location.reload()">🔄 Neues Spiel</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">← Zurück</button>
                 </div>
             </div>
         </div>
@@ -316,7 +229,7 @@ if (SessionManager::isLoggedIn()) {
         let currentEnPassant = null;
         
         function showScreen(name) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.mp-game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(name + 'Screen').classList.add('active');
         }
         
@@ -440,13 +353,13 @@ if (SessionManager::isLoggedIn()) {
         function updateWaitingRoom(players) {
             const white = players.find(p => p.color === 'white');
             const black = players.find(p => p.color === 'black');
-            
+
             document.getElementById('playersWaiting').innerHTML = `
-                <div class="player-slot ${white ? 'filled' : ''}">
+                <div class="mp-lobby-player-slot ${white ? 'filled' : ''}">
                     <div class="piece">♔</div>
                     ${white ? `${white.avatar} ${escapeHtml(white.player_name)}` : 'Wartet...'}
                 </div>
-                <div class="player-slot ${black ? 'filled' : ''}">
+                <div class="mp-lobby-player-slot ${black ? 'filled' : ''}">
                     <div class="piece">♚</div>
                     ${black ? `${black.avatar} ${escapeHtml(black.player_name)}` : 'Wartet...'}
                 </div>
@@ -461,7 +374,7 @@ if (SessionManager::isLoggedIn()) {
             // Turn Info
             const currentPlayer = data.players.find(p => p.color === game.current_player);
             const turnInfo = document.getElementById('turnInfo');
-            turnInfo.className = 'turn-info' + (gameState.myTurn ? ' my-turn' : '') + (game.check_state === 'check' && gameState.myTurn ? ' check' : '');
+            turnInfo.className = 'mp-turn-info' + (gameState.myTurn ? ' my-turn' : '') + (game.check_state === 'check' && gameState.myTurn ? ' check' : '');
             
             let turnText = currentPlayer ? `${game.current_player === 'white' ? '♔' : '♚'} ${escapeHtml(currentPlayer.player_name)}` : '---';
             if (game.check_state === 'check') turnText += ' ⚠️ SCHACH!';
@@ -752,7 +665,7 @@ if (SessionManager::isLoggedIn()) {
         
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
+            toast.className = 'mp-game-toast ' + type;
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);

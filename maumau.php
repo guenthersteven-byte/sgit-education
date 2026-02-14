@@ -1,44 +1,9 @@
 <?php
 /**
- * ============================================================================
- * sgiT Education - Mau Mau v1.0
- * ============================================================================
- * 
- * Klassisches Kartenspiel für 2-4 Spieler
- * Regeln: 7=+2, 8=Aussetzen, Bube=Wunschfarbe, Ass=Richtungswechsel
- *
- * @author sgiT Solution Engineering & IT Services
- * @version 1.0
- * ============================================================================
+ * sgiT Education - Mau Mau v1.1
+ * @version 1.1
  */
-
-session_start();
-require_once 'includes/version.php';
-require_once __DIR__ . '/wallet/SessionManager.php';
-
-// User-Daten aus SessionManager (MUSS für Multiplayer!)
-$userName = '';
-$userAge = 10;
-$walletChildId = 0;
-$userAvatar = '😀';
-
-if (SessionManager::isLoggedIn()) {
-    $childData = SessionManager::getChild();
-    if ($childData) {
-        $walletChildId = $childData['id'];
-        $userName = $childData['name'];
-        $userAvatar = $childData['avatar'] ?? '😀';
-        $userAge = $childData['age'] ?? 10;
-    }
-} elseif (isset($_SESSION['wallet_child_id'])) {
-    $walletChildId = $_SESSION['wallet_child_id'];
-    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
-    $userAvatar = $_SESSION['avatar'] ?? '😀';
-}
-
-// Karten-Symbole
-$colorSymbols = ['herz' => '♥', 'karo' => '♦', 'pik' => '♠', 'kreuz' => '♣'];
-$colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 'black'];
+require_once __DIR__ . '/includes/game_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -56,90 +21,24 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         :root {
             --card-white: #fffef5;
         }
-        body { 
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
-            min-height: 100vh;
-            color: var(--mp-text);
-            margin: 0; padding: 0;
-        }
-        .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: var(--mp-bg-card);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .header h1 { font-size: 1.4rem; }
-        .header h1 span { color: var(--accent); }
-        .back-link { color: var(--accent); text-decoration: none; }
-        
-        .screen { display: none; }
-        .screen.active { display: block; }
-        
-        /* Lobby */
-        .lobby-container { max-width: 500px; margin: 30px auto; text-align: center; }
-        .lobby-card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .lobby-card h2 { color: var(--accent); margin-bottom: 15px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; text-align: left; }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 1rem;
-        }
-        .input-group input:focus { outline: none; border-color: var(--accent); }
-        .game-code-input { font-size: 1.5rem !important; text-align: center; letter-spacing: 8px; text-transform: uppercase; }
-        
-        .btn {
-            background: var(--accent);
-            color: var(--primary);
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-        }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn.secondary { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
+
+        /* Mau Mau Button */
         .btn.small { padding: 8px 16px; width: auto; font-size: 0.9rem; }
         .btn.mau { background: #f39c12; animation: pulse 0.5s infinite; }
         @keyframes pulse { 50% { transform: scale(1.05); } }
-        
-        .divider { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--text-muted); opacity: 0.3; }
-        .divider span { padding: 0 15px; }
-        
-        /* Waiting Room */
-        .game-code-display { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .game-code { font-size: 2.5rem; font-weight: bold; color: var(--accent); letter-spacing: 8px; font-family: monospace; }
-        .players-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 20px 0; }
-        .player-slot { background: var(--bg); border: 2px dashed var(--text-muted); border-radius: 12px; padding: 15px 20px; text-align: center; }
-        .player-slot.filled { border-style: solid; border-color: var(--accent); }
-        
+
         /* Game Area */
         .game-container { display: grid; grid-template-columns: 1fr 250px; gap: 20px; }
         @media (max-width: 800px) { .game-container { grid-template-columns: 1fr; } }
-        
-        .play-area { background: var(--card-bg); border-radius: 16px; padding: 20px; min-height: 500px; }
+
+        .play-area { background: var(--mp-bg-card); border-radius: 16px; padding: 20px; min-height: 500px; }
         
         /* Spieltisch */
         .table-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         
         .opponents { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
-        .opponent { background: var(--bg); border-radius: 12px; padding: 10px 15px; text-align: center; }
-        .opponent.active { border: 2px solid var(--accent); }
+        .opponent { background: var(--mp-bg-medium); border-radius: 12px; padding: 10px 15px; text-align: center; }
+        .opponent.active { border: 2px solid var(--mp-accent); }
         .opponent .cards { display: flex; gap: -10px; justify-content: center; margin-top: 5px; }
         .card-back { width: 30px; height: 45px; border-radius: 4px; border: 1px solid #555; margin-left: -15px; background-size: cover; background-position: center; }
         .card-back:first-child { margin-left: 0; }
@@ -184,7 +83,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         .card .center-symbol { font-size: 2.5rem; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; }
         .card.playable { border-color: var(--mp-accent); box-shadow: 0 0 15px var(--mp-accent-glow); animation: mp-fieldPulse 1.5s ease infinite; }
         .card.selected { transform: translateY(-20px); border-color: #f39c12; }
-        
+
         .my-hand {
             display: flex;
             gap: -20px;
@@ -197,20 +96,10 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         }
         .my-hand .card { margin-left: -20px; }
         .my-hand .card:first-child { margin-left: 0; }
-        
-        /* Sidebar */
-        .sidebar { display: flex; flex-direction: column; gap: 15px; }
-        .info-card { background: var(--card-bg); border-radius: 12px; padding: 15px; }
-        .info-card h3 { color: var(--accent); margin-bottom: 10px; font-size: 1rem; }
-        
-        .turn-info { text-align: center; padding: 15px; background: var(--bg); border-radius: 10px; }
-        .turn-info.my-turn { border: 2px solid var(--accent); }
-        .turn-info .label { font-size: 0.85rem; color: var(--text-muted); }
-        .turn-info .name { font-size: 1.2rem; font-weight: bold; margin-top: 5px; }
-        
-        .special-info { background: var(--bg); border-radius: 10px; padding: 10px; margin-top: 10px; text-align: center; }
+
+        .special-info { background: var(--mp-bg-medium); border-radius: 10px; padding: 10px; margin-top: 10px; text-align: center; }
         .special-info.warning { border: 2px solid #f39c12; }
-        .special-info.danger { border: 2px solid var(--red); }
+        .special-info.danger { border: 2px solid var(--mp-error); }
         
         .rules-hint { font-size: 0.85rem; color: var(--text-muted); }
         .rules-hint ul { list-style: none; margin-top: 10px; }
@@ -219,8 +108,8 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         /* Wish Color Modal */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 25px; text-align: center; max-width: 350px; }
-        .modal h2 { margin-bottom: 20px; color: var(--accent); }
+        .modal-content { background: var(--mp-bg-card); border-radius: 16px; padding: 25px; text-align: center; max-width: 350px; }
+        .modal h2 { margin-bottom: 20px; color: var(--mp-accent); }
         .color-choice { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
         .color-btn { width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; border: 3px solid transparent; cursor: pointer; }
         .color-btn:hover { transform: scale(1.1); }
@@ -228,12 +117,6 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         .color-btn.karo { background: #fee; color: #e74c3c; }
         .color-btn.pik { background: #eee; color: #2c3e50; }
         .color-btn.kreuz { background: #eee; color: #2c3e50; }
-        
-        /* Toast */
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; }
-        .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: var(--mp-error); color: white; }
-        .toast.info { background: var(--mp-bg-card); border: 2px solid var(--mp-accent); }
         
         /* Mobile Optimierung */
         @media (max-width: 600px) {
@@ -258,49 +141,49 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
+<body class="mp-game-body">
+    <div class="mp-game-container">
+        <div class="mp-game-header">
             <div>
-                <a href="multiplayer.php" class="back-link">← Multiplayer</a>
+                <a href="multiplayer.php" class="mp-game-header__back">← Spiele-Hub</a>
                 <h1>🃏 <span>Mau Mau</span></h1>
             </div>
             <span><?php echo $userAvatar . ' ' . htmlspecialchars($userName ?: 'Gast'); ?></span>
         </div>
-        
+
         <!-- LOBBY -->
-        <div id="lobbyScreen" class="screen active">
-            <div class="lobby-container">
+        <div id="lobbyScreen" class="mp-game-screen active">
+            <div class="mp-game-lobby">
                 <div style="font-size: 4rem; margin-bottom: 10px;">🃏</div>
                 <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Mau Mau</h1>
-                <p style="color: var(--text-muted); margin-bottom: 25px;">Das Kartenspiel-Klassiker für 2-4 Spieler</p>
-                
-                <div class="lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
+                <p style="color: var(--mp-text-muted); margin-bottom: 25px;">Das Kartenspiel-Klassiker für 2-4 Spieler</p>
+
+                <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2>👤 Dein Name</h2>
-                    <div class="input-group">
+                    <div class="mp-lobby-input-group">
                         <input type="text" id="playerNameInput" placeholder="Name..." maxlength="20">
                     </div>
-                    <button class="btn" onclick="setPlayerName()">Weiter →</button>
+                    <button class="mp-game-btn" onclick="setPlayerName()">Weiter →</button>
                 </div>
-                
-                <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+
+                <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel</h2>
-                    <button class="btn" onclick="createGame()">👥 Gegen Mitspieler</button>
-                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='maumau_vs_computer.php'">🤖 Gegen Computer</button>
+                    <button class="mp-game-btn" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 10px;" onclick="location.href='maumau_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
-                
-                <div class="divider"><span>oder</span></div>
-                
-                <div class="lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+
+                <div class="mp-game-divider"><span>oder</span></div>
+
+                <div class="mp-lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🔗 Beitreten</h2>
-                    <div class="input-group">
-                        <input type="text" id="gameCodeInput" class="game-code-input" placeholder="CODE" maxlength="6">
+                    <div class="mp-lobby-input-group">
+                        <input type="text" id="gameCodeInput" class="mp-lobby-code-input" placeholder="CODE" maxlength="6">
                     </div>
-                    <button class="btn secondary" onclick="joinGame()">Beitreten →</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" onclick="joinGame()">Beitreten →</button>
                 </div>
-                
-                <div class="lobby-card rules-hint" style="margin-top: 20px;">
-                    <h3 style="color: var(--accent);">📜 Kurzregeln</h3>
+
+                <div class="mp-lobby-card rules-hint" style="margin-top: 20px;">
+                    <h3 style="color: var(--mp-accent);">📜 Kurzregeln</h3>
                     <ul>
                         <li>🎴 Gleiche Farbe oder Zahl legen</li>
                         <li>7️⃣ = Nächster zieht 2</li>
@@ -314,34 +197,34 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         </div>
         
         <!-- WAITING -->
-        <div id="waitingScreen" class="screen">
-            <div class="lobby-container">
-                <div class="game-code-display">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Spiel-Code</p>
-                    <div class="game-code" id="displayCode">------</div>
+        <div id="waitingScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-code-display">
+                    <p style="color: var(--mp-text-muted); font-size: 0.9rem;">Spiel-Code</p>
+                    <div class="mp-lobby-code" id="displayCode">------</div>
                 </div>
-                
-                <div class="lobby-card">
+
+                <div class="mp-lobby-card">
                     <h2>👥 Spieler</h2>
-                    <div class="players-list" id="playersWaiting"></div>
+                    <div class="mp-lobby-players" id="playersWaiting"></div>
                 </div>
-                
+
                 <div id="hostControls" style="display: none;">
-                    <button class="btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten (min. 2)</button>
+                    <button class="mp-game-btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten (min. 2)</button>
                 </div>
-                <p id="waitingMsg" style="color: var(--text-muted); display: none;">⏳ Warte auf Host...</p>
-                <button class="btn secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
+                <p id="waitingMsg" style="color: var(--mp-text-muted); display: none;">⏳ Warte auf Host...</p>
+                <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
             </div>
         </div>
         
         <!-- GAME -->
-        <div id="gameScreen" class="screen">
+        <div id="gameScreen" class="mp-game-screen">
             <div class="game-container">
                 <div class="play-area">
                     <div class="table-area">
                         <!-- Gegner -->
                         <div class="opponents" id="opponents"></div>
-                        
+
                         <!-- Mitte: Deck + Ablagestapel -->
                         <div class="center-pile">
                             <div class="deck-pile" onclick="drawCards()" id="deckPileContainer">
@@ -349,39 +232,39 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
                             </div>
                             <div class="discard-pile" id="discardPile"></div>
                         </div>
-                        
+
                         <!-- Meine Hand -->
                         <div class="my-hand" id="myHand"></div>
                     </div>
                 </div>
-                
-                <div class="sidebar">
-                    <div class="info-card">
-                        <div class="turn-info" id="turnInfo">
+
+                <div class="mp-game-sidebar">
+                    <div class="mp-info-card">
+                        <div class="mp-turn-info" id="turnInfo">
                             <div class="label">Am Zug:</div>
                             <div class="name" id="currentPlayerName">---</div>
                         </div>
                         <div class="special-info" id="specialInfo" style="display: none;"></div>
                     </div>
-                    
-                    <div class="info-card">
+
+                    <div class="mp-info-card">
                         <h3>📊 Karten</h3>
                         <div id="cardCounts"></div>
                     </div>
-                    
-                    <button class="btn mau" id="mauBtn" onclick="sayMau()" style="display: none;">📢 MAU!</button>
+
+                    <button class="mp-game-btn btn mau" id="mauBtn" onclick="sayMau()" style="display: none;">📢 MAU!</button>
                 </div>
             </div>
         </div>
-        
+
         <!-- RESULT -->
-        <div id="resultScreen" class="screen">
-            <div class="lobby-container">
-                <div class="lobby-card" style="border: 3px solid var(--accent);">
+        <div id="resultScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-card" style="border: 3px solid var(--mp-accent);">
                     <div style="font-size: 5rem;">🏆</div>
                     <h1 style="margin: 20px 0;" id="winnerText">Gewinner!</h1>
-                    <button class="btn" onclick="location.reload()">🔄 Neues Spiel</button>
-                    <button class="btn secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">← Zurück</button>
+                    <button class="mp-game-btn" onclick="location.reload()">🔄 Neues Spiel</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 10px;" onclick="location.href='multiplayer.php'">← Zurück</button>
                 </div>
             </div>
         </div>
@@ -424,7 +307,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         
         // UI Funktionen
         function showScreen(name) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.mp-game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(name + 'Screen').classList.add('active');
         }
         
@@ -542,8 +425,8 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         }
         
         function updateWaitingRoom(players) {
-            document.getElementById('playersWaiting').innerHTML = players.map(p => 
-                `<div class="player-slot filled">${p.avatar} ${escapeHtml(p.name)}</div>`
+            document.getElementById('playersWaiting').innerHTML = players.map(p =>
+                `<div class="mp-lobby-player-slot filled">${p.avatar} ${escapeHtml(p.name)}</div>`
             ).join('');
         }
         
@@ -554,7 +437,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             // Turn Info
             const currentPlayer = data.players.find(p => p.order === game.current_player);
             const turnInfo = document.getElementById('turnInfo');
-            turnInfo.className = 'turn-info' + (gameState.myTurn ? ' my-turn' : '');
+            turnInfo.className = 'mp-turn-info' + (gameState.myTurn ? ' my-turn' : '');
             document.getElementById('currentPlayerName').textContent = currentPlayer ? `${currentPlayer.avatar} ${currentPlayer.name}` : '---';
             
             // Special Info
@@ -586,7 +469,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
                 <div class="opponent ${p.order === game.current_player ? 'active' : ''}">
                     <div>${p.avatar} ${escapeHtml(p.name)}</div>
                     <div class="cards">${Array(Math.min(p.card_count, 10)).fill('<div class="card-back" style="background-image:url(\'' + PLAYING_CARD_SVGS.back + '\')"></div>').join('')}</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">${p.card_count} Karten</div>
+                    <div style="font-size: 0.8rem; color: var(--mp-text-muted);">${p.card_count} Karten</div>
                 </div>
             `).join('');
             
@@ -598,8 +481,8 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
             }).join('');
             
             // Card counts
-            document.getElementById('cardCounts').innerHTML = data.players.map(p => 
-                `<div style="display: flex; justify-content: space-between; padding: 5px 0; ${p.id === gameState.playerId ? 'color: var(--accent);' : ''}">
+            document.getElementById('cardCounts').innerHTML = data.players.map(p =>
+                `<div class="mp-score-row" style="${p.id === gameState.playerId ? 'color: var(--mp-accent);' : ''}">
                     <span>${p.avatar} ${escapeHtml(p.name)}</span>
                     <span>${p.card_count} 🃏</span>
                 </div>`
@@ -707,7 +590,7 @@ $colorClasses = ['herz' => 'red', 'karo' => 'red', 'pik' => 'black', 'kreuz' => 
         
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
+            toast.className = 'mp-game-toast ' + type;
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);

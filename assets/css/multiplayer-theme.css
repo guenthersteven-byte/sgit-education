@@ -1486,3 +1486,591 @@
         bottom: calc(20px + env(safe-area-inset-bottom));
     }
 }
+
+
+/* ===========================================
+   25. Shared Lobby Styles (Phase 2 Cleanup)
+   =========================================== */
+
+/*
+ * Gemeinsame Lobby/Button/Header Styles fuer alle 7 Multiplayer-Spiele.
+ * Ersetzt ~150 Zeilen redundantes Inline-CSS pro Spiel.
+ *
+ * Verwendung: body class="mp-body" + diese Klassen
+ */
+
+/* --- Body & Container (alle Spiele) --- */
+.mp-game-body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
+    min-height: 100vh;
+    color: var(--mp-text);
+    margin: 0;
+    padding: 0;
+}
+
+.mp-game-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+/* --- Game Header --- */
+.mp-game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--mp-bg-card);
+    border-radius: var(--mp-radius-md);
+    margin-bottom: 20px;
+    border: 1px solid var(--mp-border);
+}
+
+.mp-game-header h1 {
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.mp-game-header h1 span {
+    color: var(--mp-accent);
+}
+
+.mp-game-header__back {
+    color: var(--mp-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.mp-game-header__back:hover {
+    text-decoration: underline;
+}
+
+/* --- Screen System --- */
+.mp-game-screen {
+    display: none;
+}
+
+.mp-game-screen.active {
+    display: block;
+    animation: mp-fadeIn 0.3s ease-out;
+}
+
+/* --- Lobby --- */
+.mp-game-lobby {
+    max-width: 500px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+.mp-lobby-card {
+    background: var(--mp-bg-card);
+    border: 1px solid var(--mp-border);
+    border-radius: var(--mp-radius-lg);
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.mp-lobby-card h2 {
+    color: var(--mp-accent);
+    margin-bottom: 15px;
+}
+
+/* --- Lobby Input Group --- */
+.mp-lobby-input-group {
+    margin-bottom: 15px;
+}
+
+.mp-lobby-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--mp-text-muted);
+    font-size: 0.9rem;
+}
+
+.mp-lobby-input-group input,
+.mp-lobby-input-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid transparent;
+    border-radius: var(--mp-radius-sm);
+    background: var(--mp-bg-input);
+    color: var(--mp-text);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.mp-lobby-input-group input:focus,
+.mp-lobby-input-group select:focus {
+    outline: none;
+    border-color: var(--mp-accent);
+}
+
+/* --- Game Code Input --- */
+.mp-lobby-code-input {
+    font-size: 1.5rem !important;
+    text-align: center;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* --- Game Buttons --- */
+.mp-game-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--mp-accent);
+    color: var(--mp-primary);
+    border: none;
+    padding: 14px 28px;
+    border-radius: var(--mp-radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: var(--mp-transition);
+}
+
+.mp-game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--mp-accent-glow);
+}
+
+.mp-game-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.mp-game-btn--secondary {
+    background: var(--mp-bg-card);
+    color: var(--mp-text);
+    border: 2px solid var(--mp-accent);
+}
+
+.mp-game-btn--secondary:hover {
+    background: var(--mp-accent);
+    color: var(--mp-primary);
+}
+
+.mp-game-btn--small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    width: auto;
+}
+
+/* --- Divider --- */
+.mp-game-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: var(--mp-text-muted);
+}
+
+.mp-game-divider::before,
+.mp-game-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--mp-text-muted);
+    opacity: 0.3;
+}
+
+.mp-game-divider span {
+    padding: 0 15px;
+}
+
+/* --- Game Code Display --- */
+.mp-lobby-code-display {
+    background: var(--mp-bg-card);
+    border: 1px solid var(--mp-border);
+    border-radius: var(--mp-radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mp-lobby-code {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--mp-accent);
+    letter-spacing: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* --- Players Waiting --- */
+.mp-lobby-players {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.mp-lobby-player-slot {
+    background: var(--mp-bg-medium);
+    border: 2px dashed var(--mp-text-muted);
+    border-radius: var(--mp-radius-md);
+    padding: 20px;
+    text-align: center;
+    min-width: 120px;
+    transition: var(--mp-transition);
+}
+
+.mp-lobby-player-slot.filled {
+    border-style: solid;
+    border-color: var(--mp-accent);
+    background: var(--mp-bg-card);
+}
+
+.mp-lobby-player-slot .color-icon {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+/* --- Sidebar (Game Info) --- */
+.mp-game-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mp-info-card {
+    background: var(--mp-bg-card);
+    border: 1px solid var(--mp-border);
+    border-radius: var(--mp-radius-md);
+    padding: 15px;
+}
+
+.mp-info-card h3 {
+    color: var(--mp-accent);
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+}
+
+/* --- Turn Info --- */
+.mp-turn-info {
+    text-align: center;
+    padding: 15px;
+    background: var(--mp-bg-medium);
+    border-radius: var(--mp-radius-sm);
+}
+
+.mp-turn-info.my-turn {
+    border: 2px solid var(--mp-accent);
+    animation: mp-turnGlow 1.5s ease infinite;
+}
+
+.mp-turn-info .label {
+    font-size: 0.85rem;
+    color: var(--mp-text-muted);
+}
+
+.mp-turn-info .name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* --- Score Row --- */
+.mp-score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: var(--mp-bg-medium);
+    border-radius: var(--mp-radius-sm);
+    margin-bottom: 8px;
+}
+
+.mp-score-row.active {
+    border: 2px solid var(--mp-accent);
+}
+
+/* --- Game Toast --- */
+.mp-game-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 15px 25px;
+    border-radius: var(--mp-radius-md);
+    font-weight: 600;
+    z-index: 1000;
+    opacity: 0;
+    transition: var(--mp-transition-slow);
+}
+
+.mp-game-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.mp-game-toast.success {
+    background: var(--mp-accent);
+    color: var(--mp-primary);
+}
+
+.mp-game-toast.error {
+    background: var(--mp-error);
+    color: white;
+}
+
+.mp-game-toast.info {
+    background: var(--mp-bg-card);
+    border: 2px solid var(--mp-accent);
+    color: var(--mp-text);
+}
+
+
+/* ===========================================
+   26. Kinder-Touch-Targets (Phase 5)
+   =========================================== */
+
+/* Optimierte Touch-Targets fuer Kinder (min 56px statt 44px) */
+@media (pointer: coarse) {
+    .mp-game-btn {
+        min-height: 56px;
+        min-width: 56px;
+        font-size: 1.1rem;
+    }
+
+    .mp-lobby-input-group input,
+    .mp-lobby-input-group select {
+        min-height: 52px;
+        font-size: 18px;
+    }
+
+    .mp-lobby-card .mp-game-btn {
+        padding: 18px 28px;
+    }
+}
+
+/* Mobile Lobby Responsive */
+@media (max-width: 480px) {
+    .mp-game-lobby {
+        margin: 15px auto;
+    }
+
+    .mp-lobby-card {
+        padding: 20px 15px;
+    }
+
+    .mp-lobby-players {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mp-lobby-player-slot {
+        min-width: 100%;
+    }
+
+    .mp-lobby-code {
+        font-size: 1.8rem;
+        letter-spacing: 5px;
+    }
+}
+
+
+/* ===========================================
+   27. Game Hub Styles (Phase 1)
+   =========================================== */
+
+/* --- Category Section --- */
+.mp-hub-category {
+    margin-bottom: 30px;
+}
+
+.mp-hub-category__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--mp-accent);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- Game Cards Grid --- */
+.mp-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+/* --- Game Card --- */
+.mp-game-card {
+    background: var(--mp-bg-card);
+    border: 2px solid var(--mp-border);
+    border-radius: var(--mp-radius-lg);
+    padding: 20px;
+    text-align: center;
+    transition: var(--mp-transition-slow);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.mp-game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(67, 210, 64, 0.08), transparent);
+    transition: left 0.5s ease;
+}
+
+.mp-game-card:hover {
+    border-color: var(--mp-accent);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--mp-accent-glow);
+}
+
+.mp-game-card:hover::before {
+    left: 100%;
+}
+
+.mp-game-card__icon {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+    transition: var(--mp-transition);
+    display: block;
+}
+
+.mp-game-card:hover .mp-game-card__icon {
+    transform: scale(1.15);
+}
+
+.mp-game-card__name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.mp-game-card__players {
+    font-size: 0.8rem;
+    color: var(--mp-text-muted);
+    margin-bottom: 12px;
+}
+
+/* --- Card Action Buttons --- */
+.mp-game-card__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mp-game-card__action {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: var(--mp-radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--mp-transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.mp-game-card__action--friends {
+    background: var(--mp-accent);
+    color: var(--mp-primary);
+}
+
+.mp-game-card__action--friends:hover {
+    background: var(--mp-accent-hover);
+}
+
+.mp-game-card__action--computer {
+    background: var(--mp-bg-medium);
+    color: var(--mp-text);
+    border: 1px solid var(--mp-border);
+}
+
+.mp-game-card__action--computer:hover {
+    border-color: var(--mp-accent);
+    color: var(--mp-accent);
+}
+
+/* --- Hub User Bar --- */
+.mp-hub-user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--mp-bg-card);
+    border: 1px solid var(--mp-border);
+    border-radius: var(--mp-radius-md);
+    padding: 15px 20px;
+    margin-bottom: 25px;
+}
+
+.mp-hub-user-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mp-hub-user-bar__avatar {
+    font-size: 2rem;
+}
+
+.mp-hub-user-bar__name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.mp-hub-user-bar__sats {
+    color: var(--mp-accent);
+    font-size: 0.85rem;
+}
+
+/* --- Hub Responsive --- */
+@media (max-width: 480px) {
+    .mp-hub-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .mp-game-card {
+        padding: 15px 10px;
+    }
+
+    .mp-game-card__icon {
+        font-size: 2.5rem;
+    }
+
+    .mp-game-card__name {
+        font-size: 0.95rem;
+    }
+
+    .mp-game-card__actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .mp-hub-user-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+@media (pointer: coarse) {
+    .mp-game-card {
+        min-height: 140px;
+    }
+
+    .mp-game-card__action {
+        min-height: 48px;
+        font-size: 0.85rem;
+    }
+}

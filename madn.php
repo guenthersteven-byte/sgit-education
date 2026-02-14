@@ -1,49 +1,9 @@
 <?php
 /**
- * ============================================================================
- * sgiT Education - Mensch ärgere dich nicht v2.0
- * ============================================================================
- * 
- * BUG-052 FIX: Komplettes Redesign mit klassischem Kreuz-Layout
- * 
- * Klassisches Brettspiel für 2-4 Spieler
- *
- * @author sgiT Solution Engineering & IT Services
- * @version 2.0
- * @date 14.12.2025
- * ============================================================================
+ * sgiT Education - Mensch aergere dich nicht v1.1
+ * @version 1.1
  */
-
-session_start();
-require_once 'includes/version.php';
-require_once __DIR__ . '/wallet/SessionManager.php';
-
-// User-Daten aus SessionManager (wie multiplayer.php)
-$userName = '';
-$userAge = 10;
-$walletChildId = 0;
-$userAvatar = '😀';
-
-// SessionManager prüfen (primäre Quelle)
-if (SessionManager::isLoggedIn()) {
-    $childData = SessionManager::getChild();
-    if ($childData) {
-        $walletChildId = $childData['id'];
-        $userName = $childData['name'];
-        $userAvatar = $childData['avatar'] ?? '😀';
-        $userAge = $childData['age'] ?? 10;
-    }
-}
-// Fallback: Standard Session-Keys
-elseif (isset($_SESSION['wallet_child_id'])) {
-    $walletChildId = $_SESSION['wallet_child_id'];
-    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
-    $userAvatar = $_SESSION['avatar'] ?? '😀';
-    $userAge = $_SESSION['user_age'] ?? 10;
-}
-
-$colors = ['red' => '🔴', 'blue' => '🔵', 'green' => '🟢', 'yellow' => '🟡'];
-$colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' => 'Gelb'];
+require_once __DIR__ . '/includes/game_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -59,11 +19,11 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
            =========================================== */
         
         /* Player Colors */
-        .player-slot.red { border-color: var(--mp-player-red); }
-        .player-slot.blue { border-color: var(--mp-player-blue); }
-        .player-slot.green { border-color: var(--mp-player-green); }
-        .player-slot.yellow { border-color: var(--mp-player-yellow); }
-        
+        .mp-lobby-player-slot.red { border-color: var(--mp-player-red); }
+        .mp-lobby-player-slot.blue { border-color: var(--mp-player-blue); }
+        .mp-lobby-player-slot.green { border-color: var(--mp-player-green); }
+        .mp-lobby-player-slot.yellow { border-color: var(--mp-player-yellow); }
+
         /* Players Grid (MADN-spezifisch: 2x2) */
         .players-grid {
             display: grid;
@@ -71,22 +31,9 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             gap: 10px;
             margin: 20px 0;
         }
-        .player-slot {
-            background: var(--mp-bg-medium);
-            border: 2px dashed var(--mp-text-muted);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .player-slot.filled { border-style: solid; }
-        .player-slot .avatar { font-size: 1.8rem; }
-        .player-slot .name { font-weight: 600; margin-top: 5px; }
-        .player-slot .color-badge { font-size: 0.8rem; color: var(--mp-text-muted); }
+        .mp-lobby-player-slot .avatar { font-size: 1.8rem; }
+        .mp-lobby-player-slot .name { font-weight: 600; margin-top: 5px; }
+        .mp-lobby-player-slot .color-badge { font-size: 0.8rem; color: var(--mp-text-muted); }
         
         /* Game Board Container */
         .game-container {
@@ -261,18 +208,6 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         /* =========================================
            SIDEBAR
            ========================================= */
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .info-card {
-            background: var(--mp-bg-card);
-            border-radius: 12px;
-            padding: 15px;
-        }
-        .info-card h3 { color: var(--mp-accent); margin-bottom: 10px; font-size: 1rem; }
-        
         .turn-indicator {
             text-align: center;
             padding: 15px;
@@ -305,39 +240,9 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         .dice.rolling { animation: mp-diceRoll 0.3s linear infinite; }
         
         .scoreboard { margin-top: 10px; }
-        .score-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            background: var(--mp-bg-medium);
-            border-radius: 8px;
-            margin-bottom: 6px;
-        }
-        .score-row.active { border: 2px solid var(--mp-accent); }
-        .score-row .color { font-size: 1.2rem; }
-        .score-row .name { flex: 1; }
-        .score-row .pieces { font-size: 0.8rem; color: var(--mp-text-muted); }
-        
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateX(-50%) translateY(20px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-        .toast.success { background: var(--mp-accent); color: var(--mp-text-dark); }
-        .toast.error { background: var(--mp-error); color: white; }
-        .toast.info { background: var(--mp-bg-card); color: var(--mp-text); border: 2px solid var(--mp-accent); }
+        .mp-score-row .color { font-size: 1.2rem; }
+        .mp-score-row .name { flex: 1; }
+        .mp-score-row .pieces { font-size: 0.8rem; color: var(--mp-text-muted); }
         
         /* Result */
         .result-container { max-width: 500px; margin: 50px auto; text-align: center; }
@@ -398,7 +303,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
                 grid-template-columns: 1fr 1fr;
                 gap: 8px;
             }
-            .player-slot {
+            .mp-lobby-player-slot {
                 padding: 10px;
                 min-height: auto;
             }
@@ -433,94 +338,94 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
     </style>
     <script src="/assets/js/madn-pieces.js"></script>
 </head>
-<body class="mp-body">
-    <div class="mp-container">
-        <div class="mp-header">
+<body class="mp-game-body">
+    <div class="mp-game-container">
+        <div class="mp-game-header">
             <div>
-                <a href="multiplayer.php" class="mp-back-link">← Multiplayer</a>
+                <a href="multiplayer.php" class="mp-game-header__back">← Spiele-Hub</a>
                 <h1 class="mp-header__title">🎲 <span>Mensch ärgere dich nicht</span></h1>
             </div>
             <span class="mp-header__user"><?php echo $userAvatar . ' ' . htmlspecialchars($userName ?: 'Gast'); ?></span>
         </div>
-        
+
         <!-- LOBBY -->
-        <div id="lobbyScreen" class="mp-screen active">
-            <div class="mp-lobby">
+        <div id="lobbyScreen" class="mp-game-screen active">
+            <div class="mp-game-lobby">
                 <div style="font-size: 4rem; margin-bottom: 10px;">🎲</div>
                 <h1 class="mp-lobby__title">Mensch ärgere dich nicht</h1>
                 <p class="mp-lobby__subtitle">Das Klassiker-Brettspiel für 2-4 Spieler</p>
-                
-                <div class="mp-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
+
+                <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2 class="mp-card__title">👤 Dein Name</h2>
-                    <div class="mp-input-group">
+                    <div class="mp-lobby-input-group">
                         <input type="text" id="playerNameInput" class="mp-input" placeholder="Name eingeben..." maxlength="20">
                     </div>
-                    <button class="mp-btn mp-btn--full" onclick="setPlayerName()">Weiter →</button>
+                    <button class="mp-game-btn mp-btn--full" onclick="setPlayerName()">Weiter →</button>
                 </div>
-                
-                <div class="mp-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+
+                <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2 class="mp-card__title">🎮 Neues Spiel</h2>
-                    <button class="mp-btn mp-btn--full" onclick="createGame()">👥 Gegen Mitspieler</button>
-                    <button class="mp-btn mp-btn--secondary mp-btn--full" style="margin-top: 10px;" onclick="location.href='madn_vs_computer.php'">🤖 Gegen Computer</button>
+                    <button class="mp-game-btn mp-btn--full" onclick="createGame()">👥 Gegen Mitspieler</button>
+                    <button class="mp-game-btn mp-game-btn--secondary mp-btn--full" style="margin-top: 10px;" onclick="location.href='madn_vs_computer.php'">🤖 Gegen Computer</button>
                 </div>
-                
-                <div class="mp-divider"><span>oder</span></div>
-                
-                <div class="mp-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+
+                <div class="mp-game-divider"><span>oder</span></div>
+
+                <div class="mp-lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2 class="mp-card__title">🔗 Spiel beitreten</h2>
-                    <div class="mp-input-group">
-                        <input type="text" id="gameCodeInput" class="mp-input mp-game-code-input" placeholder="CODE" maxlength="6">
+                    <div class="mp-lobby-input-group">
+                        <input type="text" id="gameCodeInput" class="mp-lobby-code-input" placeholder="CODE" maxlength="6">
                     </div>
-                    <button class="mp-btn mp-btn--secondary mp-btn--full" onclick="joinGame()">Beitreten →</button>
+                    <button class="mp-game-btn mp-game-btn--secondary mp-btn--full" onclick="joinGame()">Beitreten →</button>
                 </div>
             </div>
         </div>
         
         <!-- WAITING -->
-        <div id="waitingScreen" class="mp-screen">
-            <div class="mp-lobby">
-                <div class="mp-game-code-display">
+        <div id="waitingScreen" class="mp-game-screen">
+            <div class="mp-game-lobby">
+                <div class="mp-lobby-code-display">
                     <p class="mp-text-muted" style="font-size: 0.9rem;">Spiel-Code</p>
-                    <div class="mp-game-code mp-animate-pulse" id="displayCode">------</div>
+                    <div class="mp-lobby-code mp-animate-pulse" id="displayCode">------</div>
                 </div>
-                
-                <div class="mp-card">
+
+                <div class="mp-lobby-card">
                     <h2 class="mp-card__title">👥 Spieler</h2>
                     <div class="players-grid" id="playersGrid">
-                        <div class="player-slot red"><span class="mp-text-muted">🔴 Wartet...</span></div>
-                        <div class="player-slot blue"><span class="mp-text-muted">🔵 Wartet...</span></div>
-                        <div class="player-slot green"><span class="mp-text-muted">🟢 Wartet...</span></div>
-                        <div class="player-slot yellow"><span class="mp-text-muted">🟡 Wartet...</span></div>
+                        <div class="mp-lobby-player-slot red"><span class="mp-text-muted">🔴 Wartet...</span></div>
+                        <div class="mp-lobby-player-slot blue"><span class="mp-text-muted">🔵 Wartet...</span></div>
+                        <div class="mp-lobby-player-slot green"><span class="mp-text-muted">🟢 Wartet...</span></div>
+                        <div class="mp-lobby-player-slot yellow"><span class="mp-text-muted">🟡 Wartet...</span></div>
                     </div>
                 </div>
-                
+
                 <div id="hostControls" style="display: none;">
-                    <button class="btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten (min. 2)</button>
+                    <button class="mp-game-btn" onclick="startGame()" id="startBtn" disabled>▶️ Spiel starten (min. 2)</button>
                 </div>
-                <p id="waitingMsg" style="color: var(--text-muted); display: none;">⏳ Warte auf Host...</p>
-                <button class="btn secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
+                <p id="waitingMsg" style="color: var(--mp-text-muted); display: none;">⏳ Warte auf Host...</p>
+                <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 15px;" onclick="leaveGame()">🚪 Verlassen</button>
             </div>
         </div>
         
         <!-- GAME -->
-        <div id="gameScreen" class="mp-screen">
+        <div id="gameScreen" class="mp-game-screen">
             <div class="game-container">
                 <div class="board-area">
                     <div class="board" id="gameBoard"></div>
                 </div>
-                <div class="sidebar">
-                    <div class="info-card">
+                <div class="mp-game-sidebar">
+                    <div class="mp-info-card">
                         <div class="turn-indicator" id="turnIndicator">
                             <div class="label">Am Zug:</div>
                             <div class="player" id="currentPlayerName">---</div>
                         </div>
                     </div>
-                    <div class="info-card dice-area">
+                    <div class="mp-info-card dice-area">
                         <h3>🎲 Würfel</h3>
                         <div class="dice" id="dice" onclick="rollDice()">?</div>
                         <p id="diceMsg" class="mp-text-muted" style="font-size: 0.9rem;">Klicke zum Würfeln</p>
                     </div>
-                    <div class="info-card">
+                    <div class="mp-info-card">
                         <h3>📊 Spieler</h3>
                         <div class="scoreboard" id="scoreboard"></div>
                     </div>
@@ -529,14 +434,14 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         </div>
         
         <!-- RESULT -->
-        <div id="resultScreen" class="mp-screen">
+        <div id="resultScreen" class="mp-game-screen">
             <div class="result-container mp-animate-pop">
                 <div class="result-card">
                     <div class="result-icon">🏆</div>
                     <div class="result-title" id="winnerName">Gewinner!</div>
                     <p class="mp-text-muted" style="margin: 20px 0;">hat alle Figuren ins Ziel gebracht!</p>
-                    <button class="mp-btn mp-btn--full" onclick="location.reload()">🔄 Neues Spiel</button>
-                    <button class="mp-btn mp-btn--secondary mp-btn--full mp-mt-1" onclick="location.href='multiplayer.php'">← Zurück</button>
+                    <button class="mp-game-btn mp-btn--full" onclick="location.reload()">🔄 Neues Spiel</button>
+                    <button class="mp-game-btn mp-game-btn--secondary mp-btn--full mp-mt-1" onclick="location.href='multiplayer.php'">← Zurück</button>
                 </div>
             </div>
         </div>
@@ -796,7 +701,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         // ============================================
         
         function showScreen(name) {
-            document.querySelectorAll('.mp-screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.mp-game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(name + 'Screen').classList.add('active');
         }
         
@@ -940,13 +845,13 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             grid.innerHTML = COLORS.map(color => {
                 const player = players.find(p => p.color === color);
                 if (player) {
-                    return `<div class="player-slot ${color} filled">
+                    return `<div class="mp-lobby-player-slot ${color} filled">
                         <span class="avatar">${player.avatar}</span>
                         <span class="name">${escapeHtml(player.player_name)}</span>
                         <span class="color-badge">${COLOR_EMOJIS[color]} ${COLOR_NAMES[color]}</span>
                     </div>`;
                 }
-                return `<div class="player-slot ${color}"><span style="color: var(--mp-text-muted);">${COLOR_EMOJIS[color]} Frei</span></div>`;
+                return `<div class="mp-lobby-player-slot ${color}"><span style="color: var(--mp-text-muted);">${COLOR_EMOJIS[color]} Frei</span></div>`;
             }).join('');
         }
 
@@ -974,7 +879,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
             document.getElementById('scoreboard').innerHTML = data.players.map(p => {
                 const finished = p.pieces.filter(pos => pos >= 40).length;
                 const isActive = p.player_order === data.game.current_player;
-                return `<div class="score-row ${isActive ? 'active' : ''}">
+                return `<div class="mp-score-row ${isActive ? 'active' : ''}">
                     <span class="color">${COLOR_EMOJIS[p.color]}</span>
                     <span class="name">${escapeHtml(p.player_name)}</span>
                     <span class="pieces">${finished}/4 🏠</span>
@@ -1099,7 +1004,7 @@ $colorNames = ['red' => 'Rot', 'blue' => 'Blau', 'green' => 'Grün', 'yellow' =>
         
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
+            toast.className = 'mp-game-toast ' + type;
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);

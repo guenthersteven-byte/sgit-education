@@ -1,46 +1,9 @@
 <?php
 /**
- * ============================================================================
- * sgiT Education - Montagsmaler v1.0
- * ============================================================================
- * 
- * Multiplayer Zeichen-Ratespiel
- * - Spieler zeichnet Begriff
- * - Andere raten
- * - Punkte für schnelles Raten
- *
- * @author sgiT Solution Engineering & IT Services
- * @version 1.0
- * ============================================================================
+ * sgiT Education - Montagsmaler v1.1
+ * @version 1.1
  */
-
-session_start();
-require_once 'includes/version.php';
-require_once __DIR__ . '/wallet/SessionManager.php';
-
-// User-Daten aus SessionManager (wie multiplayer.php)
-$userName = '';
-$userAge = 10;
-$walletChildId = 0;
-$userAvatar = '😀';
-
-// SessionManager prüfen (primäre Quelle)
-if (SessionManager::isLoggedIn()) {
-    $childData = SessionManager::getChild();
-    if ($childData) {
-        $walletChildId = $childData['id'];
-        $userName = $childData['name'];
-        $userAvatar = $childData['avatar'] ?? '😀';
-        $userAge = $childData['age'] ?? 10;
-    }
-}
-// Fallback: Standard Session-Keys
-elseif (isset($_SESSION['wallet_child_id'])) {
-    $walletChildId = $_SESSION['wallet_child_id'];
-    $userName = $_SESSION['user_name'] ?? $_SESSION['child_name'] ?? '';
-    $userAvatar = $_SESSION['avatar'] ?? '😀';
-    $userAge = $_SESSION['user_age'] ?? 10;
-}
+require_once __DIR__ . '/includes/game_header.php';
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -54,188 +17,47 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         /* ===========================================
            Montagsmaler-Spezifische Styles
            =========================================== */
-        
-        /* Lokale Aliase für Kompatibilität */
-        :root {
-            --bg: var(--mp-bg-medium);
-            --card-bg: var(--mp-bg-card);
-            --text: var(--mp-text);
-            --text-muted: var(--mp-text-muted);
-            --error: var(--mp-error);
-            --success: var(--mp-success);
-            --warning: var(--mp-warning);
-        }
-        
-        body { 
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--mp-bg-dark) 0%, var(--mp-primary) 100%);
-            min-height: 100vh;
-            color: var(--mp-text);
-            margin: 0; padding: 0;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
-        
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .header h1 { font-size: 1.5rem; }
-        .header h1 span { color: var(--accent); }
-        .header-info { display: flex; gap: 15px; align-items: center; }
-        .back-link {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .back-link:hover { text-decoration: underline; }
-        
-        /* Screens */
-        .screen { display: none; }
-        .screen.active { display: block; }
-        
-        /* Lobby Screen */
-        .lobby-container {
-            max-width: 500px;
-            margin: 50px auto;
-            text-align: center;
-        }
+
+        /* Lobby Screen (lokale Erweiterungen) */
         .lobby-title {
             font-size: 3rem;
             margin-bottom: 10px;
         }
         .lobby-subtitle {
-            color: var(--text-muted);
+            color: var(--mp-text-muted);
             margin-bottom: 30px;
         }
-        .lobby-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-        .lobby-card h2 {
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-align: left;
-        }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        .input-group input::placeholder { color: var(--text-muted); }
-        .game-code-input {
-            font-size: 1.5rem !important;
-            text-align: center;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-        }
-        
-        .btn {
-            background: var(--accent);
-            color: var(--primary);
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(67, 210, 64, 0.3); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn.secondary { background: var(--card-bg); color: var(--text); border: 2px solid var(--accent); }
-        .btn.small { padding: 8px 16px; font-size: 0.85rem; width: auto; }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: var(--text-muted);
-        }
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--text-muted);
-            opacity: 0.3;
-        }
-        .divider span { padding: 0 15px; }
-        
+
         /* Waiting Room */
         .waiting-container {
             max-width: 600px;
             margin: 30px auto;
             text-align: center;
         }
-        .game-code-display {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-        .game-code-display h2 {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-        .game-code {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--accent);
-            letter-spacing: 10px;
-            font-family: 'Courier New', monospace;
-        }
         .players-list {
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 25px;
         }
         .players-list h3 {
             margin-bottom: 15px;
-            color: var(--accent);
+            color: var(--mp-accent);
         }
         .player-item {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 10px;
-            background: var(--bg);
+            background: var(--mp-bg-medium);
             border-radius: 10px;
             margin-bottom: 8px;
         }
         .player-avatar { font-size: 1.8rem; }
         .player-name { flex: 1; text-align: left; }
         .player-host {
-            background: var(--accent);
-            color: var(--primary);
+            background: var(--mp-accent);
+            color: var(--mp-primary);
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.75rem;
@@ -257,7 +79,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         }
         
         .canvas-area {
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 16px;
             padding: 15px;
             display: flex;
@@ -273,11 +95,11 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         }
         .round-info {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: var(--mp-text-muted);
         }
         .round-info strong { color: var(--mp-accent); }
         .timer {
-            background: var(--bg);
+            background: var(--mp-bg-medium);
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
@@ -290,7 +112,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         .word-display {
             text-align: center;
             padding: 15px;
-            background: var(--bg);
+            background: var(--mp-bg-medium);
             border-radius: 10px;
             margin-bottom: 10px;
         }
@@ -298,7 +120,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             background: linear-gradient(135deg, var(--mp-primary), var(--mp-bg-card));
             border: 2px solid var(--mp-accent);
         }
-        .word-label { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 5px; }
+        .word-label { color: var(--mp-text-muted); font-size: 0.85rem; margin-bottom: 5px; }
         .word-text { font-size: 1.8rem; font-weight: bold; color: var(--mp-accent); animation: mp-wordReveal 0.5s ease-out; }
         .word-hint {
             font-size: 1.5rem;
@@ -334,14 +156,14 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             height: 40px;
             border: 2px solid transparent;
             border-radius: 10px;
-            background: var(--bg);
-            color: var(--text);
+            background: var(--mp-bg-medium);
+            color: var(--mp-text);
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .tool-btn:hover { border-color: var(--accent); }
-        .tool-btn.active { background: var(--accent); color: var(--primary); }
+        .tool-btn:hover { border-color: var(--mp-accent); }
+        .tool-btn.active { background: var(--mp-accent); color: var(--mp-primary); }
         .color-btn {
             width: 30px;
             height: 30px;
@@ -349,15 +171,15 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             border: 3px solid transparent;
             cursor: pointer;
         }
-        .color-btn.active { border-color: var(--text); transform: scale(1.2); }
+        .color-btn.active { border-color: var(--mp-text); transform: scale(1.2); }
         .size-slider {
             width: 100px;
-            accent-color: var(--accent);
+            accent-color: var(--mp-accent);
         }
         
         /* Chat/Guess Area */
         .chat-area {
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 16px;
             padding: 15px;
             display: flex;
@@ -369,10 +191,10 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             border-bottom: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 10px;
         }
-        .chat-header h3 { font-size: 1rem; color: var(--accent); }
+        .chat-header h3 { font-size: 1rem; color: var(--mp-accent); }
         
         .scoreboard {
-            background: var(--bg);
+            background: var(--mp-bg-medium);
             border-radius: 10px;
             padding: 10px;
             margin-bottom: 15px;
@@ -389,7 +211,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         .score-item.drawing { background: rgba(67, 210, 64, 0.2); border-radius: 6px; }
         .score-points {
             margin-left: auto;
-            color: var(--accent);
+            color: var(--mp-accent);
             font-weight: 600;
         }
         
@@ -397,7 +219,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             flex: 1;
             overflow-y: auto;
             padding: 10px;
-            background: var(--bg);
+            background: var(--mp-bg-medium);
             border-radius: 10px;
             margin-bottom: 10px;
         }
@@ -415,7 +237,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             animation: mp-correctFlash 0.5s ease, mp-fadeIn 0.3s ease-out;
         }
         .guess-item .player { color: var(--mp-accent); font-weight: 600; }
-        .guess-item .text { color: var(--text); }
+        .guess-item .text { color: var(--mp-text); }
         .guess-item .points { color: var(--mp-warning); font-size: 0.8rem; animation: mp-scorePop 0.4s ease; }
         
         .guess-input-area {
@@ -427,15 +249,15 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             padding: 12px;
             border: none;
             border-radius: 10px;
-            background: var(--bg);
-            color: var(--text);
+            background: var(--mp-bg-medium);
+            color: var(--mp-text);
             font-size: 1rem;
         }
-        .guess-input-area input:focus { outline: 2px solid var(--accent); }
+        .guess-input-area input:focus { outline: 2px solid var(--mp-accent); }
         .guess-input-area button {
             padding: 12px 20px;
-            background: var(--accent);
-            color: var(--primary);
+            background: var(--mp-accent);
+            color: var(--mp-primary);
             border: none;
             border-radius: 10px;
             font-weight: 600;
@@ -449,15 +271,15 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             text-align: center;
         }
         .result-card {
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 20px;
             padding: 30px;
-            border: 3px solid var(--accent);
+            border: 3px solid var(--mp-accent);
         }
         .result-icon { font-size: 5rem; margin-bottom: 15px; }
         .result-title { font-size: 2rem; margin-bottom: 20px; }
         .final-scores {
-            background: var(--bg);
+            background: var(--mp-bg-medium);
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
@@ -468,37 +290,18 @@ elseif (isset($_SESSION['wallet_child_id'])) {
             gap: 15px;
             padding: 12px;
             margin-bottom: 8px;
-            background: var(--card-bg);
+            background: var(--mp-bg-card);
             border-radius: 10px;
         }
         .final-score-item.winner {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: 2px solid var(--accent);
+            background: linear-gradient(135deg, var(--mp-primary), var(--mp-accent));
+            border: 2px solid var(--mp-accent);
         }
         .rank { font-size: 1.5rem; width: 40px; }
         .final-avatar { font-size: 2rem; }
         .final-name { flex: 1; text-align: left; font-weight: 600; }
-        .final-points { font-size: 1.3rem; color: var(--accent); font-weight: bold; }
+        .final-points { font-size: 1.3rem; color: var(--mp-accent); font-weight: bold; }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateX(-50%) translateY(20px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-        .toast.success { background: var(--accent); color: var(--primary); }
-        .toast.error { background: var(--error); color: white; }
-        .toast.info { background: var(--mp-bg-card); color: var(--mp-text); border: 2px solid var(--mp-accent); }
         
         /* Mobile Optimierung */
         @media (max-width: 800px) {
@@ -542,12 +345,12 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         }
     </style>
 </head>
-<body>
-    <div class="container">
+<body class="mp-game-body">
+    <div class="mp-game-container">
         <!-- Header -->
-        <div class="header">
+        <div class="mp-game-header">
             <div>
-                <a href="multiplayer.php" class="back-link">← Multiplayer</a>
+                <a href="multiplayer.php" class="mp-game-header__back">← Spiele-Hub</a>
                 <h1>🎨 <span>Montagsmaler</span></h1>
             </div>
             <div class="header-info">
@@ -557,25 +360,25 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         </div>
         
         <!-- ==================== LOBBY SCREEN ==================== -->
-        <div id="lobbyScreen" class="screen active">
-            <div class="lobby-container">
+        <div id="lobbyScreen" class="mp-game-screen active">
+            <div class="mp-game-lobby">
                 <div class="lobby-title">🎨</div>
                 <h1 style="font-size: 2rem; margin-bottom: 5px;">Montagsmaler</h1>
                 <p class="lobby-subtitle">Zeichne & Rate mit Freunden!</p>
-                
+
                 <!-- Name eingeben -->
-                <div class="lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
+                <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2>👤 Wie heißt du?</h2>
-                    <div class="input-group">
+                    <div class="mp-lobby-input-group">
                         <input type="text" id="playerNameInput" placeholder="Dein Name..." maxlength="20">
                     </div>
-                    <button class="btn" onclick="setPlayerName()">Weiter →</button>
+                    <button class="mp-game-btn" onclick="setPlayerName()">Weiter →</button>
                 </div>
-                
+
                 <!-- Spiel erstellen -->
-                <div class="lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+                <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel erstellen</h2>
-                    <div class="input-group">
+                    <div class="mp-lobby-input-group">
                         <label>Anzahl Runden</label>
                         <select id="roundsSelect">
                             <option value="3">3 Runden (Schnell)</option>
@@ -583,7 +386,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
                             <option value="10">10 Runden (Lang)</option>
                         </select>
                     </div>
-                    <div class="input-group">
+                    <div class="mp-lobby-input-group">
                         <label>Zeit pro Runde</label>
                         <select id="timeSelect">
                             <option value="45">45 Sekunden</option>
@@ -591,57 +394,57 @@ elseif (isset($_SESSION['wallet_child_id'])) {
                             <option value="90">90 Sekunden</option>
                         </select>
                     </div>
-                    <button class="btn" onclick="createGame()">🎨 Spiel erstellen</button>
+                    <button class="mp-game-btn" onclick="createGame()">🎨 Spiel erstellen</button>
                 </div>
-                
-                <div class="divider"><span>oder</span></div>
-                
+
+                <div class="mp-game-divider"><span>oder</span></div>
+
                 <!-- Spiel beitreten -->
-                <div class="lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
+                <div class="mp-lobby-card" id="joinCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🔗 Spiel beitreten</h2>
-                    <div class="input-group">
+                    <div class="mp-lobby-input-group">
                         <label>Spiel-Code eingeben</label>
-                        <input type="text" id="gameCodeInput" class="game-code-input" placeholder="ABC123" maxlength="6">
+                        <input type="text" id="gameCodeInput" class="mp-lobby-code-input" placeholder="ABC123" maxlength="6">
                     </div>
-                    <button class="btn secondary" onclick="joinGame()">Beitreten →</button>
+                    <button class="mp-game-btn mp-game-btn--secondary" onclick="joinGame()">Beitreten →</button>
                 </div>
             </div>
         </div>
         
         <!-- ==================== WAITING ROOM ==================== -->
-        <div id="waitingScreen" class="screen">
+        <div id="waitingScreen" class="mp-game-screen">
             <div class="waiting-container">
-                <div class="game-code-display">
+                <div class="mp-lobby-code-display">
                     <h2>🎫 Spiel-Code</h2>
-                    <div class="game-code" id="displayGameCode">------</div>
-                    <p style="color: var(--text-muted); margin-top: 10px; font-size: 0.9rem;">
+                    <div class="mp-lobby-code" id="displayGameCode">------</div>
+                    <p style="color: var(--mp-text-muted); margin-top: 10px; font-size: 0.9rem;">
                         Teile diesen Code mit deinen Freunden!
                     </p>
                 </div>
-                
+
                 <div class="players-list">
                     <h3>👥 Spieler (<span id="playerCount">0</span>)</h3>
                     <div id="playersList"></div>
                 </div>
-                
+
                 <div id="hostControls" style="display: none;">
-                    <button class="btn" onclick="startGame()" id="startBtn" disabled>
+                    <button class="mp-game-btn" onclick="startGame()" id="startBtn" disabled>
                         ▶️ Spiel starten (min. 2 Spieler)
                     </button>
                 </div>
-                
+
                 <div id="guestMessage" style="display: none;">
-                    <p style="color: var(--text-muted);">⏳ Warte auf den Host...</p>
+                    <p style="color: var(--mp-text-muted);">⏳ Warte auf den Host...</p>
                 </div>
-                
-                <button class="btn secondary" style="margin-top: 15px;" onclick="leaveGame()">
+
+                <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 15px;" onclick="leaveGame()">
                     🚪 Spiel verlassen
                 </button>
             </div>
         </div>
         
         <!-- ==================== GAME SCREEN ==================== -->
-        <div id="gameScreen" class="screen">
+        <div id="gameScreen" class="mp-game-screen">
             <div class="game-container">
                 <!-- Canvas Bereich -->
                 <div class="canvas-area">
@@ -669,14 +472,14 @@ elseif (isset($_SESSION['wallet_child_id'])) {
                         <button class="tool-btn" data-tool="eraser" title="Radierer">🧽</button>
                         <button class="tool-btn" data-tool="fill" title="Füllen">🪣</button>
                         <button class="tool-btn" data-tool="clear" title="Alles löschen">🗑️</button>
-                        <div style="width: 1px; background: var(--text-muted); margin: 0 5px;"></div>
+                        <div style="width: 1px; background: var(--mp-text-muted); margin: 0 5px;"></div>
                         <button class="color-btn active" data-color="#000000" style="background: #000000;"></button>
                         <button class="color-btn" data-color="#ff0000" style="background: #ff0000;"></button>
                         <button class="color-btn" data-color="#0000ff" style="background: #0000ff;"></button>
                         <button class="color-btn" data-color="#00aa00" style="background: #00aa00;"></button>
                         <button class="color-btn" data-color="#ffaa00" style="background: #ffaa00;"></button>
                         <button class="color-btn" data-color="#aa00aa" style="background: #aa00aa;"></button>
-                        <div style="width: 1px; background: var(--text-muted); margin: 0 5px;"></div>
+                        <div style="width: 1px; background: var(--mp-text-muted); margin: 0 5px;"></div>
                         <input type="range" class="size-slider" id="brushSize" min="2" max="30" value="5" title="Pinselgröße">
                     </div>
                 </div>
@@ -704,17 +507,17 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         </div>
         
         <!-- ==================== RESULT SCREEN ==================== -->
-        <div id="resultScreen" class="screen">
+        <div id="resultScreen" class="mp-game-screen">
             <div class="result-container">
                 <div class="result-card">
                     <div class="result-icon">🏆</div>
                     <div class="result-title">Spiel beendet!</div>
-                    
+
                     <div class="final-scores" id="finalScores"></div>
-                    
+
                     <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
-                        <button class="btn" onclick="location.reload()">🔄 Neues Spiel</button>
-                        <button class="btn secondary" onclick="location.href='adaptive_learning.php'">← Zurück</button>
+                        <button class="mp-game-btn" onclick="location.reload()">🔄 Neues Spiel</button>
+                        <button class="mp-game-btn mp-game-btn--secondary" onclick="location.href='adaptive_learning.php'">← Zurück</button>
                     </div>
                 </div>
             </div>
@@ -1144,7 +947,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         
         // ==================== UI UPDATES ====================
         function showScreen(screenName) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.mp-game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenName + 'Screen').classList.add('active');
         }
         
@@ -1166,7 +969,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
                 <div class="score-item ${p.id == drawerId ? 'drawing' : ''}">
                     <span>${p.avatar}</span>
                     <span>${escapeHtml(p.player_name)}</span>
-                    ${p.id == drawerId ? '<span style="color: var(--accent);">✏️</span>' : ''}
+                    ${p.id == drawerId ? '<span style="color: var(--mp-accent);">✏️</span>' : ''}
                     <span class="score-points">${p.score}</span>
                 </div>
             `).join('');
@@ -1293,7 +1096,7 @@ elseif (isset($_SESSION['wallet_child_id'])) {
         
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
+            toast.className = 'mp-game-toast mp-game-toast--' + type;
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
