@@ -19,6 +19,10 @@ require_once __DIR__ . '/SessionManager.php';
 // Bereits eingeloggt? Redirect zur Lernplattform
 if (SessionManager::isLoggedIn()) {
     $redirect = $_GET['redirect'] ?? '../adaptive_learning.php';
+    // Open-Redirect-Schutz: Nur relative Pfade erlauben
+    if (preg_match('#^https?://#i', $redirect) || str_contains($redirect, '//')) {
+        $redirect = '../adaptive_learning.php';
+    }
     header('Location: ' . $redirect);
     exit;
 }
@@ -57,8 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
             if ($child) {
                 SessionManager::login($child);
                 
-                // Redirect zur Lernplattform
+                // Redirect zur Lernplattform (Open-Redirect-Schutz)
                 $redirect = $_GET['redirect'] ?? '../adaptive_learning.php';
+                if (preg_match('#^https?://#i', $redirect) || str_contains($redirect, '//')) {
+                    $redirect = '../adaptive_learning.php';
+                }
                 header('Location: ' . $redirect);
                 exit;
             } else {

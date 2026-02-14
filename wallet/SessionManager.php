@@ -49,7 +49,12 @@ class SessionManager {
         if (empty($child['id'])) {
             return false;
         }
-        
+
+        // Session-ID regenerieren (Session-Fixation-Schutz)
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
+
         $_SESSION[self::KEY_CHILD_ID] = (int) $child['id'];
         $_SESSION[self::KEY_CHILD_NAME] = $child['child_name'] ?? 'Unbekannt';
         $_SESSION[self::KEY_CHILD_AVATAR] = $child['avatar'] ?? '👧';

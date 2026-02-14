@@ -1,0 +1,6 @@
+# sgiT Education - Wallet DB Protection
+# Verhindert direkten Download von Datenbankdateien
+
+<FilesMatch "\.(db|sqlite|sqlite3)$">
+    Require all denied
+</FilesMatch>

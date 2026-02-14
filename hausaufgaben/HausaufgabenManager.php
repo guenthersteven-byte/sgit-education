@@ -238,9 +238,17 @@ class HausaufgabenManager {
             return ['success' => false, 'error' => 'Bildverarbeitung fehlgeschlagen: ' . $processed['error']];
         }
 
-        // Speicherpfad erstellen
-        $yearDir = str_replace('/', '-', $schoolYear);
-        $uploadDir = self::UPLOAD_BASE . "/{$childId}/{$yearDir}/{$subject}";
+        // Speicherpfad erstellen (Path-Traversal-Schutz)
+        $yearDir = preg_replace('/[^0-9\-\/]/', '', $schoolYear);
+        $yearDir = str_replace(['/', '\\', '..'], '-', $yearDir);
+        $safeChildId = (int)$childId;
+        if ($safeChildId <= 0) {
+            return ['success' => false, 'error' => 'Ungueltige Child-ID'];
+        }
+        if (!in_array($subject, self::SUBJECTS)) {
+            return ['success' => false, 'error' => 'Ungueltiges Fach'];
+        }
+        $uploadDir = self::UPLOAD_BASE . "/{$safeChildId}/{$yearDir}/{$subject}";
         if (!is_dir($uploadDir)) {
             if (!@mkdir($uploadDir, 0755, true)) {
                 imagedestroy($processed['image']);
@@ -471,8 +479,16 @@ class HausaufgabenManager {
             return ['text' => null, 'confidence' => 0];
         }
 
+        // Path-Validation: Nur Dateien im Upload-Verzeichnis erlauben
+        $realPath = realpath($imagePath);
+        $realBase = realpath(self::UPLOAD_BASE);
+        if (!$realPath || !$realBase || !str_starts_with($realPath, $realBase)) {
+            error_log("HausaufgabenManager: OCR path traversal blocked: {$imagePath}");
+            return ['text' => null, 'confidence' => 0];
+        }
+
         // OCR Text extrahieren
-        $cmd = sprintf('tesseract %s stdout -l deu+eng 2>/dev/null', escapeshellarg($imagePath));
+        $cmd = sprintf('tesseract %s stdout -l deu+eng 2>/dev/null', escapeshellarg($realPath));
         $ocrText = shell_exec($cmd);
         $ocrText = trim($ocrText ?? '');
 
@@ -490,7 +506,13 @@ class HausaufgabenManager {
     }
 
     private function getOcrConfidence(string $imagePath): float {
-        $cmd = sprintf('tesseract %s stdout -l deu+eng --psm 6 tsv 2>/dev/null', escapeshellarg($imagePath));
+        // Path bereits in extractText() validiert, nochmal pruefen
+        $realPath = realpath($imagePath);
+        $realBase = realpath(self::UPLOAD_BASE);
+        if (!$realPath || !$realBase || !str_starts_with($realPath, $realBase)) {
+            return 0;
+        }
+        $cmd = sprintf('tesseract %s stdout -l deu+eng --psm 6 tsv 2>/dev/null', escapeshellarg($realPath));
         $tsv = shell_exec($cmd);
 
         if (empty($tsv)) {
@@ -647,21 +669,23 @@ class HausaufgabenManager {
                 return ['total_uploads' => 0, 'distinct_subjects' => 0, 'consecutive_days' => 0];
             }
 
-            $totalUploads = $db->querySingle(
-                "SELECT COUNT(*) FROM homework_uploads WHERE child_id = {$childId} AND is_deleted = 0"
-            ) ?: 0;
+            $stmt = $db->prepare("SELECT COUNT(*) FROM homework_uploads WHERE child_id = :cid AND is_deleted = 0");
+            $stmt->bindValue(':cid', $childId, SQLITE3_INTEGER);
+            $totalUploads = (int)($stmt->execute()->fetchArray()[0] ?? 0);
 
-            $distinctSubjects = $db->querySingle(
-                "SELECT COUNT(DISTINCT subject) FROM homework_uploads WHERE child_id = {$childId} AND is_deleted = 0"
-            ) ?: 0;
+            $stmt = $db->prepare("SELECT COUNT(DISTINCT subject) FROM homework_uploads WHERE child_id = :cid AND is_deleted = 0");
+            $stmt->bindValue(':cid', $childId, SQLITE3_INTEGER);
+            $distinctSubjects = (int)($stmt->execute()->fetchArray()[0] ?? 0);
 
             // Aufeinanderfolgende Tage mit Uploads berechnen
             $consecutiveDays = 0;
-            $result = $db->query(
+            $stmt = $db->prepare(
                 "SELECT DISTINCT DATE(created_at) as upload_date FROM homework_uploads
-                 WHERE child_id = {$childId} AND is_deleted = 0
+                 WHERE child_id = :cid AND is_deleted = 0
                  ORDER BY upload_date DESC"
             );
+            $stmt->bindValue(':cid', $childId, SQLITE3_INTEGER);
+            $result = $stmt->execute();
 
             $dates = [];
             while ($row = $result->fetchArray(SQLITE3_ASSOC)) {

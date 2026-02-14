@@ -1,0 +1,6 @@
+# sgiT Education - Database Protection
+# Verhindert direkten Download von Datenbankdateien
+
+<FilesMatch "\.(db|sqlite|sqlite3|json)$">
+    Require all denied
+</FilesMatch>
