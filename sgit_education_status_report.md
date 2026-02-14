@@ -419,7 +419,20 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ## 📋 VERSION HISTORY
 
-### v3.56.0 (14.02.2026) - TTS VORLESEN + EINHEITLICHE SPIELMODUS-LOBBY
+### v3.56.0 (14.02.2026) - TTS VORLESEN + LOBBY-REDESIGN + DARK MODE + GAST-LOGIN ENTFERNT
+
+**Gast-Login komplett entfernt:**
+- UI: "Dein Name"/"Dein Alter" Felder + Warntext aus adaptive_learning.php entfernt
+- Backend: PHP POST-Handler blockiert Gast-Login serverseitig (redirect zu Wallet-Login)
+- doLogin() JS-Funktion (83 Zeilen toter Code) entfernt
+- Nur noch Wallet-PIN-Login moeglich
+
+**Dark Mode ueberall:**
+- wallet/login.php: Komplett auf Dark Mode umgestellt (Glassmorphism, dunkle Cards, gruene Akzente)
+- wallet/register.php: Komplett auf Dark Mode umgestellt (dunkle Inputs, Avatar-Picker, PIN-Felder)
+- statistics.php: var(--card-bg) → var(--card) Fix, sub-heading Farbe korrigiert
+- Logo-Fix: width:80px/height:80px → width:100px/height:auto (nicht mehr gequetscht)
+- **Geaendert:** wallet/login.php, wallet/register.php, statistics.php, adaptive_learning.php
 
 **TTS Vorlesen-Funktion (Web Speech API):**
 - Text-to-Speech fuer alle Quiz-Fragen via Web Speech API (Browser-nativ, kein Server-Load)
@@ -439,14 +452,13 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 - "Gegen Computer" linkt direkt zur jeweiligen _vs_computer.php Seite
 - Konsistentes Look & Feel ueber alle Multiplayer-Spiele
 
-- **Geaendert:** adaptive_learning.php, poker.php, dame.php, madn.php, maumau.php, romme.php, includes/version.php
-
-**Hausaufgaben-Bugfixes (v3.56.0):**
+**Hausaufgaben-Bugfixes:**
 - DB-Berechtigungen: hausaufgaben/ Verzeichnis war root:root, gefixt auf www-data
 - Doppelte Klasse/Schuljahr-Auswahl aus Upload-Formular entfernt (nutzt jetzt Schulinfo-Banner)
 - "Ungueltiges Fach" Fix: in_array() gegen Values statt Keys geaendert zu array_key_exists()
 - WalletManager::updateChildWallet() Return-Type Fix (SQLite3Result vs bool)
-- **Geaendert:** HausaufgabenManager.php, WalletManager.php, hausaufgaben/index.php, assets/js/hausaufgaben.js
+
+- **Geaendert:** adaptive_learning.php, poker.php, dame.php, madn.php, maumau.php, romme.php, wallet/login.php, wallet/register.php, statistics.php, HausaufgabenManager.php, WalletManager.php, hausaufgaben/index.php, assets/js/hausaufgaben.js, includes/version.php
 
 ### v3.55.0 (14.02.2026) - MULTIPLAYER GAME HUB + OLLAMA REMOVAL
 - **Multiplayer Game Hub:** multiplayer.php komplett redesigned als kindgerechter Spiele-Hub
@@ -635,5 +647,5 @@ CT 105 (sgit-edu-AIassistent) hostet den sgit.space AI Assistant:
 
 ---
 
-*Status-Report aktualisiert am 14.02.2026 - v3.56.0 TTS + Lobby-Redesign + Hausaufgaben-Bugfixes*
-*Spielmodus-Lobby, Web Speech API TTS, Hausaufgaben Upload gefixt (DB-Perm, Fach-Validierung, Return-Type)*
+*Status-Report aktualisiert am 14.02.2026 - v3.56.0*
+*TTS, Lobby-Redesign, Dark Mode (Login/Register/Statistics), Gast-Login entfernt, Hausaufgaben-Bugfixes*
