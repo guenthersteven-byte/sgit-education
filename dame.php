@@ -108,6 +108,24 @@ require_once __DIR__ . '/includes/game_header.php';
                 <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Dame</h1>
                 <p style="color: var(--mp-text-muted); margin-bottom: 25px;">Das klassische Brettspiel f&uuml;r 2 Spieler</p>
 
+                <!-- Moduswahl -->
+                <div class="mp-lobby-card" id="modeCard">
+                    <h2>Spielmodus</h2>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button class="mp-game-btn" onclick="document.getElementById('modeCard').style.display='none'; document.getElementById('pvpCards').style.display='block';" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">&#x1F465;</div>
+                            <div style="font-weight: 600;">Gegen Spieler</div>
+                            <div style="font-size: 0.8rem; color: var(--mp-primary); opacity: 0.8; margin-top: 4px;">2 Spieler online</div>
+                        </button>
+                        <a href="dame_vs_computer.php" class="mp-game-btn mp-game-btn--secondary" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; text-decoration: none;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">&#x1F916;</div>
+                            <div style="font-weight: 600;">Gegen Computer</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">KI mit 5 Stufen</div>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="pvpCards" style="display: none;">
                 <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2>&#x1F464; Dein Name</h2>
                     <div class="mp-lobby-input-group">
@@ -119,8 +137,7 @@ require_once __DIR__ . '/includes/game_header.php';
                 <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>&#x1F3AE; Neues Spiel</h2>
                     <p style="color: var(--mp-text-muted); margin-bottom: 15px;">Du spielst mit &#x26AB; Schwarz (beginnst)</p>
-                    <button class="mp-game-btn" onclick="createGame()">&#x1F465; Gegen Mitspieler</button>
-                    <button class="mp-game-btn mp-game-btn--secondary" style="margin-top: 10px;" onclick="location.href='dame_vs_computer.php'">&#x1F916; Gegen Computer</button>
+                    <button class="mp-game-btn" onclick="createGame()">Spiel erstellen</button>
                 </div>
 
                 <div class="mp-game-divider"><span>oder</span></div>
@@ -133,6 +150,7 @@ require_once __DIR__ . '/includes/game_header.php';
                     </div>
                     <button class="mp-game-btn mp-game-btn--secondary" onclick="joinGame()">Beitreten &rarr;</button>
                 </div>
+                </div><!-- /pvpCards -->
             </div>
         </div>
         

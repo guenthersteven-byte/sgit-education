@@ -129,6 +129,24 @@ require_once __DIR__ . '/includes/game_header.php';
                 <h1 style="font-size: 1.8rem; margin-bottom: 5px;">Rommé</h1>
                 <p style="color: var(--mp-text-muted); margin-bottom: 25px;">Das Kartenspiel für 2-4 Spieler</p>
 
+                <!-- Moduswahl -->
+                <div class="mp-lobby-card" id="modeCard">
+                    <h2>Spielmodus</h2>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button class="mp-game-btn" onclick="document.getElementById('modeCard').style.display='none'; document.getElementById('pvpCards').style.display='block';" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">👥</div>
+                            <div style="font-weight: 600;">Gegen Spieler</div>
+                            <div style="font-size: 0.8rem; color: var(--mp-primary); opacity: 0.8; margin-top: 4px;">2-4 Spieler online</div>
+                        </button>
+                        <a href="romme_vs_computer.php" class="mp-game-btn mp-game-btn--secondary" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; text-decoration: none;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">🤖</div>
+                            <div style="font-weight: 600;">Gegen Computer</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">KI mit 3 Stufen</div>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="pvpCards" style="display: none;">
                 <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2>👤 Dein Name</h2>
                     <div class="mp-lobby-input-group">
@@ -139,8 +157,7 @@ require_once __DIR__ . '/includes/game_header.php';
 
                 <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2>🎮 Neues Spiel</h2>
-                    <button class="mp-game-btn full" onclick="createGame()">👥 Gegen Mitspieler</button>
-                    <button class="mp-game-btn mp-game-btn--secondary full" style="margin-top: 10px;" onclick="location.href='romme_vs_computer.php'">🤖 Gegen Computer</button>
+                    <button class="mp-game-btn full" onclick="createGame()">Spiel erstellen</button>
                 </div>
 
                 <div class="mp-game-divider"><span>oder</span></div>
@@ -152,17 +169,7 @@ require_once __DIR__ . '/includes/game_header.php';
                     </div>
                     <button class="mp-game-btn mp-game-btn--secondary full" onclick="joinGame()">Beitreten →</button>
                 </div>
-
-                <div class="mp-lobby-card" style="margin-top: 20px; text-align: left;">
-                    <h3 style="color: var(--mp-accent); margin-bottom: 10px;">📜 Kurzregeln</h3>
-                    <ul style="font-size: 0.85rem; color: var(--mp-text-muted); list-style: none;">
-                        <li>🎴 Ziehe 1 Karte (Stapel oder Ablage)</li>
-                        <li>📤 Lege Sätze (3-4 gleiche) oder Reihen (3+ Folge)</li>
-                        <li>🔢 Erstauslage: min. 30 Punkte</li>
-                        <li>➕ Danach: An Kombinationen anlegen</li>
-                        <li>🎯 Ziel: Alle Karten loswerden!</li>
-                    </ul>
-                </div>
+                </div><!-- /pvpCards -->
             </div>
         </div>
         

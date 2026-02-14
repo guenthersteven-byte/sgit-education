@@ -355,6 +355,24 @@ require_once __DIR__ . '/includes/game_header.php';
                 <h1 class="mp-lobby__title">Mensch ärgere dich nicht</h1>
                 <p class="mp-lobby__subtitle">Das Klassiker-Brettspiel für 2-4 Spieler</p>
 
+                <!-- Moduswahl -->
+                <div class="mp-lobby-card" id="modeCard">
+                    <h2>Spielmodus</h2>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button class="mp-game-btn" onclick="document.getElementById('modeCard').style.display='none'; document.getElementById('pvpCards').style.display='block';" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">👥</div>
+                            <div style="font-weight: 600;">Gegen Spieler</div>
+                            <div style="font-size: 0.8rem; color: var(--mp-primary); opacity: 0.8; margin-top: 4px;">2-4 Spieler online</div>
+                        </button>
+                        <a href="madn_vs_computer.php" class="mp-game-btn mp-game-btn--secondary" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; text-decoration: none;">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">🤖</div>
+                            <div style="font-weight: 600;">Gegen Computer</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">KI mit 3 Stufen</div>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="pvpCards" style="display: none;">
                 <div class="mp-lobby-card" id="nameCard" style="<?php echo $userName ? 'display:none' : ''; ?>">
                     <h2 class="mp-card__title">👤 Dein Name</h2>
                     <div class="mp-lobby-input-group">
@@ -365,8 +383,7 @@ require_once __DIR__ . '/includes/game_header.php';
 
                 <div class="mp-lobby-card" id="createCard" style="<?php echo $userName ? '' : 'display:none'; ?>">
                     <h2 class="mp-card__title">🎮 Neues Spiel</h2>
-                    <button class="mp-game-btn mp-btn--full" onclick="createGame()">👥 Gegen Mitspieler</button>
-                    <button class="mp-game-btn mp-game-btn--secondary mp-btn--full" style="margin-top: 10px;" onclick="location.href='madn_vs_computer.php'">🤖 Gegen Computer</button>
+                    <button class="mp-game-btn mp-btn--full" onclick="createGame()">Spiel erstellen</button>
                 </div>
 
                 <div class="mp-game-divider"><span>oder</span></div>
@@ -378,6 +395,7 @@ require_once __DIR__ . '/includes/game_header.php';
                     </div>
                     <button class="mp-game-btn mp-game-btn--secondary mp-btn--full" onclick="joinGame()">Beitreten →</button>
                 </div>
+                </div><!-- /pvpCards -->
             </div>
         </div>
         
