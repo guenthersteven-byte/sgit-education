@@ -2035,22 +2035,11 @@ if (isset($_POST['action']) && $_POST['action'] == 'check_answer') {
             <div class="login-title">sgiT Education</div>
             <div class="login-subtitle">Adaptive Learning</div>
             
-            <input type="text" id="userName" class="login-input" placeholder="Dein Name" maxlength="50">
-            <input type="number" id="userAge" class="login-input" placeholder="Dein Alter (ab 5)" min="5" max="99">
-            
-            <div class="login-info" style="cursor: pointer;" onclick="window.location.href='wallet/login.php'">
-                💡 <strong>Wallet-User?</strong> Bitte nutze den 
-                <a href="wallet/login.php" 
-                   style="color: var(--bitcoin); font-weight: bold; text-decoration: underline; cursor: pointer;"
-                   onclick="event.stopPropagation(); window.location.href='wallet/login.php';">₿ Wallet-Login mit PIN</a>
+            <div class="login-info" style="margin-bottom: 15px; font-size: 0.95rem; color: var(--text-muted);">
+                Melde dich mit deinem Wallet-PIN an, um zu lernen und Sats zu verdienen!
             </div>
-            
-            <div class="login-warning">
-                ⚠️ <strong>Wichtig:</strong> Ohne Wallet-Login werden deine Daten nur im Browser gespeichert. 
-                <br><strong style="color: var(--bitcoin);">→ Mit Wallet-Login bleibt dein Fortschritt sicher gespeichert!</strong>
-            </div>
-            
-            <button class="login-btn" onclick="doLogin()">Los geht's! →</button>
+
+            <a href="wallet/login.php" class="login-btn" style="display: block; text-align: center; text-decoration: none;">₿ Mit PIN anmelden →</a>
             <div class="login-error" id="loginError"></div>
         </div>
     </div>
